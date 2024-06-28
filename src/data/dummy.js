@@ -493,6 +493,11 @@ export const links = [
         label :'Lịch nhân viên',
         icon: <AiOutlineCalendar />,
       },
+      {
+        name: 'qlnguoidung',
+        label :'Quản lý người dùng',
+        icon: <AiOutlineCalendar />,
+      },
       
     ],
   },

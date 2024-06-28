@@ -6,7 +6,6 @@ import moment from 'moment';
 import UserService from '../../Service/UserService';
 import EditUs from './EditUser';
 import AddUsserComponet from './AddUsser';
-import BreadcrumbComponent from './Breadcrumb';
 const { Option } = Select;
 
 function ListUser2 ()
@@ -106,8 +105,7 @@ function ListUser2 ()
     ];
 
     return (
-        <>
-            <BreadcrumbComponent items={ breadcrumbItems } />
+        <>npm install @mui/material @emotion/react @emotion/styled
 
             <Content style={ {
                 padding: 24,

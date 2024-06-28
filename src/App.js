@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
-
+import ListUser2 from "./pages/Admin/ListUser"
 import { Navbar, Footer, Sidebar, ThemeSettings } from "./components";
 import {
   Ecommerce,
@@ -99,6 +99,7 @@ const App = () => {
                 <Route path="/editor" element={<Editor />} /> */}
                 <Route path="/lichcanhan" element={<Calendar />} />
                 <Route path="/lichnhanvien" element={<Calendar />} />
+                <Route path="/qlnguoidung" element={<ListUser2/>} />
 
                 {/* charts  */}
                 <Route path="/line" element={<Line />} />
