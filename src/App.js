@@ -86,7 +86,7 @@ const App = () => {
 
               <Routes>
                 {/* dashboard  */}
-                <Route path="/" element={<Ecommerce />} />
+                <Route path="/" element={<Calendar />} />
                 <Route path="/ecommerce" element={<Ecommerce />} />
 
                 {/* pages  */}
@@ -95,10 +95,10 @@ const App = () => {
                 <Route path="/customers" element={<Customers />} />
 
                 {/* apps  */}
-                <Route path="/kanban" element={<Kanban />} />
-                <Route path="/editor" element={<Editor />} />
-                <Route path="/calendar" element={<Calendar />} />
-                <Route path="/color-picker" element={<ColorPicker />} />
+                {/* <Route path="/kanban" element={<Kanban />} />
+                <Route path="/editor" element={<Editor />} /> */}
+                <Route path="/lichcanhan" element={<Calendar />} />
+                <Route path="/lichnhanvien" element={<Calendar />} />
 
                 {/* charts  */}
                 <Route path="/line" element={<Line />} />
