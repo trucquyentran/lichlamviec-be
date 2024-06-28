@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ScheduleComponent,
   ViewsDirective,
@@ -13,15 +13,19 @@ import {
   DragAndDrop,
 } from "@syncfusion/ej2-react-schedule";
 
+import CalendarService from '../Service/CalendarService';
+
 import { DatePickerComponent } from "@syncfusion/ej2-react-calendars";
 
-import { scheduleData } from "../data/dummy";
+// import { scheduleData } from "../data/dummy";
 import { Header } from "../components";
 
 // eslint-disable-next-line react/destructuring-assignment
 const PropertyPane = (props) => <div className="mt-5">{props.children}</div>;
 
 const Scheduler = () => {
+  const [cals, setCals] = useState([]);
+  const [newColumns, setColumns] = useState([]);
   const [scheduleObj, setScheduleObj] = useState();
 
   const change = (args) => {
@@ -30,24 +34,51 @@ const Scheduler = () => {
   };
 
   const onDragStart = (arg) => {
-    // eslint-disable-next-line no-param-reassign
     arg.navigation.enable = true;
   };
+ 
+  const loadCals = async () => {
+    try {
+      const response = await CalendarService.getCals();
+      setCals(response.data);
+     
+    } catch (error) {
+      console.error("Error loading Cals:", error);
+    }
+  };
+  useEffect(() => {
+    loadCals();
+  }, []);
+  useEffect(() => {
+    console.log("Dữ liệu từ API:", cals);
+    const newColumns = cals.map(cal => ({
+      Id: cal.id,
+      Subject: cal.diaDiem,
+      Location: cal.diaDiem,
+      StartTime: cal.thoiGianBD,
+      EndTime:cal.thoiGianKT,
+      CategoryColor:"#1aaa55"
+    }));
+    console.log("Các cột được tạo:", newColumns);
+    setColumns(newColumns);
+  }, [cals]);
 
   return (
     <div className="m-2 md:m-10 mt-24 p-2 md:p-10 bg-white rounded-3xl">
       <Header category="App" title="Calendar" />
       <ScheduleComponent
         height="650px"
-      showQuickInfo={false}
-        ref={(schedule) => setScheduleObj(schedule)}
+        showQuickInfo={false}
+        ref={(schedule) => setScheduleObj(schedule) }
         selectedDate={new Date()}
-        eventSettings={{ dataSource: scheduleData }}
+        eventSettings={{ dataSource: newColumns} }
         dragStart={onDragStart}
         
       >
+        {console.log(newColumns)}
+       
         <ViewsDirective>
-          {["Day", "Week", "WorkWeek", "Month", "Agenda"].map((item) => (
+          {["Day", "Week", "Month"].map((item) => (
             <ViewDirective key={item} option={item} />
           ))}
         </ViewsDirective>
@@ -78,32 +109,3 @@ const Scheduler = () => {
 
 export default Scheduler;
 
-
-// import * as React from 'react';
-// import * as ReactDOM from 'react-dom';
-// import { ScheduleComponent, Day, Week, Month, TimelineViews, Inject, ViewsDirective, ViewDirective } from '@syncfusion/ej2-react-schedule';
-// import { scheduleData } from './datasource';
-// import { L10n, loadCldr } from '@syncfusion/ej2-base';
-// import * as localeObj from "../locale.json";
-// import * as numberingSystems from '../numberingSystems.json';
-// import * as gregorian from '../ca-gregorian.json';
-// import * as numbers from '../numbers.json';
-// import * as timeZoneNames from '../timeZoneNames.json';
-// import * as islamic from '../ca-islamic.json';
-// loadCldr(numberingSystems, gregorian, numbers, timeZoneNames, islamic);
-// L10n.load(localeObj);
-// const Scheduler = () => {
-//     const eventSettings = { dataSource: scheduleData };
-//     return (<ScheduleComponent height='550px' showQuickInfo={false} selectedDate={new Date(2018, 1, 15)} locale='ar' eventSettings={eventSettings}>
-//       <ViewsDirective>
-//         <ViewDirective option='Day'/>
-//         <ViewDirective option='Week'/>
-//         <ViewDirective option='TimelineWorkWeek'/>
-//         <ViewDirective option='Month'/>
-//       </ViewsDirective>
-//       <Inject services={[Day, Week, Month, TimelineViews]}/>
-//     </ScheduleComponent>);
-// }
-// ;
-// const root = ReactDOM.createRoot(document.getElementById('schedule'));
-// root.render(<Scheduler />);
