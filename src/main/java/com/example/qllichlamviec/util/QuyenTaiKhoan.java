@@ -1,7 +1,7 @@
 package com.example.qllichlamviec.util;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.databind.ser.std.TimeZoneSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,23 +10,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Document(collection = "DonVi")
+@Document(collection = "QuyenTaiKhoan")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DonVi {
+public class QuyenTaiKhoan {
     @Id
-    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = TimeZoneSerializer.class)
     private ObjectId _id;
-    @NotNull
-    @Size(max = 100)
-    private String tenDonVi;
 
-    public DonVi(ObjectId _id){
-        this._id = _id;
-    }
+    @DocumentReference(lazy = false)
+    private Quyen quyen;
 
+    @DocumentReference(lazy = false)
+    private TaiKhoan taiKhoan;
 }

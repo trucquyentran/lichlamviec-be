@@ -8,24 +8,21 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Document(collection = "DonVi")
+@Document(collection = "Quyen")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DonVi {
+public class Quyen {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
-    @NotNull
     @Size(max = 100)
-    private String tenDonVi;
+    private String tenQuyen;
 
-    public DonVi(ObjectId _id){
+    public Quyen(ObjectId _id){
         this._id = _id;
     }
 
