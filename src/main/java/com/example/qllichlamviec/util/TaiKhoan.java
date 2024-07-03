@@ -11,9 +11,8 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
-
+import com.example.qllichlamviec.util.pojo.Session;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +37,10 @@ public class TaiKhoan {
     @ReadOnlyProperty
     @DocumentReference(collection = "QuyenTaiKhoan", lookup = "{'taiKhoan':?#{#self._id}}")
     private List<QuyenTaiKhoan> quyenTaiKhoanList;
-    private Integer trangThai;
     private LocalDateTime ngayTao;
+    private Integer trangThai;
+//    private List<Session> listSession;
+//    private List<Session> listSession;
+private List<Session> listSession;
 
 }

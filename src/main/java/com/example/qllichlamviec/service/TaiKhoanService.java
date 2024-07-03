@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class TaiKhoanService {
     private MongoTemplate mongoTemplate;
     @Autowired
     private JwtService jwtService;
-//    @Autowired
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -67,16 +68,23 @@ public class TaiKhoanService {
         taiKhoan.setTrangThai(1);
         NguoiDung ngDungRS = nguoiDungReponsitory.save(taiKhoan.getNguoiDung());
         taiKhoan.setNguoiDung(ngDungRS);
-        List<QuyenTaiKhoan> vaiTroTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
+        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
         taiKhoan.setQuyenTaiKhoanList(null);
         taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
         TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
 
-        for (QuyenTaiKhoan vttk : vaiTroTaiKhoanList) {
-            vttk.setTaiKhoan(taiKhoanRs);
-            quyenTaiKhoanService.save(vttk);
+        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
+            qtk.setTaiKhoan(taiKhoanRs);
+            quyenTaiKhoanService.save(qtk);
         }
         return taiKhoanRs;
+    }
+
+    public static boolean isStrongPassword(String password) {
+        String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        if (Pattern.compile(PASSWORD_PATTERN).matcher(password).matches()) {
+            return false;
+        } else return true;
     }
 
     public Error kiemTraNguoiDungTonTaiEmailHoacSoDienThoai(NguoiDung nguoiDung) {
@@ -129,9 +137,13 @@ public class TaiKhoanService {
         tk.setTrangThai(1);
         List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
 //        quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
-        quyenTaiKhoanList.add(new QuyenTaiKhoan(null, new Quyen(new ObjectId("66431ee6950a6be77897e99b")), tk));
+        quyenTaiKhoanList.add(new QuyenTaiKhoan(null, tk, new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
         tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
         return  khoiTaoNguoiDungKemTaiKhoan(tk);
+    }
+
+    public TaiKhoan getTaiKhoanFromRequest(HttpServletRequest httpRequest) {
+        return taiKhoanReponsitory.getByID(jwtService.getIDTaiKhoanFromToken(jwtService.getToken(httpRequest)));
     }
 
 }

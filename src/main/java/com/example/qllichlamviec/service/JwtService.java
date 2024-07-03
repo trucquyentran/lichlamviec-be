@@ -22,13 +22,12 @@ public class JwtService {
     public static final String TAIKHOANID = "taiKhoanID";
     public static final String NGUOIDUNGID = "nguoiDungId";
     public static final String TYPE = "type";
-    public static final String SECRET_KEY = "SECRET_KEY_QuanLyLichLamViec";
+    public static final String SECRET_KEY = "SECRET_KEY_QuanLyLichLamViec_TranThiTrucquyen_01_07_2024_Least_256Bits30122024";
     public static final int EXPIRE_TIME = 86400000*1;
 
-    public String generateTokenLogin(String idTaiKhoan, String nguoiDungID, LocalDateTime ngayCapNhat, Integer trangThai) {
+    public String generateTokenLogin(String idTaiKhoan, String nguoiDungID, Integer trangThai) {
         String token = null;
         try {
-            // Create HMAC signer
             JWSSigner signer = new MACSigner(generateShareSecret());
 
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
@@ -48,6 +47,26 @@ public class JwtService {
         return token;
     }
 
+    public  String generateRefreshToken(String idTaiKhoan, String nguoiDungID, Integer trangThai){
+        String refreshToken = null;
+        try {
+            JWSSigner signer = new MACSigner(generateShareSecret());
+            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+            builder.claim(TAIKHOANID, idTaiKhoan);
+            builder.claim(NGUOIDUNGID, nguoiDungID);
+            builder.claim(TRANGTHAI, trangThai);
+            builder.claim(TYPE,"1");
+            builder.expirationTime(new Date(System.currentTimeMillis() + 86400000*3));
+            JWTClaimsSet claimsSet = builder.build();
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+            signedJWT.sign(signer);
+            refreshToken = signedJWT.serialize();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return  refreshToken;
+    }
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + EXPIRE_TIME);
     }

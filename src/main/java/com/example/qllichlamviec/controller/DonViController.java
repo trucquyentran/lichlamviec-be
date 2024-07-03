@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/don-vi")
+@RequestMapping("/admin/don-vi")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class DonViController {
     @Autowired
@@ -26,6 +26,12 @@ public class DonViController {
     private JwtService jwtService;
     @Autowired
     private TaiKhoanService taiKhoanService;
+
+    @GetMapping(value = "/getall")
+    public List<DonVi> getAlls(){
+         return donViService.findAll();
+    }
+
     @GetMapping
     public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
         try {
@@ -58,8 +64,8 @@ public class DonViController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<Object>delete(@RequestBody String id, HttpServletRequest httpRequest){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object>delete(@PathVariable String id, HttpServletRequest httpRequest){
         try {
             donViService.deleteByID(id);
             return new ResponseEntity<>(id, HttpStatus.OK);

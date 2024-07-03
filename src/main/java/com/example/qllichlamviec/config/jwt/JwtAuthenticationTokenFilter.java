@@ -53,11 +53,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     boolean credentialsNonExpired = true;
                     boolean accountNonLocked = true;
                     List<GrantedAuthority> autho = new ArrayList<GrantedAuthority>();
-                    List<QuyenTaiKhoan> listVaiTro = taiKhoanService.getListQuyenByID(taiKhoan.get_id().toHexString());
+                    List<QuyenTaiKhoan> listQuyen = taiKhoanService.getListQuyenByID(taiKhoan.get_id().toHexString());
                     List<String> roles = new ArrayList<>();
-                    for (int i = 0; i < listVaiTro.size(); i++) {
-                        for (int j = 0; j < listVaiTro.size(); j++) {
-                            roles.add("ROLE_" + listVaiTro.get(j).getQuyen().getTenQuyen().toUpperCase());
+                    for (int i = 0; i < listQuyen.size(); i++) {
+                        for (int j = 0; j < listQuyen.size(); j++) {
+                            roles.add("ROLE_" + listQuyen.get(j).getQuyen().getTenQuyen().toUpperCase());
                         }
                     }
                     autho.add(new SimpleGrantedAuthority("ROLE_USER"));

@@ -71,13 +71,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     //JWT
     protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf().ignoringAntMatchers("/**");
+        http.csrf().ignoringAntMatchers("/admin/**");
         http.cors().and()
                 //config jwt
-                .antMatcher("/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
+                .antMatcher("/admin/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/user/login").permitAll()
-                .antMatchers("/public/**"
+                .antMatchers(HttpMethod.POST, "/admin/user/dang-nhap").permitAll()
+                .antMatchers("/admin/public/**"
                 ).permitAll()
                 .antMatchers("/**").access("hasRole('ROLE_USER')")
                 .and()

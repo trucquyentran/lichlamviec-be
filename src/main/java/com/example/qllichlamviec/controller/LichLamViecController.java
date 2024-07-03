@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/lich-lam-viec")
+@RequestMapping("/admin/lich-lam-viec")
 @PreAuthorize("role('ROLE_ADMIN')")
 public class LichLamViecController {
     @Autowired

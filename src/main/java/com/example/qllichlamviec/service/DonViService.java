@@ -21,6 +21,7 @@ public class DonViService {
     public DonVi getById(String id){
         return donViReponsitory.getByID(id);
     }
+
     public List<DonVi> findAll(){
         return donViReponsitory.findAll();
     }

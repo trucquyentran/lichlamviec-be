@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class TaiKhoanDangNhapDTO {
     private Long id;
     private String username;
-    private String passdword;
+    private String password;
     private String oldPassdword;
     private String newPassword;
     private String newPassword2;

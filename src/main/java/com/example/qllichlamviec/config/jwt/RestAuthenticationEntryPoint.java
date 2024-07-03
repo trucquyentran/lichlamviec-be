@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.config.jwt;
 
+import com.example.qllichlamviec.modal.system.Error;
 import com.google.gson.Gson;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.core.AuthenticationException;
@@ -15,7 +16,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().write(new Gson().toJson(new Error("Invalid Token")));
+        response.getWriter().write(new Gson().toJson(new Error("401","Invalid Token")));
 
     }
 }
