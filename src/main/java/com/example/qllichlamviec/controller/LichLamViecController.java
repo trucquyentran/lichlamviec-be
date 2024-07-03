@@ -1,24 +1,24 @@
 package com.example.qllichlamviec.controller;
 
 import com.example.qllichlamviec.service.JwtService;
+import com.example.qllichlamviec.service.LichLamViecService;
 import com.example.qllichlamviec.service.TaiKhoanService;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
-@Slf4j
-public class TaiKhoanController {
+@RequestMapping("/lich-lam-viec")
+@PreAuthorize("role('ROLE_ADMIN')")
+public class LichLamViecController {
     @Autowired
-    private TaiKhoanService taiKhoanService;
+    private LichLamViecService lichLamViecService;
 //    @Autowired
-    private PasswordEncoder passwordEncoder;
-//    @Autowired
-    private ModelMapper modelMapper;
+    private ModuleLayer moduleLayer;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private TaiKhoanService taiKhoanService;
+
 }

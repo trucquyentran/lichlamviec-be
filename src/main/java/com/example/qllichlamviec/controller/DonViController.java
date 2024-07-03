@@ -17,12 +17,11 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/don-vi")
-@PreAuthorize("role('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class DonViController {
     @Autowired
     private DonViService donViService;
-    @Autowired
-    private ModuleLayer moduleLayer;
+
     @Autowired
     private JwtService jwtService;
     @Autowired
