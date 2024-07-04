@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.controller;
 
+import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.service.DonViService;
 import com.example.qllichlamviec.service.JwtService;
 import com.example.qllichlamviec.service.TaiKhoanService;
@@ -50,7 +51,7 @@ public class DonViController {
         try {
             return new ResponseEntity<>(donViService.save(donVi), HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(new Error("400"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 
         }
     }
@@ -60,7 +61,7 @@ public class DonViController {
         try {
             return new ResponseEntity<Object>(donViService.update(donVi), HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(new Error("400"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,7 +71,7 @@ public class DonViController {
             donViService.deleteByID(id);
             return new ResponseEntity<>(id, HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(new Error("400"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }
