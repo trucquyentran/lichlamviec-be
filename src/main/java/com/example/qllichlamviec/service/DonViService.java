@@ -22,13 +22,16 @@ public class DonViService {
         return donViReponsitory.getByID(id);
     }
 
+    public DonVi getById2(ObjectId id) {
+        return donViReponsitory.findById(id).orElse(null);
+    }
+
+
     public List<DonVi> findAll(){
         return donViReponsitory.findAll();
     }
     public void deleteByID(String id){
         donViReponsitory.deleteById(new ObjectId(id));
     }
-
-
 
 }

@@ -11,7 +11,7 @@ public class TaiKhoanDangNhapDTO {
     private Long id;
     private String username;
     private String password;
-    private String oldPassdword;
+    private String oldPassword;
     private String newPassword;
     private String newPassword2;
     private String avatar;

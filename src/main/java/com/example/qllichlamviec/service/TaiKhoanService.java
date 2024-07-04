@@ -136,7 +136,6 @@ public class TaiKhoanService {
         tk.setNguoiDung(nguoiDung);
         tk.setTrangThai(1);
         List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-//        quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
         quyenTaiKhoanList.add(new QuyenTaiKhoan(null, tk, new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
         tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
         return  khoiTaoNguoiDungKemTaiKhoan(tk);
@@ -145,5 +144,6 @@ public class TaiKhoanService {
     public TaiKhoan getTaiKhoanFromRequest(HttpServletRequest httpRequest) {
         return taiKhoanReponsitory.getByID(jwtService.getIDTaiKhoanFromToken(jwtService.getToken(httpRequest)));
     }
+
 
 }
