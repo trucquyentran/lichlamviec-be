@@ -3,10 +3,7 @@ package com.example.qllichlamviec.service;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
-import com.example.qllichlamviec.util.LichLamViec;
-import com.example.qllichlamviec.util.NguoiDung;
-import com.example.qllichlamviec.util.QuyenTaiKhoan;
-import com.example.qllichlamviec.util.TaiKhoan;
+import com.example.qllichlamviec.util.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +25,15 @@ public class LichLamViecService {
     public LichLamViec update(LichLamViec lichLamViec){
         return lichLamViecReponsitory.save(lichLamViec);
     }
-    public NguoiDung getByNguoiDungID(String nguoiDung){
+    public List<LichLamViec> getByNguoiDungID(ObjectId nguoiDung){
         return lichLamViecReponsitory.getByIDNguoiDung(nguoiDung);
     }
+
+
+    public List<LichLamViec> getByIdDonVi(ObjectId donVi){
+        return lichLamViecReponsitory.getByIdDonVi(donVi);
+    }
+
     public LichLamViec getById(String id){
         return lichLamViecReponsitory.getByID(id);
     }

@@ -1,6 +1,7 @@
 package com.example.qllichlamviec.controller;
 
 import com.example.qllichlamviec.modal.dto.LichLanViecDTO;
+import com.example.qllichlamviec.modal.dto.TaiKhoanDangNhapDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.NguoiDungDangNhapDTO;
@@ -42,25 +43,61 @@ public class LichLamViecController {
     @Autowired
     private DonViService donViService;
 
-
     @GetMapping(value = "/getall")
     public List<LichLamViec> getAlls(){
         return lichLamViecService.findAll();
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
+//    @GetMapping
+//    public ResponseEntity<Object> search(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
+//        try {
+//            if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
+//                return new ResponseEntity<>(lichLamViecService.getById(search), HttpStatus.OK);
+//            }else {
+//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//            }
+//        }catch (Exception e){
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+    @GetMapping ("/lich-don-vi/{idDonVi}")
+    public ResponseEntity<List<LichLamViec>> getLichByDonVi(@PathVariable ObjectId idDonVi){
         try {
-            if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
-                List<DonVi> dv = new ArrayList<>();
-                return new ResponseEntity<>(lichLamViecService.getById(search), HttpStatus.OK);
-            }else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+                List<LichLamViec> llv = lichLamViecService.getByIdDonVi(idDonVi);
+                return new ResponseEntity<>(llv, HttpStatus.OK);
+
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping ("/lich-user/{NguoiDungId}")
+    public ResponseEntity<List<LichLamViec>> getLichByNguoiDung(@PathVariable ObjectId NguoiDungId){
+        try {
+            List<LichLamViec> llv = lichLamViecService.getByNguoiDungID(NguoiDungId);
+            return new ResponseEntity<>(llv, HttpStatus.OK);
+
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/lich-ca-nhan")
+    public ResponseEntity<Object> getLichCaNhan(HttpServletRequest httpServletRequest) {
+        try {
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+
+            ObjectId nguoiDungId = new ObjectId(String.valueOf(taiKhoan.getNguoiDung().get_id())); // Chuyển đổi chuỗi ID thành ObjectId
+            List<LichLamViec> llv = lichLamViecService.getByNguoiDungID(nguoiDungId);
+
+            return new ResponseEntity<>(llv, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 
     @PutMapping
     public ResponseEntity<Object> update(@RequestBody LichLamViec lichLamViec, HttpServletRequest httpRequest){
@@ -93,7 +130,6 @@ public class LichLamViecController {
             if (taiKhoan == null) {
                 return new ResponseEntity<>("Không tìm thấy thông tin người dùng", HttpStatus.UNAUTHORIZED);
             }
-
 
             LichLamViec lichLamViec = new LichLamViec();
             lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
