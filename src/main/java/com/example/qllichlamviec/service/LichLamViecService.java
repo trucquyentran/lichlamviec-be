@@ -5,6 +5,8 @@ import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.NguoiDung;
+import com.example.qllichlamviec.util.QuyenTaiKhoan;
+import com.example.qllichlamviec.util.TaiKhoan;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,4 +43,14 @@ public class LichLamViecService {
     public void deleteByNguoiDungID(ObjectId id){
         lichLamViecReponsitory.deleteByNguoiDungID(id);
     }
+
+//    public LichLamViec khoiTaoLichLV(LichLamViec lichLamViec) {
+//        LichLamViec llv = lichLamViecReponsitory.save(lichLamViec.getThoiGianBD());
+//
+////        lichLamViec.setNguoiDung(ngDungRS);
+////        lichLamViec.setQuyenTaiKhoanList(null);
+////        lichLamViec.setPassword(passwordEncoder.encode(lichLamViec.getPassword()));
+////        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(lichLamViec);
+//
+//    }
 }

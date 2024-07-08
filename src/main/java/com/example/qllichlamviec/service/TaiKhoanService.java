@@ -3,10 +3,7 @@ package com.example.qllichlamviec.service;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
-import com.example.qllichlamviec.util.NguoiDung;
-import com.example.qllichlamviec.util.Quyen;
-import com.example.qllichlamviec.util.QuyenTaiKhoan;
-import com.example.qllichlamviec.util.TaiKhoan;
+import com.example.qllichlamviec.util.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -46,6 +43,10 @@ public class TaiKhoanService {
 
     public TaiKhoan getByID(String idTaiKhoan) {
         return taiKhoanReponsitory.getByID(idTaiKhoan);
+    }
+
+    public TaiKhoan findById(ObjectId id) {
+        return taiKhoanReponsitory.findById(id).orElse(null);
     }
 
     public TaiKhoan getByUsername(String username) {

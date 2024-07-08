@@ -22,7 +22,7 @@ public class JwtService {
     public static final String TAIKHOANID = "taiKhoanID";
     public static final String NGUOIDUNGID = "nguoiDungId";
     public static final String TYPE = "type";
-    public static final String SECRET_KEY = "SECRET_KEY_QuanLyLichLamViec_TranThiTrucquyen_01_07_2024_Least_256Bits30122024";
+    public static final String SECRET_KEY = "SECRET_KEY_QuanLyLichLamViec_TranThiTrucquyen_01_07_2024_256Bits30122024";
     public static final int EXPIRE_TIME = 86400000*1;
 
     public String generateTokenLogin(String idTaiKhoan, String nguoiDungID, Integer trangThai) {

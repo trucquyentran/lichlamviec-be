@@ -23,8 +23,12 @@ public class LichLamViec {
     private ObjectId _id;
     private LocalDateTime thoiGianBD;
     private  LocalDateTime thoiGianKT;
+    @Size(max = 700)
+    private String tieuDe;
     @Size(max = 100)
     private String diaDiem;
+    @Size(max = 300)
+    private String noiDung;
     @Size(max = 300)
     private String ghiChu;
     @DocumentReference (lazy = false)
