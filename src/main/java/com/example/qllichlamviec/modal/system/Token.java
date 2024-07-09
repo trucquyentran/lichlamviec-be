@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class Token {
     private String access_token;
     private String refresh_token;
-    private NguoiDungDangNhapDTO nguoiDung;
+    private NguoiDungDangNhapDTO taiKhoan;
 }

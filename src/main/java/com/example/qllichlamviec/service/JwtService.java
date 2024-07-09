@@ -25,14 +25,14 @@ public class JwtService {
     public static final String SECRET_KEY = "SECRET_KEY_QuanLyLichLamViec_TranThiTrucquyen_01_07_2024_256Bits30122024";
     public static final int EXPIRE_TIME = 86400000*1;
 
-    public String generateTokenLogin(String idTaiKhoan, String nguoiDungID, Integer trangThai) {
+    public String generateTokenLogin(String idTaiKhoan, Integer trangThai) {
         String token = null;
         try {
             JWSSigner signer = new MACSigner(generateShareSecret());
 
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
             builder.claim(TAIKHOANID, idTaiKhoan);
-            builder.claim(NGUOIDUNGID, nguoiDungID);
+//            builder.claim(NGUOIDUNGID, nguoiDungID);
             builder.claim(TRANGTHAI, trangThai);
             builder.claim(TYPE, "0");
             builder.expirationTime(generateExpirationDate());
@@ -47,13 +47,13 @@ public class JwtService {
         return token;
     }
 
-    public  String generateRefreshToken(String idTaiKhoan, String nguoiDungID, Integer trangThai){
+    public  String generateRefreshToken(String idTaiKhoan, Integer trangThai){
         String refreshToken = null;
         try {
             JWSSigner signer = new MACSigner(generateShareSecret());
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
             builder.claim(TAIKHOANID, idTaiKhoan);
-            builder.claim(NGUOIDUNGID, nguoiDungID);
+//            builder.claim(NGUOIDUNGID, nguoiDungID);
             builder.claim(TRANGTHAI, trangThai);
             builder.claim(TYPE,"1");
             builder.expirationTime(new Date(System.currentTimeMillis() + 86400000*3));

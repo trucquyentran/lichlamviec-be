@@ -21,7 +21,6 @@ public class TaiKhoanNguoiDungDTO {
     private String password;
     private Boolean gioiTinh;
     private LocalDate ngaySinh;
-    private String diaChi;
     private String email;
     private String sdt;
     private List<String> listQuyen;

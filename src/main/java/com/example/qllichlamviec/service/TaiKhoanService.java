@@ -4,9 +4,12 @@ import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.*;
+import com.example.qllichlamviec.util.pojo.Session;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -54,21 +58,38 @@ public class TaiKhoanService {
         return taiKhoanReponsitory.getByUsername(username);
     }
 
-    public TaiKhoan getByIDNguoiDung(String idNguoiDung) {
+//    public TaiKhoan getByIDNguoiDung(String idNguoiDung) {
+//
+//        return taiKhoanReponsitory.getByIDNguoiDung(idNguoiDung);
+//    }
 
-        return taiKhoanReponsitory.getByIDNguoiDung(idNguoiDung);
-    }
+//    @Transactional
+//    public NguoiDung khoiTaoNguoiDung(NguoiDung nguoiDung) {
+//        return nguoiDungReponsitory.save(nguoiDung);
+//    }
+
+//    @Transactional
+//    public TaiKhoan khoiTaoNguoiDungKemTaiKhoan(TaiKhoan taiKhoan) {
+//        taiKhoan.setTrangThai(1);
+//        NguoiDung ngDungRS = nguoiDungReponsitory.save(taiKhoan.getNguoiDung());
+//        taiKhoan.setNguoiDung(ngDungRS);
+//        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
+//        taiKhoan.setQuyenTaiKhoanList(null);
+//        taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
+//        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
+//
+//        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
+//            qtk.setTaiKhoan(taiKhoanRs);
+//            quyenTaiKhoanService.save(qtk);
+//        }
+//        return taiKhoanRs;
+//    }
 
     @Transactional
-    public NguoiDung khoiTaoNguoiDung(NguoiDung nguoiDung) {
-        return nguoiDungReponsitory.save(nguoiDung);
-    }
-
-    @Transactional
-    public TaiKhoan khoiTaoNguoiDungKemTaiKhoan(TaiKhoan taiKhoan) {
+    public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
         taiKhoan.setTrangThai(1);
-        NguoiDung ngDungRS = nguoiDungReponsitory.save(taiKhoan.getNguoiDung());
-        taiKhoan.setNguoiDung(ngDungRS);
+//        NguoiDung ngDungRS = nguoiDungReponsitory.save(taiKhoan.getNguoiDung());
+//        taiKhoan.setNguoiDung(ngDungRS);
         List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
         taiKhoan.setQuyenTaiKhoanList(null);
         taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
@@ -129,22 +150,72 @@ public class TaiKhoanService {
 
 
 
-    public TaiKhoan themNguoiDungMoi(NguoiDung nguoiDung) {
-
-        TaiKhoan tk = new TaiKhoan();
-        tk.setUsername(nguoiDung.getSdt());
-        tk.setPassword("Vnpt#042024123");
-        tk.setNguoiDung(nguoiDung);
-        tk.setTrangThai(1);
-        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-        quyenTaiKhoanList.add(new QuyenTaiKhoan(null, tk, new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
-        tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
-        return  khoiTaoNguoiDungKemTaiKhoan(tk);
-    }
+//    public TaiKhoan themNguoiDungMoi(NguoiDung nguoiDung) {
+//
+//        TaiKhoan tk = new TaiKhoan();
+//        tk.setUsername(nguoiDung.getSdt());
+//        tk.setPassword("Vnpt#042024123");
+//        tk.setNguoiDung(nguoiDung);
+//        tk.setTrangThai(1);
+//        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
+//        quyenTaiKhoanList.add(new QuyenTaiKhoan(null, tk, new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
+//        tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
+//        return  khoiTaoNguoiDungKemTaiKhoan(tk);
+//    }
 
     public TaiKhoan getTaiKhoanFromRequest(HttpServletRequest httpRequest) {
         return taiKhoanReponsitory.getByID(jwtService.getIDTaiKhoanFromToken(jwtService.getToken(httpRequest)));
     }
+
+//    public TaiKhoan logoutToken(String taiKhoanID ,String token) {
+//        TaiKhoan taiKhoan = getByID(taiKhoanID);
+//        if(taiKhoan.getListSession() == null){
+//            taiKhoan.setListSession(new ArrayList<>());
+//        }
+//        for (Session session :taiKhoan.getListSession()) {
+//            if(session.getAccessToken().equals(token)){
+//                taiKhoan.getListSession().remove(session);
+//            }
+//        }
+//        return taiKhoanReponsitory.save(taiKhoan);
+//    }
+    public TaiKhoan logoutToken(String taiKhoanID, String token) {
+    TaiKhoan taiKhoan = getByID(taiKhoanID);
+    if (taiKhoan.getListSession() == null) {
+        taiKhoan.setListSession(new ArrayList<>());
+    }
+
+    List<Session> sessionsToRemove = new ArrayList<>();
+    for (Session session : taiKhoan.getListSession()) {
+        if (session.getAccessToken().equals(token)) {
+            sessionsToRemove.add(session); // Thêm session vào danh sách cần xoá
+        }
+    }
+
+    taiKhoan.getListSession().removeAll(sessionsToRemove); // Xoá tất cả các session trong danh sách cần xoá
+
+    // Lưu thay đổi vào cơ sở dữ liệu
+    taiKhoan = taiKhoanReponsitory.save(taiKhoan);
+
+    return taiKhoan;
+    }
+
+    public boolean kiemTraUserAdmin(Authentication authentication) {
+        try {
+            List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
+            List<String> roles = new ArrayList<>();
+            for (GrantedAuthority authority : authorities) {
+                if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                    return true;
+                }
+            }
+            return false;
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 
 
 }

@@ -15,6 +15,8 @@ public class NguoiDungDangNhapDTO {
     private String hoTen;
     private String email;
     private String sdt;
+    private String ngaySinh;
+    private Boolean gioiTinh;
     private List<String> listQuyen;
     private String avatar;
     private DonViNameDTO donVi;

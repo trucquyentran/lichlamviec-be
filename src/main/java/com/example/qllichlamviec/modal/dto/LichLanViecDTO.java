@@ -19,6 +19,6 @@ public class LichLanViecDTO {
     private String ghiChu;
     private String noiDung;
     private String tieuDe;
-    private ObjectId nguoiDung;
+    private ObjectId taiKhoan;
     private ObjectId donVi;
 }

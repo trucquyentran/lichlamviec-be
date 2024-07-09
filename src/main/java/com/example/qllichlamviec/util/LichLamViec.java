@@ -32,7 +32,7 @@ public class LichLamViec {
     @Size(max = 300)
     private String ghiChu;
     @DocumentReference (lazy = false)
-    private NguoiDung nguoiDung;
+    private TaiKhoan taiKhoan;
     @DocumentReference(lazy = false)
     private DonVi donVi;
 }

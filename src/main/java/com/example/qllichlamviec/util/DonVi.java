@@ -22,7 +22,7 @@ public class DonVi {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
     @NotNull
-    @Size(max = 100)
+    @Size(max = 300)
     private String tenDonVi;
 
     public DonVi(ObjectId _id){

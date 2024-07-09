@@ -38,21 +38,28 @@ public class PublicController {
     public ResponseEntity<Object> dangNhap() {
         DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT"));
         Quyen q = quyenService.save(new Quyen(null,"Admin"));
-        NguoiDung ngd= new NguoiDung();
-        ngd.setHoTen("Admin");
-        ngd.setEmail("Admin@vnpt.vn");
-        ngd.setSdt("0123456789");
-        ngd.setGioiTinh(true);
-        ngd.setNgaySinh( LocalDate.now());
-        ngd.setDonVi(dv);
+//        NguoiDung ngd= new NguoiDung();
+//        ngd.setHoTen("Admin");
+//        ngd.setEmail("Admin@vnpt.vn");
+//        ngd.setSdt("0123456789");
+//        ngd.setGioiTinh(true);
+//        ngd.setNgaySinh( LocalDate.now());
+//        ngd.setDonVi(dv);
         TaiKhoan tk = new TaiKhoan();
         tk.setUsername("admin");
         tk.setPassword("Admin@123");
-        tk.setNguoiDung(ngd);
+        tk.setHoTen("Admin");
+        tk.setEmail("Admin@vnpt.vn");
+        tk.setSdt("0123456789");
+        tk.setGioiTinh(true);
+        tk.setNgaySinh( LocalDate.now());
+        tk.setDonVi(dv);
+//        tk.setNguoiDung(ngd);
         List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
         quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,q));
         tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
-        taiKhoanService.khoiTaoNguoiDungKemTaiKhoan(tk);
+//        taiKhoanService.khoiTaoNguoiDungKemTaiKhoan(tk);
+        taiKhoanService.khoiTaoTaiKhoan(tk);
         return new ResponseEntity<>(new Error("201","OK"), HttpStatus.OK);
     }
 

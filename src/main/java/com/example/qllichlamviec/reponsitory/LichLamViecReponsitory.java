@@ -19,7 +19,7 @@ public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, Obj
     List<LichLamViec> getByIdDonVi(ObjectId donVi);
 
     @Query(value = "{'nguoiDung': ?0}",delete = true)
-    void deleteByNguoiDungID(ObjectId nguiDung);
+    void deleteByNguoiDungID(ObjectId nguoiDung);
 
 
 }

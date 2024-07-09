@@ -37,7 +37,6 @@ public class DonViController {
     public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
         try {
             if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
-                List<DonVi> dv = new ArrayList<>();
                 return new ResponseEntity<>(donViService.getById(search), HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -69,7 +68,7 @@ public class DonViController {
     public ResponseEntity<Object>delete(@PathVariable String id, HttpServletRequest httpRequest){
         try {
             donViService.deleteByID(id);
-            return new ResponseEntity<>(id, HttpStatus.OK);
+            return new ResponseEntity<>("Xoá thành công đơn vị có ID: "+id, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
         }

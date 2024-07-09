@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -25,6 +26,8 @@ public class ThongBao {
     private LocalDateTime thoiGian;
     @DocumentReference(lazy = false)
     private User user;
+    @Size(max = 300)
+    private String noiDung;
     @DocumentReference(lazy = false)
     private LichLamViec lichLamViec;
 

@@ -28,6 +28,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/user")
+
 @Slf4j
 public class TaiKhoanController {
     @Autowired
@@ -55,10 +56,11 @@ public class TaiKhoanController {
             }
             if (passwordEncoder.matches(taiKhoan.getPassword(), taiKhoan1.getPassword())){
                 Token token = new Token();
-                token.setNguoiDung(modelMapper.map((taiKhoan1.getNguoiDung()), new TypeToken<NguoiDungDangNhapDTO>(){
+                token.setTaiKhoan(modelMapper.map((taiKhoan1), new TypeToken<NguoiDungDangNhapDTO>(){
                 }.getType()));
-                token.setAccess_token(jwtService.generateTokenLogin(taiKhoan1.get_id().toHexString(),taiKhoan1.getNguoiDung().get_id().toHexString(), taiKhoan1.getTrangThai()));
-                token.setRefresh_token(jwtService.generateRefreshToken(taiKhoan1.get_id().toHexString(),taiKhoan1.getNguoiDung().get_id().toHexString(),taiKhoan1.getTrangThai()));
+
+                token.setAccess_token(jwtService.generateTokenLogin(taiKhoan1.get_id().toHexString(), taiKhoan1.getTrangThai()));
+                token.setRefresh_token(jwtService.generateRefreshToken(taiKhoan1.get_id().toHexString(),taiKhoan1.getTrangThai()));
 
            if (taiKhoan1.getListSession() == null){
                taiKhoan1.setListSession(new ArrayList<>());
@@ -79,7 +81,7 @@ public class TaiKhoanController {
             String forwardedForHeader = httpRequest.getHeader("X-Forwarded-For");
             String ip = (forwardedForHeader != null && !forwardedForHeader.isEmpty())?forwardedForHeader.split("\\s*")[0]:null;
             TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
-            NguoiDungDangNhapDTO nguoiDungDangNhapDTO = modelMapper.map(taiKhoan.getNguoiDung(), NguoiDungDangNhapDTO.class);
+            NguoiDungDangNhapDTO nguoiDungDangNhapDTO = modelMapper.map(taiKhoan, NguoiDungDangNhapDTO.class);
             nguoiDungDangNhapDTO.setListQuyen(new ArrayList<>());
             for (QuyenTaiKhoan qtk : taiKhoan.getQuyenTaiKhoanList()){
                 nguoiDungDangNhapDTO.getListQuyen().add(qtk.getQuyen().getTenQuyen());
@@ -92,7 +94,7 @@ public class TaiKhoanController {
 
     @PostMapping("doi-mk")
     public ResponseEntity<Object> doiMatKhau(HttpServletRequest httpRequest, @RequestBody TaiKhoanDangNhapDTO taiKhoanDTO){
-        TaiKhoan taiKhoan =taiKhoanService.getTaiKhoanFromRequest(httpRequest);
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
         if (passwordEncoder.matches(taiKhoanDTO.getOldPassword(), taiKhoan.getPassword())){
             if (taiKhoanService.isStrongPassword(taiKhoanDTO.getNewPassword())){
                 return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
@@ -104,6 +106,41 @@ public class TaiKhoanController {
             return new ResponseEntity<>(new Error("400","Mật khẩu cũ không chính xác"), HttpStatus.OK);
         }
     }
+
+    @GetMapping("/dang-xuat")
+    public ResponseEntity<Object> dangXuat(HttpServletRequest httpRequest){
+        try {
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
+            String token = jwtService.getToken(httpRequest);
+            String idtk = taiKhoan.get_id().toHexString();
+
+            taiKhoanService.logoutToken(idtk, token);
+            return new ResponseEntity<>("Đã đăng xuất khỏi tài khoản " + taiKhoan.getUsername(), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>("Lỗi khi đăng xuất", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+//    @PutMapping
+//    public ResponseEntity<Object> editAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO){
+//        try {
+//            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+//            DonVi donVi = donViService.getById(taiKhoanNguoiDungDTO.getDonVi().toHexString());
+////        TaiKhoan taiKhoan1 = new TaiKhoan();
+//            taiKhoan.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
+//            taiKhoan.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
+//            taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
+//            taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
+//            taiKhoan.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
+//            taiKhoan.setDonVi(donVi);
+//
+//            TaiKhoan tkCapNhat = taiKhoanService.update(taiKhoan);
+//
+//            return new ResponseEntity<>(tkCapNhat, HttpStatus.OK);
+//        }catch (Exception e){
+//            return new ResponseEntity<>(new Error("500", "Lỗi khi sửa thông tin tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PostMapping("add-user")
     @Transactional
@@ -128,23 +165,30 @@ public class TaiKhoanController {
             }
 
             // Tạo người dùng từ DTO
-            NguoiDung nguoiDung = new NguoiDung();
-            nguoiDung.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
-            nguoiDung.setEmail(taiKhoanNguoiDungDTO.getEmail());
-            nguoiDung.setSdt(taiKhoanNguoiDungDTO.getSdt());
-            nguoiDung.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
-            nguoiDung.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
-            nguoiDung.setDonVi(donVi); // Liên kết đến đơn vị đã lấy từ cơ sở dữ liệu
+//            NguoiDung nguoiDung = new NguoiDung();
+//            nguoiDung.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
+//            nguoiDung.setEmail(taiKhoanNguoiDungDTO.getEmail());
+//            nguoiDung.setSdt(taiKhoanNguoiDungDTO.getSdt());
+//            nguoiDung.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
+//            nguoiDung.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
+//            nguoiDung.setDonVi(donVi); // Liên kết đến đơn vị đã lấy từ cơ sở dữ liệu
 
             // Lưu người dùng vào cơ sở dữ liệu và nhận lại đối tượng đã lưu
-            nguoiDung = taiKhoanService.khoiTaoNguoiDung(nguoiDung);
+//            nguoiDung = taiKhoanService.khoiTaoNguoiDung(nguoiDung);
 
             // Tạo tài khoản từ DTO
             TaiKhoan taiKhoan = new TaiKhoan();
+            taiKhoan.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
+            taiKhoan.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
+            taiKhoan.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
+            taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
+            taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
+
             taiKhoan.setUsername(taiKhoanNguoiDungDTO.getUsername()); // Sử dụng tên người dùng làm username
             taiKhoan.setPassword(taiKhoanNguoiDungDTO.getPassword()); // Mật khẩu từ request
             taiKhoan.setNgayTao(LocalDateTime.now());
-            taiKhoan.setNguoiDung(nguoiDung); // Liên kết đến người dùng đã lưu
+            taiKhoan.setDonVi(donVi);
+//            taiKhoan.setNguoiDung(nguoiDung); // Liên kết đến người dùng đã lưu
 
 
             // Phân quyền cho tài khoản
@@ -154,9 +198,9 @@ public class TaiKhoanController {
                 taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
 
             }
-           taiKhoanService.khoiTaoNguoiDungKemTaiKhoan(taiKhoan);
+           taiKhoanService.khoiTaoTaiKhoan(taiKhoan);
 
-            return new ResponseEntity<>(new Error("201", "Người dùng và tài khoản đã được tạo thành công"), HttpStatus.OK);
+            return new ResponseEntity<>(new Error("201", "Tài khoản đã được tạo thành công"), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(new Error("500", "Lỗi khi tạo người dùng và tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
