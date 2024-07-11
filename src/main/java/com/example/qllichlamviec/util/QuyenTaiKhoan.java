@@ -2,6 +2,7 @@ package com.example.qllichlamviec.util;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.TimeZoneSerializer;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -17,7 +18,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class QuyenTaiKhoan {
     @Id
-    @JsonSerialize(using = TimeZoneSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
     @Getter(AccessLevel.NONE)
     @DocumentReference(lazy = false)

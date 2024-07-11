@@ -16,6 +16,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,6 @@ public class TaiKhoanController {
     private ModelMapper modelMapper;
     @Autowired
     private JwtService jwtService;
-
 
     @PostMapping("/dang-nhap")
     public ResponseEntity<Object> dangnhap(@RequestBody TaiKhoanDangNhapDTO taiKhoan){
@@ -121,27 +121,26 @@ public class TaiKhoanController {
         }
     }
 
-//    @PutMapping
-//    public ResponseEntity<Object> editAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO){
-//        try {
-//            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
-//            DonVi donVi = donViService.getById(taiKhoanNguoiDungDTO.getDonVi().toHexString());
-////        TaiKhoan taiKhoan1 = new TaiKhoan();
-//            taiKhoan.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
-//            taiKhoan.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
-//            taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
-//            taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
-//            taiKhoan.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
-//            taiKhoan.setDonVi(donVi);
-//
-//            TaiKhoan tkCapNhat = taiKhoanService.update(taiKhoan);
-//
-//            return new ResponseEntity<>(tkCapNhat, HttpStatus.OK);
-//        }catch (Exception e){
-//            return new ResponseEntity<>(new Error("500", "Lỗi khi sửa thông tin tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @PutMapping("/edit-account")
+    public ResponseEntity<Object> editAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO){
+        try {
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
 
+            taiKhoan.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
+            taiKhoan.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
+            taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
+            taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
+            taiKhoan.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
+
+            TaiKhoan tkCapNhat = taiKhoanService.update(taiKhoan);
+
+            return new ResponseEntity<>(tkCapNhat, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new Error("500", "Lỗi khi sửa thông tin tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("add-user")
     @Transactional
     public ResponseEntity<Object> themNguoiDung(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO) {
@@ -188,10 +187,10 @@ public class TaiKhoanController {
             taiKhoan.setPassword(taiKhoanNguoiDungDTO.getPassword()); // Mật khẩu từ request
             taiKhoan.setNgayTao(LocalDateTime.now());
             taiKhoan.setDonVi(donVi);
-//            taiKhoan.setNguoiDung(nguoiDung); // Liên kết đến người dùng đã lưu
+//            taiKhoan.setNguoiDung(nguoiDung);
 
 
-            // Phân quyền cho tài khoản
+
             List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
             for (Quyen quyen : quyenList) {
                 quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
@@ -206,4 +205,58 @@ public class TaiKhoanController {
             return new ResponseEntity<>(new Error("500", "Lỗi khi tạo người dùng và tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/getall")
+    public ResponseEntity<Object> ListTaiKhoan(){
+        try {
+            List<TaiKhoan> taiKhoanList = taiKhoanService.getAll();
+            return new ResponseEntity<>(taiKhoanList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Lỗi khi hiển thị danh sách"+ e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/edit-quyen-donvi")
+    @Transactional
+    public ResponseEntity<Object> editQuyenOrDonVi(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO, @RequestParam String id){
+        try {
+            TaiKhoan taiKhoan = taiKhoanService.getByID(id);
+            quyenTaiKhoanService.deleteByTaiKhoan(taiKhoan.get_id());
+            // Lấy đơn vị từ cơ sở dữ liệu
+            DonVi donVi = donViService.getById2(taiKhoanNguoiDungDTO.getDonVi());
+            if (donVi == null) {
+                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanNguoiDungDTO.getDonVi()), HttpStatus.NOT_FOUND);
+            }
+
+            // Lấy danh sách quyền từ cơ sở dữ liệu
+            List<Quyen> quyenList = new ArrayList<>();
+            for (String quyenId : taiKhoanNguoiDungDTO.getListQuyen()) {
+                Quyen quyen = quyenService.getById(quyenId);
+                if (quyen != null) {
+                    quyenList.add(quyen);
+                } else {
+                    // Xử lý nếu quyền không tồn tại
+                    return new ResponseEntity<>(new Error("404", "Không tìm thấy quyền với ID: " + quyenId), HttpStatus.NOT_FOUND);
+                }
+            }
+
+            taiKhoan.setDonVi(donVi);
+
+            List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
+            for (Quyen quyen : quyenList) {
+                quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
+                taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
+
+            }
+
+            TaiKhoan capNhatUser = taiKhoanService.phanQuyenOrDonVi(taiKhoan);
+
+            return new ResponseEntity<>(capNhatUser,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>("Lỗi khi chỉnh sửa "+ e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
 }

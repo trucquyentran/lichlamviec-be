@@ -3,8 +3,11 @@ package com.example.qllichlamviec.controller;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.service.JwtService;
 import com.example.qllichlamviec.service.QuyenService;
+import com.example.qllichlamviec.service.QuyenTaiKhoanService;
 import com.example.qllichlamviec.service.TaiKhoanService;
 import com.example.qllichlamviec.util.Quyen;
+import com.example.qllichlamviec.util.TaiKhoan;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,8 @@ public class QuyenController {
     private JwtService jwtService;
     @Autowired
     private TaiKhoanService taiKhoanService;
+    @Autowired
+    private QuyenTaiKhoanService quyenTaiKhoanService;
 
     @GetMapping("/getall")
     public List<Quyen> getAll(){
@@ -76,5 +81,16 @@ public class QuyenController {
             return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Object>deleteQuyenTK(@PathVariable("id") ObjectId id){
+//        try {
+//            quyenTaiKhoanService.deleteByTaiKhoan(id);
+//
+//            return new ResponseEntity<>("Xoá thành công các quyền của user có ID: "+id, HttpStatus.OK);
+//        }catch (Exception e){
+//            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
 }

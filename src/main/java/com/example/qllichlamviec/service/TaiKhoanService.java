@@ -2,6 +2,7 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
+import com.example.qllichlamviec.reponsitory.QuyenTaiKhoanReponsitory;
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.*;
 import com.example.qllichlamviec.util.pojo.Session;
@@ -31,6 +32,8 @@ public class TaiKhoanService {
     private DonViReponsitory donViReponsitory;
     @Autowired
     private QuyenTaiKhoanService quyenTaiKhoanService;
+    @Autowired
+    private QuyenTaiKhoanReponsitory quyenTaiKhoanReponsitory;
 //    @Autowired
     private ModuleLayer moduleLayer;
     @Autowired
@@ -98,6 +101,25 @@ public class TaiKhoanService {
         for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
             qtk.setTaiKhoan(taiKhoanRs);
             quyenTaiKhoanService.save(qtk);
+        }
+        return taiKhoanRs;
+    }
+
+    @Transactional
+    public TaiKhoan phanQuyenOrDonVi(TaiKhoan taiKhoan) {
+
+        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
+
+        taiKhoan.setQuyenTaiKhoanList(null);
+
+        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
+
+        // Xóa tất cả các quyền cũ liên quan đến tài khoản
+        quyenTaiKhoanService.deleteByTaiKhoan(taiKhoanRs.get_id());
+
+        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
+            qtk.setTaiKhoan(taiKhoanRs);
+            quyenTaiKhoanService.update(qtk);
         }
         return taiKhoanRs;
     }
@@ -217,5 +239,7 @@ public class TaiKhoanService {
     }
 
 
-
+    public List<TaiKhoan> getAll() {
+        return taiKhoanReponsitory.findAll();
+    }
 }

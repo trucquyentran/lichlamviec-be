@@ -60,9 +60,9 @@ public class TaiKhoan {
     @DocumentReference(lazy = false)
     private DonVi donVi;
 
-//    public void NguoiDung(ObjectId _id){
-//        this._id = _id;
-//    }
+    public void TaiKhoan(ObjectId _id){
+        this._id = _id;
+    }
     public void validate() throws Exception{
         if (getHoTen() == null || getHoTen().isEmpty() || getHoTen().length()>50){
             throw  new Exception("Tên không hợp lệ");

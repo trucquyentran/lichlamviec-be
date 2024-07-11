@@ -28,10 +28,14 @@ public class QuyenTaiKhoanService {
     public List<QuyenTaiKhoan> findAll(){
         return quyenTaiKhoanReponsitory.findAll();
     }
+
+
     public void deleteByID(String id){
         quyenTaiKhoanReponsitory.deleteById(new ObjectId(id));
     }
     public void deleteByTaiKhoan(ObjectId id){
+//        quyenTaiKhoanReponsitory.deleteByTaiKhoanID(id);
+        List<QuyenTaiKhoan> quyenTaiKhoanList = quyenTaiKhoanReponsitory.getByTaiKhoanID(id.toHexString());
         quyenTaiKhoanReponsitory.deleteByTaiKhoanID(id);
     }
 }
