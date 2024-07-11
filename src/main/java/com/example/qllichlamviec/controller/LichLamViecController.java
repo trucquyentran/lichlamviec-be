@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.modelmapper.ModelMapper;
 
@@ -248,45 +250,62 @@ public class LichLamViecController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object>deleteByAdmin(@PathVariable String id, HttpServletRequest httpRequest){
         try {
             TaiKhoan tk = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
             LichLamViec lichLamViec = lichLamViecService.getById(id);
-            if (lichLamViec.getDonVi() != null || lichLamViec.getTaiKhoan().get_id().toString().equals(tk.get_id().toString())) {
-//                TaiKhoan kttk = taiKhoanService.kiemTraUserAdmin(();
-                lichLamViecService.deleteByID(id);
-            }
 
-            return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: "+id, HttpStatus.OK);
+            // Lấy Authentication hiện tại từ SecurityContext
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            taiKhoanService.kiemTraUserAdmin(authentication);
+            // Kiểm tra xem người dùng có phải là Admin hay không
+            if (!taiKhoanService.kiemTraUserAdmin(authentication)) {
+                // Kiểm tra xem lịch làm việc có thuộc về tài khoản đang đăng nhập không
+                if (!lichLamViec.getTaiKhoan().get_id().equals(tk.get_id())) {
+                    return new ResponseEntity<>("Bạn không có quyền xoá lịch làm việc này!", HttpStatus.FORBIDDEN);
+                }
+                // Xoá lịch làm việc
+                lichLamViecService.deleteByID(id);
+                return new ResponseEntity<>("Xoá thành công lịch làm việc với ID:"+id, HttpStatus.FORBIDDEN);
+            }else {
+
+                if (lichLamViec.getDonVi() != null || lichLamViec.getTaiKhoan().get_id().toString().equals(tk.get_id().toString())) {
+
+                    lichLamViecService.deleteByID(id);
+                }
+                return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: "+id, HttpStatus.OK);
+            }
 
         }catch (Exception e){
-            return new ResponseEntity<>(new Error("400","Đây là lịch cá nhân bạn không có quyền xoa", e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Error("400","Bạn không có quyền xóa lịch làm việc này ", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> deleteByUser(@PathVariable String id, HttpServletRequest httpRequest) {
-        try {
-            // Lấy thông tin tài khoản từ httpRequest
-            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
 
-            // Lấy thông tin lịch làm việc cần xoá từ id
-            LichLamViec lichLamViec = lichLamViecService.getById(id);
 
-            // Kiểm tra xem lịch làm việc có thuộc về tài khoản đang đăng nhập không
-            if (!lichLamViec.getTaiKhoan().get_id().equals(taiKhoan.get_id())) {
-                return new ResponseEntity<>("Bạn không có quyền xoá lịch làm việc này.", HttpStatus.FORBIDDEN);
-            }
-
-            // Xoá lịch làm việc
-            lichLamViecService.deleteByID(id);
-
-            return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: " + id, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PreAuthorize("hasRole('ROLE_USER')")
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Object> deleteByUser(@PathVariable String id, HttpServletRequest httpRequest) {
+//        try {
+//            // Lấy thông tin tài khoản từ httpRequest
+//            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
+//
+//            // Lấy thông tin lịch làm việc cần xoá từ id
+//            LichLamViec lichLamViec = lichLamViecService.getById(id);
+//
+//            // Kiểm tra xem lịch làm việc có thuộc về tài khoản đang đăng nhập không
+//            if (!lichLamViec.getTaiKhoan().get_id().equals(taiKhoan.get_id())) {
+//                return new ResponseEntity<>("Bạn không có quyền xoá lịch làm việc này.", HttpStatus.FORBIDDEN);
+//            }
+//
+//            // Xoá lịch làm việc
+//            lichLamViecService.deleteByID(id);
+//
+//            return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: " + id, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 }
