@@ -26,10 +26,6 @@ public class QuyenController {
     @Autowired
     private QuyenService quyenService;
     @Autowired
-//    private ModuleLayer moduleLayer;
-//    @Autowired
-    private JwtService jwtService;
-    @Autowired
     private TaiKhoanService taiKhoanService;
     @Autowired
     private QuyenTaiKhoanService quyenTaiKhoanService;
@@ -82,15 +78,15 @@ public class QuyenController {
         }
     }
 
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<Object>deleteQuyenTK(@PathVariable("id") ObjectId id){
-//        try {
-//            quyenTaiKhoanService.deleteByTaiKhoan(id);
-//
-//            return new ResponseEntity<>("Xoá thành công các quyền của user có ID: "+id, HttpStatus.OK);
-//        }catch (Exception e){
-//            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Object>deleteQuyenTK(@PathVariable ObjectId id){
+        try {
+            quyenTaiKhoanService.deleteByTaiKhoan(id);
+
+            return new ResponseEntity<>("Xoá thành công các quyền của user có ID: "+id, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

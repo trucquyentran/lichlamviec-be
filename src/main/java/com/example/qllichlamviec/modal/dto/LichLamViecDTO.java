@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class LichLamViecDTO {
     private LocalDateTime thoiGianBD;
     private  LocalDateTime thoiGianKT;
+    private LocalDateTime thoiGianTao;
     private String diaDiem;
     private String ghiChu;
     private String noiDung;

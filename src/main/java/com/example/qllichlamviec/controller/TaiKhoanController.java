@@ -149,6 +149,11 @@ public class TaiKhoanController {
         return new ResponseEntity<>(""+authentication.getAuthorities(),HttpStatus.OK);
     }
 
+    @GetMapping("/list-user")
+    public List<TaiKhoan> ListUser(){
+        return taiKhoanService.findAllUser();
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("add-user")
     @Transactional
@@ -172,17 +177,6 @@ public class TaiKhoanController {
                 }
             }
 
-            // Tạo người dùng từ DTO
-//            NguoiDung nguoiDung = new NguoiDung();
-//            nguoiDung.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
-//            nguoiDung.setEmail(taiKhoanNguoiDungDTO.getEmail());
-//            nguoiDung.setSdt(taiKhoanNguoiDungDTO.getSdt());
-//            nguoiDung.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
-//            nguoiDung.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
-//            nguoiDung.setDonVi(donVi); // Liên kết đến đơn vị đã lấy từ cơ sở dữ liệu
-
-            // Lưu người dùng vào cơ sở dữ liệu và nhận lại đối tượng đã lưu
-//            nguoiDung = taiKhoanService.khoiTaoNguoiDung(nguoiDung);
 
             // Tạo tài khoản từ DTO
             TaiKhoan taiKhoan = new TaiKhoan();
@@ -192,13 +186,21 @@ public class TaiKhoanController {
             taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
             taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
 
-            taiKhoan.setUsername(taiKhoanNguoiDungDTO.getUsername()); // Sử dụng tên người dùng làm username
-            taiKhoan.setPassword(taiKhoanNguoiDungDTO.getPassword()); // Mật khẩu từ request
+            taiKhoan.setUsername(taiKhoanNguoiDungDTO.getUsername());
+            taiKhoan.setPassword(taiKhoanNguoiDungDTO.getPassword());
             taiKhoan.setNgayTao(LocalDateTime.now());
             taiKhoan.setDonVi(donVi);
-//            taiKhoan.setNguoiDung(nguoiDung);
 
+//            Check username, email, sdt
+            Error error = taiKhoanService.kiemTraTonTaiEmailHoacSdt(taiKhoan);
+            if(error != null){
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 
+            }
+//          Check password
+            if (taiKhoanService.isStrongPassword(taiKhoan.getPassword())){
+                return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
+            }
 
             List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
             for (Quyen quyen : quyenList) {

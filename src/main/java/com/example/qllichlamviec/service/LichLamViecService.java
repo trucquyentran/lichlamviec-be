@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.service;
 
+import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
@@ -8,6 +9,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,8 +27,8 @@ public class LichLamViecService {
     public LichLamViec update(LichLamViec lichLamViec){
         return lichLamViecReponsitory.save(lichLamViec);
     }
-    public List<LichLamViec> getByNguoiDungID(ObjectId nguoiDung){
-        return lichLamViecReponsitory.getByIDNguoiDung(nguoiDung);
+    public List<LichLamViec> getByTaiKhoanID(ObjectId taiKhoan){
+        return lichLamViecReponsitory.getByIDTaiKhoan(taiKhoan);
     }
 
 
@@ -47,13 +49,14 @@ public class LichLamViecService {
         lichLamViecReponsitory.deleteByNguoiDungID(id);
     }
 
-//    public LichLamViec khoiTaoLichLV(LichLamViec lichLamViec) {
-//        LichLamViec llv = lichLamViecReponsitory.save(lichLamViec.getThoiGianBD());
-//
-////        lichLamViec.setNguoiDung(ngDungRS);
-////        lichLamViec.setQuyenTaiKhoanList(null);
-////        lichLamViec.setPassword(passwordEncoder.encode(lichLamViec.getPassword()));
-////        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(lichLamViec);
-//
-//    }
+    public Error kiemTraThoiGianHopLe(LichLamViec lichLamViec) {
+        LocalDateTime thoiGianBD = lichLamViec.getThoiGianBD();
+        LocalDateTime thoiGianKT = lichLamViec.getThoiGianKT();
+
+        if (thoiGianBD.isAfter(thoiGianKT) || thoiGianBD.isEqual(thoiGianKT)) {
+            return new Error("400", "Lỗi: Vui lòng nhập đúng thời gian. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
+        } else {
+            return null;
+        }
+    }
 }

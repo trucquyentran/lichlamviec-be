@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.service;
 
+import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.reponsitory.QuyenTaiKhoanReponsitory;
@@ -56,6 +57,10 @@ public class TaiKhoanService {
         return taiKhoanReponsitory.findById(id).orElse(null);
     }
 
+    public List<TaiKhoan> findAllUser(){
+        return taiKhoanReponsitory.findAll();
+    }
+
     public TaiKhoan getByUsername(String username) {
 
         return taiKhoanReponsitory.getByUsername(username);
@@ -66,33 +71,10 @@ public class TaiKhoanService {
 //        return taiKhoanReponsitory.getByIDNguoiDung(idNguoiDung);
 //    }
 
-//    @Transactional
-//    public NguoiDung khoiTaoNguoiDung(NguoiDung nguoiDung) {
-//        return nguoiDungReponsitory.save(nguoiDung);
-//    }
-
-//    @Transactional
-//    public TaiKhoan khoiTaoNguoiDungKemTaiKhoan(TaiKhoan taiKhoan) {
-//        taiKhoan.setTrangThai(1);
-//        NguoiDung ngDungRS = nguoiDungReponsitory.save(taiKhoan.getNguoiDung());
-//        taiKhoan.setNguoiDung(ngDungRS);
-//        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
-//        taiKhoan.setQuyenTaiKhoanList(null);
-//        taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
-//        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
-//
-//        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
-//            qtk.setTaiKhoan(taiKhoanRs);
-//            quyenTaiKhoanService.save(qtk);
-//        }
-//        return taiKhoanRs;
-//    }
-
     @Transactional
     public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
         taiKhoan.setTrangThai(1);
-//        NguoiDung ngDungRS = nguoiDungReponsitory.save(taiKhoan.getNguoiDung());
-//        taiKhoan.setNguoiDung(ngDungRS);
+
         List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
         taiKhoan.setQuyenTaiKhoanList(null);
         taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
@@ -131,14 +113,18 @@ public class TaiKhoanService {
         } else return true;
     }
 
-    public Error kiemTraNguoiDungTonTaiEmailHoacSoDienThoai(NguoiDung nguoiDung) {
-        NguoiDung ngDungEmail = nguoiDungReponsitory.getByEmail(nguoiDung.getEmail());
-        if (ngDungEmail != null) {
-            return new Error("Đã tồn tại email");
+    public Error kiemTraTonTaiEmailHoacSdt(TaiKhoan taiKhoan) {
+        TaiKhoan tkUsername = taiKhoanReponsitory.getByUsername(taiKhoan.getUsername());
+        if (tkUsername != null){
+            return new Error("400","Đã tồn tại Username");
+        }
+        TaiKhoan tkEmail = taiKhoanReponsitory.getByEmail(taiKhoan.getEmail());
+        if (tkEmail != null) {
+            return new Error("400","Đã tồn tại email");
         } else {
-            NguoiDung ngDungSDT = nguoiDungReponsitory.getBySdt(nguoiDung.getSdt());
-            if (ngDungEmail != null) {
-                return new Error("Đã tồn tại số điện thoại");
+            TaiKhoan tkSdt = taiKhoanReponsitory.getBySdt(taiKhoan.getSdt());
+            if (tkSdt != null) {
+                return new Error("400","Đã tồn tại số điện thoại");
             } else {
                 return null;
             }
@@ -166,7 +152,7 @@ public class TaiKhoanService {
         if (Pattern.compile(PASSWORD_PATTERN).matcher(password).matches()) {
             return null;
         } else
-            return new Error("Mật khẩu có ít nhất 8 ký tự , phải có ít nhất 1 ký tự hoa, thường , số, đặc biệt.");
+            return new Error("400","Mật khẩu có ít nhất 8 ký tự , phải có ít nhất 1 ký tự hoa, thường , số, đặc biệt.");
     }
 
 

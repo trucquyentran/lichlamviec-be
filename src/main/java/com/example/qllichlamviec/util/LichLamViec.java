@@ -23,6 +23,7 @@ public class LichLamViec {
     private ObjectId _id;
     private LocalDateTime thoiGianBD;
     private  LocalDateTime thoiGianKT;
+    private LocalDateTime thoiGianTao;
     @Size(max = 700)
     private String tieuDe;
     @Size(max = 100)

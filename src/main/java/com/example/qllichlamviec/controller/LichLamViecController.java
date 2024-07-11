@@ -65,10 +65,10 @@ public class LichLamViecController {
         }
     }
 
-    @GetMapping ("/lich-user/{NguoiDungId}")
-    public ResponseEntity<List<LichLamViec>> getLichByNguoiDung(@PathVariable ObjectId NguoiDungId){
+    @GetMapping ("/lich-user/{taiKhoanId}")
+    public ResponseEntity<Object> getLichByNguoiDung(@PathVariable ObjectId taiKhoanId){
         try {
-            List<LichLamViec> llv = lichLamViecService.getByNguoiDungID(NguoiDungId);
+            List<LichLamViec> llv = lichLamViecService.getByTaiKhoanID(taiKhoanId);
             return new ResponseEntity<>(llv, HttpStatus.OK);
 
         }catch (Exception e){
@@ -81,8 +81,8 @@ public class LichLamViecController {
         try {
             TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
 
-            ObjectId nguoiDungId = new ObjectId(String.valueOf(taiKhoan.get_id())); // Chuyển đổi chuỗi ID thành ObjectId
-            List<LichLamViec> llv = lichLamViecService.getByNguoiDungID(nguoiDungId);
+            ObjectId taiKhoanId = new ObjectId(String.valueOf(taiKhoan.get_id())); // Chuyển đổi chuỗi ID thành ObjectId
+            List<LichLamViec> llv = lichLamViecService.getByTaiKhoanID(taiKhoanId);
 
             return new ResponseEntity<>(llv, HttpStatus.OK);
         } catch (Exception e) {
@@ -121,9 +121,11 @@ public class LichLamViecController {
             lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
             lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
 
-
-//            lichLamViec.setNguoiDung(taiKhoan.getNguoiDung());
-//            lichLamViec.setDonVi(taiKhoan.getNguoiDung().getDonVi());
+            // Check thời gian bắt đầu và kết thục lịch
+            Error error = lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
+            if (error != null){
+                return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+            }
 
             DonVi donVi = donViService.getById(lichLamViecDTO.getDonVi().toHexString());
             if (donVi == null) {
@@ -131,17 +133,7 @@ public class LichLamViecController {
             }
             lichLamViec.setDonVi(donVi);
 
-//            lichLamViec.setNguoiDung(taiKhoan.getNguoiDung());
-
             LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
-
-
-            ThongBao thongBao = new ThongBao();
-            thongBao.setThoiGian(LocalDateTime.now());
-//            thongBao.setUser();
-
-
-//            thongBaoService.save(thongBao);
 
             return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
 
@@ -171,6 +163,13 @@ public class LichLamViecController {
             lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
             lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
             lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
+            lichLamViec.setThoiGianTao(LocalDateTime.now());
+
+            // Check thời gian bắt đầu và kết thục lịch
+            Error error = lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
+            if (error != null){
+                return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+            }
 
             LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
 
@@ -200,8 +199,15 @@ public class LichLamViecController {
             lichLamViec.setNoiDung(lichCaNhanDTO.getNoiDung());
             lichLamViec.setTieuDe(lichCaNhanDTO.getTieuDe());
             lichLamViec.setGhiChu(lichCaNhanDTO.getGhiChu());
+            lichLamViec.setThoiGianTao(LocalDateTime.now());
 
             lichLamViec.setTaiKhoan(taiKhoan);
+
+            // Check thời gian bắt đầu và kết thục lịch
+            Error error = lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
+            if (error != null){
+                return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+            }
 
             LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
 
@@ -237,6 +243,12 @@ public class LichLamViecController {
                 lichLamViec.setNoiDung(lichCaNhanDTO.getNoiDung());
                 lichLamViec.setTieuDe(lichCaNhanDTO.getTieuDe());
                 lichLamViec.setGhiChu(lichCaNhanDTO.getGhiChu());
+
+                // Check thời gian bắt đầu và kết thục lịch
+                Error error = lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
+                if (error != null){
+                    return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+                }
 
                 LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
                 return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);

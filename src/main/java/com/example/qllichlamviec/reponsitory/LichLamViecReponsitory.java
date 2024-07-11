@@ -12,8 +12,8 @@ import java.util.List;
 public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, ObjectId> {
     @Query("{'_id': ?0}")
     LichLamViec getByID(String id);
-    @Query("{'nguoiDung': ?0}")
-    List<LichLamViec> getByIDNguoiDung(ObjectId nguoiDung);
+    @Query("{'taiKhoan': ?0}")
+    List<LichLamViec> getByIDTaiKhoan(ObjectId taiKhoan);
 
     @Query("{'donVi': ?0}")
     List<LichLamViec> getByIdDonVi(ObjectId donVi);
