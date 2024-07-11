@@ -55,8 +55,18 @@ public class LichLamViecService {
 
         if (thoiGianBD.isAfter(thoiGianKT) || thoiGianBD.isEqual(thoiGianKT)) {
             return new Error("400", "Lỗi: Vui lòng nhập đúng thời gian. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
-        } else {
-            return null;
         }
+
+        List<LichLamViec> lichDaTonTai = lichLamViecReponsitory.findAll();
+        for (LichLamViec lich : lichDaTonTai) {
+            LocalDateTime tgbd = lich.getThoiGianBD();
+            LocalDateTime tgkt = lich.getThoiGianKT();
+
+            if ((thoiGianBD.isBefore(tgkt) && thoiGianKT.isAfter(tgbd)) ||
+                    (thoiGianBD.isEqual(tgbd) || thoiGianKT.isEqual(tgkt))) {
+                return new Error("400", "Lỗi: Thời gian đã trùng với lịch làm việc khác.");
+            }
+        }
+        return null;
     }
 }
