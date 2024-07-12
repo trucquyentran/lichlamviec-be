@@ -94,16 +94,16 @@ public class TaiKhoanService {
 
         taiKhoan.setQuyenTaiKhoanList(null);
 
-        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
+        TaiKhoan tk = taiKhoanReponsitory.save(taiKhoan);
 
         // Xóa tất cả các quyền cũ liên quan đến tài khoản
-        quyenTaiKhoanService.deleteByTaiKhoan(taiKhoanRs.get_id());
+        quyenTaiKhoanService.deleteByTaiKhoan(tk.get_id());
 
         for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
-            qtk.setTaiKhoan(taiKhoanRs);
+            qtk.setTaiKhoan(tk);
             quyenTaiKhoanService.update(qtk);
         }
-        return taiKhoanRs;
+        return tk;
     }
 
     public static boolean isStrongPassword(String password) {

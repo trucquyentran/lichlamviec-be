@@ -14,7 +14,7 @@ public interface QuyenTaiKhoanReponsitory extends MongoRepository<QuyenTaiKhoan,
     @Query("{'taiKhoan': ObjectId('?0')}")
     List<QuyenTaiKhoan> getByTaiKhoanID(String taiKhoan);
 
-    @Query(value = "{'taiKhoan': '?0'}", delete = true)
-    void deleteByTaiKhoanID(ObjectId taiKhoan);
+    @Query(value = "{'taiKhoan': ObjectId('?0')}", delete = true)
+    void deleteByTaiKhoanID(ObjectId  taiKhoan);
 
 }

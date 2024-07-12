@@ -232,7 +232,7 @@ public class TaiKhoanController {
     public ResponseEntity<Object> editQuyenOrDonVi(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO, @RequestParam String id){
         try {
             TaiKhoan taiKhoan = taiKhoanService.getByID(id);
-            quyenTaiKhoanService.deleteByTaiKhoan(taiKhoan.get_id());
+
             // Lấy đơn vị từ cơ sở dữ liệu
             DonVi donVi = donViService.getById2(taiKhoanNguoiDungDTO.getDonVi());
             if (donVi == null) {
@@ -262,7 +262,7 @@ public class TaiKhoanController {
 
             TaiKhoan capNhatUser = taiKhoanService.phanQuyenOrDonVi(taiKhoan);
 
-            return new ResponseEntity<>(capNhatUser,HttpStatus.OK);
+            return new ResponseEntity<>("Cập nhật thành công",HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>("Lỗi khi chỉnh sửa "+ e.getMessage(), HttpStatus.BAD_REQUEST);
         }

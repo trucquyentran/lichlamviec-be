@@ -29,13 +29,10 @@ public class QuyenTaiKhoanService {
         return quyenTaiKhoanReponsitory.findAll();
     }
 
-
     public void deleteByID(String id){
         quyenTaiKhoanReponsitory.deleteById(new ObjectId(id));
     }
     public void deleteByTaiKhoan(ObjectId id){
-//        quyenTaiKhoanReponsitory.deleteByTaiKhoanID(id);
-        List<QuyenTaiKhoan> quyenTaiKhoanList = quyenTaiKhoanReponsitory.getByTaiKhoanID(id.toHexString());
         quyenTaiKhoanReponsitory.deleteByTaiKhoanID(id);
     }
 }

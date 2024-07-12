@@ -31,7 +31,6 @@ public class LichLamViecService {
         return lichLamViecReponsitory.getByIDTaiKhoan(taiKhoan);
     }
 
-
     public List<LichLamViec> getByIdDonVi(ObjectId donVi){
         return lichLamViecReponsitory.getByIdDonVi(donVi);
     }
