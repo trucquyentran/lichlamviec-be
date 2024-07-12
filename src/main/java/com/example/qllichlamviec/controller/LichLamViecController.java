@@ -65,7 +65,24 @@ public class LichLamViecController {
     }
 
     @GetMapping ("/lich-don-vi")
-    public ResponseEntity <List<LichDonViTaiKhoanDTO>> getLichByDonViOfTaiKhoan(HttpServletRequest httpServletRequest){
+    public ResponseEntity<List<LichLamViec>> getLichDonVi(HttpServletRequest httpServletRequest){
+        try {
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+            DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toHexString());
+
+            List<LichLamViec> llv = lichLamViecService.getByIdDonVi(donVi.get_id());
+            return new ResponseEntity<>(llv, HttpStatus.OK);
+
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+
+    @GetMapping ("/lich-tai-khoan-don-vi")
+    public ResponseEntity <List<LichDonViTaiKhoanDTO>> getLichTaiKhoanOfDonViQuanLy(HttpServletRequest httpServletRequest){
         try {
 
             TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
