@@ -151,7 +151,7 @@ public class LichLamViecController {
 //    -----------------------
 
     @PostMapping("/them")
-    public ResponseEntity<Object> themLichLamViec(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> themLichDonVi(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
         try {
 
             TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
@@ -178,6 +178,43 @@ public class LichLamViecController {
             if (donVi == null) {
                 return new ResponseEntity<>("Không tìm thấy thông tin đơn vị với ID: " +donVi, HttpStatus.UNAUTHORIZED);
             }
+            lichLamViec.setDonVi(donVi);
+
+            LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
+
+            return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>("Lỗi khi tạo lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PostMapping("/them-lich-donvi-quanly")
+    public ResponseEntity<Object> themLichDonViQuanLy(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
+        try {
+
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
+
+            if (taiKhoan == null) {
+                return new ResponseEntity<>("Không tìm thấy thông tin người dùng với ID: "+taiKhoan, HttpStatus.UNAUTHORIZED);
+            }
+
+            LichLamViec lichLamViec = new LichLamViec();
+            lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
+            lichLamViec.setThoiGianKT(lichLamViecDTO.getThoiGianKT());
+            lichLamViec.setDiaDiem(lichLamViecDTO.getDiaDiem());
+            lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
+            lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
+            lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
+
+            // Check thời gian bắt đầu và kết thục lịch
+            Error error = lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
+            if (error != null){
+                return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+            }
+
+            DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toString());
             lichLamViec.setDonVi(donVi);
 
             LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);

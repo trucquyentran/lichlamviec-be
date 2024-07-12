@@ -56,16 +56,16 @@ public class LichLamViecService {
             return new Error("400", "Lỗi: Vui lòng nhập đúng thời gian. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
         }
 
-        List<LichLamViec> lichDaTonTai = lichLamViecReponsitory.findAll();
-        for (LichLamViec lich : lichDaTonTai) {
-            LocalDateTime tgbd = lich.getThoiGianBD();
-            LocalDateTime tgkt = lich.getThoiGianKT();
-
-            if ((thoiGianBD.isBefore(tgkt) && thoiGianKT.isAfter(tgbd)) ||
-                    (thoiGianBD.isEqual(tgbd) || thoiGianKT.isEqual(tgkt))) {
-                return new Error("400", "Lỗi: Thời gian đã trùng với lịch làm việc khác.");
-            }
-        }
+//        List<LichLamViec> lichDaTonTai = lichLamViecReponsitory.getByIDTaiKhoan(taiKhoan.get_id());
+//        for (LichLamViec lich : lichDaTonTai) {
+//            LocalDateTime tgbd = lich.getThoiGianBD();
+//            LocalDateTime tgkt = lich.getThoiGianKT();
+//
+//            if ((thoiGianBD.isBefore(tgkt) && thoiGianKT.isAfter(tgbd)) ||
+//                    (thoiGianBD.isEqual(tgbd) || thoiGianKT.isEqual(tgkt))) {
+//                return new Error("400", "Lỗi: Thời gian đã trùng với lịch làm việc khác.");
+//            }
+//        }
         return null;
     }
 }
