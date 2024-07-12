@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -33,8 +34,6 @@ public class LichLamViecController {
     private TaiKhoanService taiKhoanService;
     @Autowired
     private DonViService donViService;
-//    @Autowired
-//    private ThongBaoService thongBaoService;
 
     @GetMapping(value = "/getall")
     public List<LichLamViec> getAlls(){
@@ -65,6 +64,37 @@ public class LichLamViecController {
         }
     }
 
+    @GetMapping ("/lich-don-vi")
+    public ResponseEntity <List<LichDonViTaiKhoanDTO>> getLichByDonViOfTaiKhoan(HttpServletRequest httpServletRequest){
+        try {
+
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+            DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toHexString());
+
+            List<TaiKhoan> taiKhoanList = taiKhoanService.getByDonViID(donVi.get_id());
+
+            // Lấy danh sách lịch làm việc của từng tài khoản trong đơn vị
+            List<LichDonViTaiKhoanDTO> lichDonViTaiKhoanDTOList = new ArrayList<>();
+            for (TaiKhoan tk : taiKhoanList) {
+
+                List<LichLamViec> lichLamViecCuaTaiKhoan = lichLamViecService.getByTaiKhoanID(tk.get_id());
+
+                LichDonViTaiKhoanDTO llv = new LichDonViTaiKhoanDTO();
+                llv.setTaiKhoan(tk);
+                llv.setLichLamViecList(lichLamViecCuaTaiKhoan);
+
+                lichDonViTaiKhoanDTOList.add(llv);
+
+            }
+
+            return new ResponseEntity<>(lichDonViTaiKhoanDTOList,HttpStatus.OK);
+
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     @GetMapping ("/lich-user/{taiKhoanId}")
     public ResponseEntity<Object> getLichByNguoiDung(@PathVariable ObjectId taiKhoanId){
         try {
@@ -90,16 +120,16 @@ public class LichLamViecController {
         }
     }
 
-
-
-    @PutMapping
-    public ResponseEntity<Object> update(@RequestBody LichLamViec lichLamViec, HttpServletRequest httpRequest){
-        try {
-            return new ResponseEntity<Object>(lichLamViecService.update(lichLamViec), HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-    }
+//
+//
+//    @PutMapping
+//    public ResponseEntity<Object> update(@RequestBody LichLamViec lichLamViec, HttpServletRequest httpRequest){
+//        try {
+//            return new ResponseEntity<Object>(lichLamViecService.update(lichLamViec), HttpStatus.OK);
+//        }catch (Exception e){
+//            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
 //    -----------------------
 

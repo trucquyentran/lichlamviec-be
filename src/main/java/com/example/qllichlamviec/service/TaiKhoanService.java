@@ -66,6 +66,11 @@ public class TaiKhoanService {
         return taiKhoanReponsitory.getByUsername(username);
     }
 
+    public List<TaiKhoan> getByDonViID(ObjectId id) {
+
+        return taiKhoanReponsitory.getByIdDonVi(id);
+    }
+
 //    public TaiKhoan getByIDNguoiDung(String idNguoiDung) {
 //
 //        return taiKhoanReponsitory.getByIDNguoiDung(idNguoiDung);

@@ -16,6 +16,10 @@ public interface TaiKhoanReponsitory extends MongoRepository<TaiKhoan, ObjectId>
 //    TaiKhoan  getByIDNguoiDung(String idnguoiDng);
     @Query("{ 'username' : ?0 }")
     TaiKhoan getByUsername(String username);
+
+    @Query("{ 'donVi' : ObjectId('?0') }")
+    List<TaiKhoan> getByIdDonVi(ObjectId donVi);
+
     @Query("{ 'username' : ?0 }")
     List<TaiKhoanDangNhapDTO> timKiemTaiKhoanSelect(String key);
 
