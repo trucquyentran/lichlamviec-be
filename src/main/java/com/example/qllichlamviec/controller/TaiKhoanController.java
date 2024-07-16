@@ -158,6 +158,13 @@ public class TaiKhoanController {
         return taiKhoanService.findAllUser();
     }
 
+    @GetMapping("/list-user-donvi")
+    public List<TaiKhoan> ListUserTrongDonVi(HttpServletRequest httpServletRequest){
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+        List<TaiKhoan> taiKhoanThuocDonViList = taiKhoanService.getByDonViID(taiKhoan.getDonVi().get_id());
+        return taiKhoanThuocDonViList;
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("add-user")
     @Transactional
