@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, ObjectId> {
@@ -20,6 +21,10 @@ public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, Obj
 
     @Query(value = "{'nguoiDung': ?0}",delete = true)
     void deleteByNguoiDungID(ObjectId nguoiDung);
+
+    @Query("{ 'thoiGianBD': {$gte: ?1, $lt: ?2}}")
+    List<LichLamViec> findByThoiGianBDBetween( LocalDateTime thoiGianBD);
+
 
 
 }

@@ -32,6 +32,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     private TaiKhoanService taiKhoanService;
 
+    private static final ThreadLocal<UserDetails> authenticatedUser = new ThreadLocal<>();
+
+
     @SneakyThrows
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
@@ -68,6 +71,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     UserDetails userDetail = new User(taiKhoan.get_id().toHexString(), taiKhoan.getPassword(), enabled, accountNonExpired,
                             credentialsNonExpired, accountNonLocked, autho);
 
+                    // Lưu trữ người dùng đã được xác thực trong ThreadLocal để truy cập sau
+                    authenticatedUser.set(userDetail);
+
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,
                             null, userDetail.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
@@ -77,7 +83,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         }
         log.info(request.getMethod() + "|" + request.getRequestURI() + (request.getQueryString() != null ? ("?" + request.getQueryString()) : "") + "►IP: " + ip + "/" + xForwardedForHeader + "►User:" + username);
-        filterChain.doFilter(request, response);
+//        filterChain.doFilter(request, response);
+
+        try {
+            filterChain.doFilter(request, response);
+        } finally {
+            // Dọn dẹp ThreadLocal sau khi quá trình xử lý yêu cầu hoàn tất
+            authenticatedUser.remove();
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+    public static UserDetails getCurrentUser() {
+        return authenticatedUser.get();
     }
 
 

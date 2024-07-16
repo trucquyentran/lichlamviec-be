@@ -34,6 +34,8 @@ public class LichLamViecController {
     private TaiKhoanService taiKhoanService;
     @Autowired
     private DonViService donViService;
+    @Autowired
+    private ThongBaoService thongBaoService;
 
     @GetMapping(value = "/getall")
     public List<LichLamViec> getAlls(){
@@ -64,6 +66,7 @@ public class LichLamViecController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping ("/lich-don-vi")
     public ResponseEntity<List<LichLamViec>> getLichDonVi(HttpServletRequest httpServletRequest){
         try {
@@ -180,7 +183,7 @@ public class LichLamViecController {
             }
             lichLamViec.setDonVi(donVi);
 
-            LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
+            LichLamViec lichLamViecDaTao = lichLamViecService.themLichKemThongBao(lichLamViec);
 
             return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
 
@@ -217,7 +220,7 @@ public class LichLamViecController {
             DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toString());
             lichLamViec.setDonVi(donVi);
 
-            LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
+            LichLamViec lichLamViecDaTao = lichLamViecService.themLichKemThongBao(lichLamViec);
 
             return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
 
@@ -293,7 +296,7 @@ public class LichLamViecController {
                 return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
             }
 
-            LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
+            LichLamViec lichLamViecDaTao = lichLamViecService.themLichKemThongBao(lichLamViec);
 
             return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
 

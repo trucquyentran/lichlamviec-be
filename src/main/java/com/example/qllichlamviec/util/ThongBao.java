@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document(collection = "ThongBao")
 @Data
@@ -25,11 +26,12 @@ public class ThongBao {
     private ObjectId _id;
     private LocalDateTime thoiGian;
     @DocumentReference(lazy = false)
-    private User user;
+    private TaiKhoan taiKhoan;
     @Size(max = 300)
     private String noiDung;
     @DocumentReference(lazy = false)
     private LichLamViec lichLamViec;
+
 
 
 }

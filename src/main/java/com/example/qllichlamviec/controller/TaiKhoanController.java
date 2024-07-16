@@ -48,6 +48,8 @@ public class TaiKhoanController {
     private ModelMapper modelMapper;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private ThongBaoService thongBaoService;
 
     @PostMapping("/dang-nhap")
     public ResponseEntity<Object> dangnhap(@RequestBody TaiKhoanDangNhapDTO taiKhoan){
@@ -69,6 +71,7 @@ public class TaiKhoanController {
            }
            taiKhoan1.getListSession().add(new Session(token.getAccess_token(), token.getRefresh_token()));
            taiKhoanService.update(taiKhoan1);
+
            return new ResponseEntity<>(token, HttpStatus.OK);
         }else {
                 taiKhoanService.update(taiKhoan1);
@@ -143,9 +146,10 @@ public class TaiKhoanController {
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<Object> getQuyenTaiKhoan(){
+    public ResponseEntity<Object> getQuyenTaiKhoan(HttpServletRequest httpServletRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         taiKhoanService.kiemTraUserAdmin(authentication);
+//        thongBaoService.kiemTraVaGuiThongBao(httpServletRequest);
         return new ResponseEntity<>(""+authentication.getAuthorities(),HttpStatus.OK);
     }
 
