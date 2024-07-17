@@ -71,13 +71,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     //JWT
     protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf().ignoringAntMatchers("/admin/**");
+        http.csrf().ignoringAntMatchers("/ql-lich/**");
         http.cors().and()
                 //config jwt
-                .antMatcher("/admin/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
+                .antMatcher("/ql-lich/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/admin/user/dang-nhap").permitAll()
-                .antMatchers("/admin/public/**"
+                .antMatchers(HttpMethod.POST, "/ql-lich/user/dang-nhap").permitAll()
+                .antMatchers("/ql-lich/public/**"
                 ).permitAll()
                 .antMatchers("/**").access("hasRole('ROLE_USER')")
                 .and()

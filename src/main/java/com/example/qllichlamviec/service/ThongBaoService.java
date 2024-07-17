@@ -45,40 +45,40 @@ public class ThongBaoService {
         return thongBaoReponsitory.save(thongBao);
     }
 
-    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
-    public void kiemTraVaGuiThongBao() {
-
-        logger.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
-
-
-        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime reminderTime = now.plusMinutes(20);
-
-//        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGian(now);
+//    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
+//    public void kiemTraVaGuiThongBao() {
 //
-//        for (ThongBao tbl : thongBaoList) {
-//           taoThongBao(tbl.getTaiKhoan());
+//        logger.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
+//
+//
+//        LocalDateTime now = LocalDateTime.now();
+////        LocalDateTime reminderTime = now.plusMinutes(20);
+//
+////        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGian(now);
+////
+////        for (ThongBao tbl : thongBaoList) {
+////           taoThongBao(tbl.getTaiKhoan());
+////        }
+//    }
+//
+//    public void guiThongBaoLichLamViec(TaiKhoan taiKhoan, LichLamViec lichLamViec) {
+//        // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
+//        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + lichLamViec.getThoiGianBD();
+//         }
+//
+//    public void taoThongBao(TaiKhoan tk, HttpServletRequest httpServletRequest){
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+//        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(taiKhoan.get_id().toHexString(), now);
+//
+//        for (ThongBao tb : thongBaoList) {
+//            guiThongBao(taiKhoan, tb);
 //        }
-    }
-
-    public void guiThongBaoLichLamViec(TaiKhoan taiKhoan, LichLamViec lichLamViec) {
-        // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
-        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + lichLamViec.getThoiGianBD();
-         }
-
-    public void taoThongBao(TaiKhoan tk, HttpServletRequest httpServletRequest){
-        LocalDateTime now = LocalDateTime.now();
-
-        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
-        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(taiKhoan.get_id().toHexString(), now);
-
-        for (ThongBao tb : thongBaoList) {
-            guiThongBao(taiKhoan, tb);
-        }
-    }
-
-    public void guiThongBao(TaiKhoan taiKhoan, ThongBao thongBao) {
-        // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
-        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + thongBao.getThoiGian();
-    }
+//    }
+//
+//    public void guiThongBao(TaiKhoan taiKhoan, ThongBao thongBao) {
+//        // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
+//        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + thongBao.getThoiGian();
+//    }
 }

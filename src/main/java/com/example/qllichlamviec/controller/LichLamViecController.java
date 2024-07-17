@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/admin/lich-lam-viec")
+@RequestMapping("/ql-lich/lich-lam-viec")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class LichLamViecController {
     @Autowired
@@ -35,8 +35,8 @@ public class LichLamViecController {
     private TaiKhoanService taiKhoanService;
     @Autowired
     private DonViService donViService;
-    @Autowired
-    private ThongBaoService thongBaoService;
+//    @Autowired
+//    private ThongBaoService thongBaoService;
 
     @GetMapping(value = "/getall")
     public List<LichLamViec> getAlls(){

@@ -41,7 +41,7 @@ public class PublicController {
     public ResponseEntity<Object> khoiTaoAdmin() {
         DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT"));
         Quyen q = quyenService.save(new Quyen(null,"Admin"));
-        TaiKhoanDTO tk = new TaiKhoanDTO();
+        TaiKhoan tk = new TaiKhoan();
         tk.setUsername("admin");
         tk.setPassword("Admin@123");
         tk.setHoTen("Admin");
@@ -50,10 +50,10 @@ public class PublicController {
         tk.setGioiTinh(true);
         tk.setNgaySinh(null);
         tk.setNgayTao(LocalDateTime.now());
-        tk.setDonVi(dv.get_id());
-//        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-//        quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,q));
-//        tk.setListQuyen(quyenTaiKhoanList);
+        tk.setDonVi(dv);
+        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
+        quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,q));
+        tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
         taiKhoanService.khoiTaoTaiKhoan(tk);
         return new ResponseEntity<>(new Error("201","OK"), HttpStatus.OK);
     }

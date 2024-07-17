@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/user")
+@RequestMapping("/ql-lich/user")
 
 @Slf4j
 public class TaiKhoanController {
@@ -117,26 +117,16 @@ public class TaiKhoanController {
             String token = jwtService.getToken(httpRequest);
             String idtk = taiKhoan.get_id().toHexString();
 
-            taiKhoanService.logoutToken(idtk, token);
-            return new ResponseEntity<>("Đã đăng xuất khỏi tài khoản " + taiKhoan.getUsername(), HttpStatus.OK);
+            return ResponseEntity.ok(taiKhoanService.logoutToken(idtk, token));
         }catch (Exception e){
             return new ResponseEntity<>("Lỗi khi đăng xuất", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/edit-account")
-    public ResponseEntity<Object> editAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO){
+    public ResponseEntity<Object> suaThongTinAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO){
         try {
-            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
-
-            taiKhoan.setHoTen(taiKhoanDTO.getHoTen());
-            taiKhoan.setGioiTinh(taiKhoanDTO.getGioiTinh());
-            taiKhoan.setSdt(taiKhoanDTO.getSdt());
-            taiKhoan.setEmail(taiKhoanDTO.getEmail());
-            taiKhoan.setNgaySinh(taiKhoanDTO.getNgaySinh());
-
-            TaiKhoan tkCapNhat = taiKhoanService.update(taiKhoan);
-
+            TaiKhoan tkCapNhat = taiKhoanService.editAccount(taiKhoanDTO, httpServletRequest);
             return new ResponseEntity<>(tkCapNhat, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Error("500", "Lỗi khi sửa thông tin tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -174,58 +164,7 @@ public class TaiKhoanController {
     @Transactional
     public ResponseEntity<Object> themNguoiDung(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO) {
         try {
-//            // Lấy đơn vị từ cơ sở dữ liệu
-//            DonVi donVi = donViService.getById2(taiKhoanDTO.getDonVi());
-//            if (donVi == null) {
-//                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanDTO.getDonVi()), HttpStatus.NOT_FOUND);
-//            }
-//
-//            // Lấy danh sách quyền từ cơ sở dữ liệu
-//            List<Quyen> quyenList = new ArrayList<>();
-//            for (String quyenId : taiKhoanDTO.getListQuyen()) {
-//                Quyen quyen = quyenService.getById(quyenId);
-//                if (quyen != null) {
-//                    quyenList.add(quyen);
-//                } else {
-//                    // Xử lý nếu quyền không tồn tại
-//                    return new ResponseEntity<>(new Error("404", "Không tìm thấy quyền với ID: " + quyenId), HttpStatus.NOT_FOUND);
-//                }
-//            }
-//
-//            // Tạo tài khoản từ DTO
-//            TaiKhoan taiKhoan = new TaiKhoan();
-//            taiKhoan.setHoTen(taiKhoanDTO.getHoTen());
-//            taiKhoan.setGioiTinh(taiKhoanDTO.getGioiTinh());
-//            taiKhoan.setNgaySinh(taiKhoanDTO.getNgaySinh());
-//            taiKhoan.setEmail(taiKhoanDTO.getEmail());
-//            taiKhoan.setSdt(taiKhoanDTO.getSdt());
-//
-//            taiKhoan.setUsername(taiKhoanDTO.getUsername());
-//            taiKhoan.setPassword(taiKhoanDTO.getPassword());
-//            taiKhoan.setNgayTao(LocalDateTime.now());
-//            taiKhoan.setDonVi(donVi);
-//
-////            Check username, email, sdt
-//            Error error = taiKhoanService.kiemTraTonTaiEmailHoacSdt(taiKhoan);
-//            if(error != null){
-//                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//
-//            }
-////          Check password
-//            if (taiKhoanService.isStrongPassword(taiKhoan.getPassword())){
-//                return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
-//            }
-//
-//            List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-//            for (Quyen quyen : quyenList) {
-//                quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
-//                taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
-//
-//            }
-           return taiKhoanService.khoiTaoTaiKhoan(taiKhoanDTO);
-
-//            return new ResponseEntity<>(new Error("201", "Tài khoản đã được tạo thành công"), HttpStatus.OK);
-
+           return taiKhoanService.themTaiKhoan(taiKhoanDTO);
         } catch (Exception e) {
             return new ResponseEntity<>(new Error("500", "Lỗi khi tạo người dùng và tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

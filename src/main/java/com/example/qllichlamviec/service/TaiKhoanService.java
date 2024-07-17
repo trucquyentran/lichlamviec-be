@@ -104,8 +104,24 @@ public class TaiKhoanService {
 //        return taiKhoanReponsitory.getByIDNguoiDung(idNguoiDung);
 //    }
 
+    public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
+
+        taiKhoan.setTrangThai(1);
+
+        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
+        taiKhoan.setQuyenTaiKhoanList(null);
+        taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
+        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
+
+        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
+            qtk.setTaiKhoan(taiKhoanRs);
+            quyenTaiKhoanService.save(qtk);
+        }
+        return taiKhoanRs;
+    }
+
     @Transactional
-    public ResponseEntity<Object> khoiTaoTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
+    public ResponseEntity<Object> themTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
 
         // Lấy đơn vị từ cơ sở dữ liệu
         DonVi donVi = donViService.getById2(taiKhoanDTO.getDonVi());
@@ -134,9 +150,13 @@ public class TaiKhoanService {
         taiKhoan.setSdt(taiKhoanDTO.getSdt());
 
         taiKhoan.setUsername(taiKhoanDTO.getUsername());
-        taiKhoan.setPassword(taiKhoanDTO.getPassword());
+        taiKhoan.setPassword(passwordEncoder.encode(taiKhoanDTO.getPassword()));
         taiKhoan.setNgayTao(LocalDateTime.now());
+        taiKhoan.setTrangThai(1);
         taiKhoan.setDonVi(donVi);
+
+
+
 
 //            Check username, email, sdt
         Error error = kiemTraTonTaiEmailHoacSdt(taiKhoan);
@@ -156,11 +176,11 @@ public class TaiKhoanService {
 
         }
 
-        taiKhoan.setTrangThai(1);
+//        khoiTaoTaiKhoan(taiKhoan);
 
         List<QuyenTaiKhoan> quyenTaiKhoanList2 = taiKhoan.getQuyenTaiKhoanList();
         taiKhoan.setQuyenTaiKhoanList(null);
-        taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
+
         TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
 
         for (QuyenTaiKhoan qtk : quyenTaiKhoanList2) {
@@ -222,6 +242,17 @@ public class TaiKhoanService {
 
 
     public TaiKhoan update(TaiKhoan taiKhoan) {
+        return taiKhoanReponsitory.save(taiKhoan);
+    }
+
+    public TaiKhoan editAccount(TaiKhoanDTO taiKhoanDTO, HttpServletRequest httpServletRequest) {
+        TaiKhoan taiKhoan = getTaiKhoanFromRequest(httpServletRequest);
+
+        taiKhoan.setHoTen(taiKhoanDTO.getHoTen());
+        taiKhoan.setGioiTinh(taiKhoanDTO.getGioiTinh());
+        taiKhoan.setSdt(taiKhoanDTO.getSdt());
+        taiKhoan.setEmail(taiKhoanDTO.getEmail());
+        taiKhoan.setNgaySinh(taiKhoanDTO.getNgaySinh());
 
         return taiKhoanReponsitory.save(taiKhoan);
     }
@@ -241,46 +272,20 @@ public class TaiKhoanService {
     }
 
 
-
-
-//    public TaiKhoan themNguoiDungMoi(NguoiDung nguoiDung) {
-//
-//        TaiKhoan tk = new TaiKhoan();
-//        tk.setUsername(nguoiDung.getSdt());
-//        tk.setPassword("Vnpt#042024123");
-//        tk.setNguoiDung(nguoiDung);
-//        tk.setTrangThai(1);
-//        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-//        quyenTaiKhoanList.add(new QuyenTaiKhoan(null, tk, new Quyen(new ObjectId("66431ee6950a6be77897e99b"))));
-//        tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
-//        return  khoiTaoNguoiDungKemTaiKhoan(tk);
-//    }
-
     public TaiKhoan getTaiKhoanFromRequest(HttpServletRequest httpRequest) {
         return taiKhoanReponsitory.getByID(jwtService.getIDTaiKhoanFromToken(jwtService.getToken(httpRequest)));
     }
 
-//    public TaiKhoan logoutToken(String taiKhoanID ,String token) {
-//        TaiKhoan taiKhoan = getByID(taiKhoanID);
-//        if(taiKhoan.getListSession() == null){
-//            taiKhoan.setListSession(new ArrayList<>());
-//        }
-//        for (Session session :taiKhoan.getListSession()) {
-//            if(session.getAccessToken().equals(token)){
-//                taiKhoan.getListSession().remove(session);
-//            }
-//        }
-//        return taiKhoanReponsitory.save(taiKhoan);
-//    }
-    public TaiKhoan logoutToken(String taiKhoanID, String token) {
+    public ResponseEntity<Object> logoutToken(String taiKhoanID, String token) {
     TaiKhoan taiKhoan = getByID(taiKhoanID);
     if (taiKhoan.getListSession() == null) {
         taiKhoan.setListSession(new ArrayList<>());
     }
-
     List<Session> sessionsToRemove = new ArrayList<>();
     for (Session session : taiKhoan.getListSession()) {
-        if (session.getAccessToken().equals(token)) {
+        String sessionToken = session.getAccessToken().trim();
+        String trimmedToken = token.trim();
+        if (sessionToken.equals(trimmedToken)) {
             sessionsToRemove.add(session); // Thêm session vào danh sách cần xoá
         }
     }
@@ -289,8 +294,8 @@ public class TaiKhoanService {
 
     // Lưu thay đổi vào cơ sở dữ liệu
     taiKhoan = taiKhoanReponsitory.save(taiKhoan);
+    return new ResponseEntity<>("Đã đăng xuất khỏi tài khoản " + taiKhoan.getUsername(), HttpStatus.OK);
 
-    return taiKhoan;
     }
 
     public boolean kiemTraUserAdmin(Authentication authentication) {

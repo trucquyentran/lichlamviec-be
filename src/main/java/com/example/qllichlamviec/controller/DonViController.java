@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/admin/don-vi")
+@RequestMapping("/ql-lich/don-vi")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class DonViController {
     @Autowired

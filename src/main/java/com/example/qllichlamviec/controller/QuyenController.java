@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping("/admin/quyen")
+@RequestMapping("/ql-lich/quyen")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class QuyenController {
     @Autowired
