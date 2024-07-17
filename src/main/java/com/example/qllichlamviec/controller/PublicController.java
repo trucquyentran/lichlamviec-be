@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class PublicController {
 
     @GetMapping("/khoitaouser")
     @Transactional
-    public ResponseEntity<Object> dangNhap() {
+    public ResponseEntity<Object> khoiTaoAdmin() {
         DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT"));
         Quyen q = quyenService.save(new Quyen(null,"Admin"));
         TaiKhoanDTO tk = new TaiKhoanDTO();
@@ -47,10 +48,11 @@ public class PublicController {
         tk.setEmail("Admin@vnpt.vn");
         tk.setSdt("0123456789");
         tk.setGioiTinh(true);
-        tk.setNgaySinh( LocalDate.now());
+        tk.setNgaySinh(null);
+        tk.setNgayTao(LocalDateTime.now());
         tk.setDonVi(dv.get_id());
-//        List<QuyenTaiKhoanDTO> quyenTaiKhoanList = new ArrayList<>();
-//        quyenTaiKhoanList.add(new QuyenTaiKhoanDTO(null,tk,q));
+//        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
+//        quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,q));
 //        tk.setListQuyen(quyenTaiKhoanList);
         taiKhoanService.khoiTaoTaiKhoan(tk);
         return new ResponseEntity<>(new Error("201","OK"), HttpStatus.OK);

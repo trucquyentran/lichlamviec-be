@@ -69,7 +69,7 @@ public class TaiKhoanService {
 
     public TaiKhoanNguoiDungDTO mapToTaiKhoanNguoiDungDTO(TaiKhoan taiKhoan) {
         TaiKhoanNguoiDungDTO taiKhoanDTO = modelMapper.map(taiKhoan, TaiKhoanNguoiDungDTO.class);
-        taiKhoanDTO.setDonVi(taiKhoan.getDonVi().get_id());
+//        taiKhoanDTO.setDonVi(taiKhoan.getDonVi().get_id());
         taiKhoanDTO.setListQuyen(new ArrayList<>());
         for (QuyenTaiKhoan qtk : taiKhoan.getQuyenTaiKhoanList()) {
             taiKhoanDTO.getListQuyen().add(qtk.getQuyen().getTenQuyen());
