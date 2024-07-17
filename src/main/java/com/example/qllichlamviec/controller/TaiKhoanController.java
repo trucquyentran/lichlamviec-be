@@ -1,16 +1,15 @@
 package com.example.qllichlamviec.controller;
 
 import com.example.qllichlamviec.modal.dto.TaiKhoanDangNhapDTO;
-import com.example.qllichlamviec.modal.dto.TaiKhoanNguoiDungDTO;
-import com.example.qllichlamviec.modal.system.DonViNameDTO;
+import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.NguoiDungDangNhapDTO;
+import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.service.*;
 import com.example.qllichlamviec.util.*;
 import com.example.qllichlamviec.util.pojo.Session;
 import lombok.extern.slf4j.Slf4j;
 import com.example.qllichlamviec.modal.system.Token;
-import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,15 +125,15 @@ public class TaiKhoanController {
     }
 
     @PutMapping("/edit-account")
-    public ResponseEntity<Object> editAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO){
+    public ResponseEntity<Object> editAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO){
         try {
             TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
 
-            taiKhoan.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
-            taiKhoan.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
-            taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
-            taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
-            taiKhoan.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
+            taiKhoan.setHoTen(taiKhoanDTO.getHoTen());
+            taiKhoan.setGioiTinh(taiKhoanDTO.getGioiTinh());
+            taiKhoan.setSdt(taiKhoanDTO.getSdt());
+            taiKhoan.setEmail(taiKhoanDTO.getEmail());
+            taiKhoan.setNgaySinh(taiKhoanDTO.getNgaySinh());
 
             TaiKhoan tkCapNhat = taiKhoanService.update(taiKhoan);
 
@@ -148,78 +146,83 @@ public class TaiKhoanController {
     @GetMapping("/roles")
     public ResponseEntity<Object> getQuyenTaiKhoan(HttpServletRequest httpServletRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        taiKhoanService.kiemTraUserAdmin(authentication);
-//        thongBaoService.kiemTraVaGuiThongBao(httpServletRequest);
         return new ResponseEntity<>(""+authentication.getAuthorities(),HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list-user")
-    public List<TaiKhoan> ListUser(){
+    public List<TaiKhoanNguoiDungDTO> ListUser(){
         return taiKhoanService.findAllUser();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list-user-donvi")
-    public List<TaiKhoan> ListUserTrongDonVi(HttpServletRequest httpServletRequest){
+    public List<TaiKhoanNguoiDungDTO> ListUserTrongDonVi(HttpServletRequest httpServletRequest){
         TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
         List<TaiKhoan> taiKhoanThuocDonViList = taiKhoanService.getByDonViID(taiKhoan.getDonVi().get_id());
-        return taiKhoanThuocDonViList;
+
+        List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
+        for (TaiKhoan tk: taiKhoanThuocDonViList){
+            TaiKhoanNguoiDungDTO taiKhoanDTO = taiKhoanService.mapToTaiKhoanNguoiDungDTO(tk);
+            taiKhoanDTOList.add(taiKhoanDTO);
+        }
+        return taiKhoanDTOList;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("add-user")
     @Transactional
-    public ResponseEntity<Object> themNguoiDung(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO) {
+    public ResponseEntity<Object> themNguoiDung(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO) {
         try {
-            // Lấy đơn vị từ cơ sở dữ liệu
-            DonVi donVi = donViService.getById2(taiKhoanNguoiDungDTO.getDonVi());
-            if (donVi == null) {
-                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanNguoiDungDTO.getDonVi()), HttpStatus.NOT_FOUND);
-            }
-
-            // Lấy danh sách quyền từ cơ sở dữ liệu
-            List<Quyen> quyenList = new ArrayList<>();
-            for (String quyenId : taiKhoanNguoiDungDTO.getListQuyen()) {
-                Quyen quyen = quyenService.getById(quyenId);
-                if (quyen != null) {
-                    quyenList.add(quyen);
-                } else {
-                    // Xử lý nếu quyền không tồn tại
-                    return new ResponseEntity<>(new Error("404", "Không tìm thấy quyền với ID: " + quyenId), HttpStatus.NOT_FOUND);
-                }
-            }
-
-
-            // Tạo tài khoản từ DTO
-            TaiKhoan taiKhoan = new TaiKhoan();
-            taiKhoan.setHoTen(taiKhoanNguoiDungDTO.getHoTen());
-            taiKhoan.setGioiTinh(taiKhoanNguoiDungDTO.getGioiTinh());
-            taiKhoan.setNgaySinh(taiKhoanNguoiDungDTO.getNgaySinh());
-            taiKhoan.setEmail(taiKhoanNguoiDungDTO.getEmail());
-            taiKhoan.setSdt(taiKhoanNguoiDungDTO.getSdt());
-
-            taiKhoan.setUsername(taiKhoanNguoiDungDTO.getUsername());
-            taiKhoan.setPassword(taiKhoanNguoiDungDTO.getPassword());
-            taiKhoan.setNgayTao(LocalDateTime.now());
-            taiKhoan.setDonVi(donVi);
-
-//            Check username, email, sdt
-            Error error = taiKhoanService.kiemTraTonTaiEmailHoacSdt(taiKhoan);
-            if(error != null){
-                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-
-            }
-//          Check password
-            if (taiKhoanService.isStrongPassword(taiKhoan.getPassword())){
-                return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
-            }
-
-            List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-            for (Quyen quyen : quyenList) {
-                quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
-                taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
-
-            }
-           taiKhoanService.khoiTaoTaiKhoan(taiKhoan);
+//            // Lấy đơn vị từ cơ sở dữ liệu
+//            DonVi donVi = donViService.getById2(taiKhoanDTO.getDonVi());
+//            if (donVi == null) {
+//                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanDTO.getDonVi()), HttpStatus.NOT_FOUND);
+//            }
+//
+//            // Lấy danh sách quyền từ cơ sở dữ liệu
+//            List<Quyen> quyenList = new ArrayList<>();
+//            for (String quyenId : taiKhoanDTO.getListQuyen()) {
+//                Quyen quyen = quyenService.getById(quyenId);
+//                if (quyen != null) {
+//                    quyenList.add(quyen);
+//                } else {
+//                    // Xử lý nếu quyền không tồn tại
+//                    return new ResponseEntity<>(new Error("404", "Không tìm thấy quyền với ID: " + quyenId), HttpStatus.NOT_FOUND);
+//                }
+//            }
+//
+//            // Tạo tài khoản từ DTO
+//            TaiKhoan taiKhoan = new TaiKhoan();
+//            taiKhoan.setHoTen(taiKhoanDTO.getHoTen());
+//            taiKhoan.setGioiTinh(taiKhoanDTO.getGioiTinh());
+//            taiKhoan.setNgaySinh(taiKhoanDTO.getNgaySinh());
+//            taiKhoan.setEmail(taiKhoanDTO.getEmail());
+//            taiKhoan.setSdt(taiKhoanDTO.getSdt());
+//
+//            taiKhoan.setUsername(taiKhoanDTO.getUsername());
+//            taiKhoan.setPassword(taiKhoanDTO.getPassword());
+//            taiKhoan.setNgayTao(LocalDateTime.now());
+//            taiKhoan.setDonVi(donVi);
+//
+////            Check username, email, sdt
+//            Error error = taiKhoanService.kiemTraTonTaiEmailHoacSdt(taiKhoan);
+//            if(error != null){
+//                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//
+//            }
+////          Check password
+//            if (taiKhoanService.isStrongPassword(taiKhoan.getPassword())){
+//                return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
+//            }
+//
+//            List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
+//            for (Quyen quyen : quyenList) {
+//                quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
+//                taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
+//
+//            }
+           taiKhoanService.khoiTaoTaiKhoan(taiKhoanDTO);
 
             return new ResponseEntity<>(new Error("201", "Tài khoản đã được tạo thành công"), HttpStatus.OK);
 
@@ -240,19 +243,19 @@ public class TaiKhoanController {
 
     @PutMapping("/edit-quyen-donvi")
     @Transactional
-    public ResponseEntity<Object> editQuyenOrDonVi(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO, @RequestParam String id){
+    public ResponseEntity<Object> editQuyenOrDonVi(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO, @RequestParam String id){
         try {
             TaiKhoan taiKhoan = taiKhoanService.getByID(id);
 
             // Lấy đơn vị từ cơ sở dữ liệu
-            DonVi donVi = donViService.getById2(taiKhoanNguoiDungDTO.getDonVi());
+            DonVi donVi = donViService.getById2(taiKhoanDTO.getDonVi());
             if (donVi == null) {
-                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanNguoiDungDTO.getDonVi()), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanDTO.getDonVi()), HttpStatus.NOT_FOUND);
             }
 
             // Lấy danh sách quyền từ cơ sở dữ liệu
             List<Quyen> quyenList = new ArrayList<>();
-            for (String quyenId : taiKhoanNguoiDungDTO.getListQuyen()) {
+            for (String quyenId : taiKhoanDTO.getListQuyen()) {
                 Quyen quyen = quyenService.getById(quyenId);
                 if (quyen != null) {
                     quyenList.add(quyen);

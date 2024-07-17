@@ -1,11 +1,11 @@
 package com.example.qllichlamviec.modal.dto;
 
-import com.example.qllichlamviec.modal.system.DonViNameDTO;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaiKhoanNguoiDungDTO {
+public class TaiKhoanDTO {
 //    @Id
 //    private ObjectId _id;
     private String hoTen;
@@ -25,5 +25,6 @@ public class TaiKhoanNguoiDungDTO {
     private String sdt;
     private List<String> listQuyen;
     private String avatar;
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId donVi;
 }

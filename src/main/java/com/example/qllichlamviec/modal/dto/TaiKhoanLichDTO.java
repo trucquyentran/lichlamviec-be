@@ -1,4 +1,4 @@
-package com.example.qllichlamviec.modal.system;
+package com.example.qllichlamviec.modal.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -10,17 +10,11 @@ import org.bson.types.ObjectId;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class NguoiDungDangNhapDTO {
+@NoArgsConstructor
+public class TaiKhoanLichDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
-    private String hoTen;
-    private String email;
-    private String sdt;
-    private String ngaySinh;
-    private Boolean gioiTinh;
+    private String username;
     private List<String> listQuyen;
-    private String avatar;
-    private DonViNameDTO donVi;
 }

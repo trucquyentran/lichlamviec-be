@@ -1,17 +1,28 @@
 package com.example.qllichlamviec.service;
 
+import com.example.qllichlamviec.modal.dto.LichCaNhanDTO;
+import com.example.qllichlamviec.modal.dto.LichDonViTaiKhoanDTO;
+import com.example.qllichlamviec.modal.dto.LichLamViecDTO;
+import com.example.qllichlamviec.modal.dto.LichLamViecDonViDTO;
 import com.example.qllichlamviec.modal.system.Error;
+import com.example.qllichlamviec.modal.system.NguoiDungDangNhapDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.util.*;
 import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.http.HttpClient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class LichLamViecService {
@@ -25,6 +36,10 @@ public class LichLamViecService {
     private ThongBaoService thongBaoService;
     @Autowired
     private TaiKhoanService taiKhoanService;
+    @Autowired
+    private DonViService donViService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public LichLamViec save(LichLamViec lichLamViec){
         return lichLamViecReponsitory.save(lichLamViec);
@@ -106,6 +121,98 @@ public class LichLamViecService {
         }
 
         return llv;
+    }
+
+    public List<LichDonViTaiKhoanDTO> getLichTaiKhoanOfDonViQuanLy(HttpServletRequest httpServletRequest){
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+        DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toHexString());
+
+        List<TaiKhoan> taiKhoanList = taiKhoanService.getByDonViID(donVi.get_id());
+
+        // Lấy danh sách lịch làm việc của từng tài khoản trong đơn vị
+        List<LichDonViTaiKhoanDTO> lichDonViTaiKhoanDTOList = new ArrayList<>();
+        for (TaiKhoan tk : taiKhoanList) {
+
+            List<LichLamViec> lichLamViecCuaTaiKhoan = getByTaiKhoanID(tk.get_id());
+
+            LichDonViTaiKhoanDTO llv = new LichDonViTaiKhoanDTO();
+            llv.setTaiKhoan(tk);
+            llv.setLichLamViecList(lichLamViecCuaTaiKhoan);
+
+            lichDonViTaiKhoanDTOList.add(llv);
+
+        }
+        return lichDonViTaiKhoanDTOList;
+    }
+
+    public List<LichLamViecDonViDTO> getLichDonVi(HttpServletRequest httpServletRequest){
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+        DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toHexString());
+
+        List<LichLamViec> lichDonViList = getByIdDonVi(donVi.get_id());
+        List<LichLamViecDonViDTO> lichLamViecDTOList = new ArrayList<>();
+        for (LichLamViec llv: lichDonViList){
+            LichLamViecDonViDTO lichLamViecDonViDTO = modelMapper.map(llv, LichLamViecDonViDTO.class);
+            lichLamViecDonViDTO.setDonVi(taiKhoan.getDonVi().get_id());
+            lichLamViecDTOList.add(lichLamViecDonViDTO);
+        }
+        return lichLamViecDTOList;
+    }
+
+
+    public List<LichCaNhanDTO> getLichTaiKhoan(HttpServletRequest httpServletRequest){
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+
+        List<LichLamViec> lichTaiKhoanList = getByTaiKhoanID(taiKhoan.get_id());
+        List<LichCaNhanDTO> lichCaNhanDTOList = new ArrayList<>();
+        for (LichLamViec llv: lichTaiKhoanList){
+            LichCaNhanDTO lichCaNhanDTO = modelMapper.map(llv, LichCaNhanDTO.class);
+            lichCaNhanDTO.setTaiKhoan(taiKhoan.get_id());
+            lichCaNhanDTOList.add(lichCaNhanDTO);
+        }
+        return lichCaNhanDTOList;
+
+    }
+
+    public ResponseEntity<Object> taoLich(LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest){
+
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
+
+        LichLamViec lichLamViec = new LichLamViec();
+        lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
+        lichLamViec.setThoiGianKT(lichLamViecDTO.getThoiGianKT());
+        lichLamViec.setThoiGianTao(LocalDateTime.now());
+        lichLamViec.setDiaDiem(lichLamViecDTO.getDiaDiem());
+        lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
+        lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
+        lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
+
+        // Check thời gian bắt đầu và kết thục lịch
+        Error error = kiemTraThoiGianHopLe(lichLamViec);
+        if (error != null){
+            return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+        }
+
+        if(lichLamViecDTO.getDonVi() == null){
+            lichLamViec.setTaiKhoan(taiKhoan);
+        }else {
+
+            DonVi donVi = donViService.getById(lichLamViecDTO.getDonVi().toHexString());
+            if (donVi == null) {
+                return new ResponseEntity<>("Không tìm thấy thông tin đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
+            }
+            if(taiKhoan.getDonVi().equals(donVi)){
+                lichLamViec.setDonVi(donVi);
+            }else {
+                return new ResponseEntity<>("Bạn không có quền quản lý đơn vị này nên không thể thêm lịch cho đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
+            }
+
+        }
+
+        LichLamViec lichLamViecDaTao = themLichKemThongBao(lichLamViec);
+
+        return ResponseEntity.ok(lichLamViecDaTao);
+
     }
 
 }

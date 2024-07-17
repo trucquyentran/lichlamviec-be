@@ -1,5 +1,7 @@
 package com.example.qllichlamviec.controller;
 
+import com.example.qllichlamviec.modal.dto.QuyenTaiKhoanDTO;
+import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.service.*;
 import com.example.qllichlamviec.util.*;
@@ -38,7 +40,7 @@ public class PublicController {
     public ResponseEntity<Object> dangNhap() {
         DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT"));
         Quyen q = quyenService.save(new Quyen(null,"Admin"));
-        TaiKhoan tk = new TaiKhoan();
+        TaiKhoanDTO tk = new TaiKhoanDTO();
         tk.setUsername("admin");
         tk.setPassword("Admin@123");
         tk.setHoTen("Admin");
@@ -46,10 +48,10 @@ public class PublicController {
         tk.setSdt("0123456789");
         tk.setGioiTinh(true);
         tk.setNgaySinh( LocalDate.now());
-        tk.setDonVi(dv);
-        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-        quyenTaiKhoanList.add(new QuyenTaiKhoan(null,tk,q));
-        tk.setQuyenTaiKhoanList(quyenTaiKhoanList);
+        tk.setDonVi(dv.get_id());
+//        List<QuyenTaiKhoanDTO> quyenTaiKhoanList = new ArrayList<>();
+//        quyenTaiKhoanList.add(new QuyenTaiKhoanDTO(null,tk,q));
+//        tk.setListQuyen(quyenTaiKhoanList);
         taiKhoanService.khoiTaoTaiKhoan(tk);
         return new ResponseEntity<>(new Error("201","OK"), HttpStatus.OK);
     }

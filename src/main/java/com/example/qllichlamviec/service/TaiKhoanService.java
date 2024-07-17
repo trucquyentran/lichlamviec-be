@@ -1,6 +1,8 @@
 package com.example.qllichlamviec.service;
 
+import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
 import com.example.qllichlamviec.modal.system.Error;
+import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.reponsitory.QuyenTaiKhoanReponsitory;
@@ -8,8 +10,11 @@ import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.*;
 import com.example.qllichlamviec.util.pojo.Session;
 import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -35,14 +39,20 @@ public class TaiKhoanService {
     private QuyenTaiKhoanService quyenTaiKhoanService;
     @Autowired
     private QuyenTaiKhoanReponsitory quyenTaiKhoanReponsitory;
-//    @Autowired
-    private ModuleLayer moduleLayer;
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
     private JwtService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private DonViService donViService;
+    @Autowired
+    private QuyenService quyenService;
+
+
 
 
     public List<QuyenTaiKhoan> getListQuyenByID(String idTaiKhoan) {
@@ -57,8 +67,26 @@ public class TaiKhoanService {
         return taiKhoanReponsitory.findById(id).orElse(null);
     }
 
-    public List<TaiKhoan> findAllUser(){
-        return taiKhoanReponsitory.findAll();
+    public TaiKhoanNguoiDungDTO mapToTaiKhoanNguoiDungDTO(TaiKhoan taiKhoan) {
+        TaiKhoanNguoiDungDTO taiKhoanDTO = modelMapper.map(taiKhoan, TaiKhoanNguoiDungDTO.class);
+        taiKhoanDTO.setDonVi(taiKhoan.getDonVi().get_id());
+        taiKhoanDTO.setListQuyen(new ArrayList<>());
+        for (QuyenTaiKhoan qtk : taiKhoan.getQuyenTaiKhoanList()) {
+            taiKhoanDTO.getListQuyen().add(qtk.getQuyen().getTenQuyen());
+        }
+        return taiKhoanDTO;
+    }
+
+    public List<TaiKhoanNguoiDungDTO> findAllUser(){
+
+        List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll();
+
+        List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
+        for (TaiKhoan tk: taiKhoanList){
+            TaiKhoanNguoiDungDTO taiKhoanDTO = mapToTaiKhoanNguoiDungDTO(tk);
+            taiKhoanDTOList.add(taiKhoanDTO);
+        }
+        return taiKhoanDTOList;
     }
 
     public TaiKhoan getByUsername(String username) {
@@ -77,20 +105,70 @@ public class TaiKhoanService {
 //    }
 
     @Transactional
-    public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
+    public ResponseEntity<Object> khoiTaoTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
+
+        // Lấy đơn vị từ cơ sở dữ liệu
+        DonVi donVi = donViService.getById2(taiKhoanDTO.getDonVi());
+        if (donVi == null) {
+            return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanDTO.getDonVi()), HttpStatus.NOT_FOUND);
+        }
+
+        // Lấy danh sách quyền từ cơ sở dữ liệu
+        List<Quyen> quyenList = new ArrayList<>();
+        for (String quyenId : taiKhoanDTO.getListQuyen()) {
+            Quyen quyen = quyenService.getById(quyenId);
+            if (quyen != null) {
+                quyenList.add(quyen);
+            } else {
+                // Xử lý nếu quyền không tồn tại
+                return new ResponseEntity<>(new Error("404", "Không tìm thấy quyền với ID: " + quyenId), HttpStatus.NOT_FOUND);
+            }
+        }
+
+        // Tạo tài khoản từ DTO
+        TaiKhoan taiKhoan = new TaiKhoan();
+        taiKhoan.setHoTen(taiKhoanDTO.getHoTen());
+        taiKhoan.setGioiTinh(taiKhoanDTO.getGioiTinh());
+        taiKhoan.setNgaySinh(taiKhoanDTO.getNgaySinh());
+        taiKhoan.setEmail(taiKhoanDTO.getEmail());
+        taiKhoan.setSdt(taiKhoanDTO.getSdt());
+
+        taiKhoan.setUsername(taiKhoanDTO.getUsername());
+        taiKhoan.setPassword(taiKhoanDTO.getPassword());
+        taiKhoan.setNgayTao(LocalDateTime.now());
+        taiKhoan.setDonVi(donVi);
+
+//            Check username, email, sdt
+        Error error = kiemTraTonTaiEmailHoacSdt(taiKhoan);
+        if(error != null){
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
+        }
+//          Check password
+        if (isStrongPassword(taiKhoan.getPassword())){
+            return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
+        }
+
+        List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
+        for (Quyen quyen : quyenList) {
+            quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
+            taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
+
+        }
+
         taiKhoan.setTrangThai(1);
 
-        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
+        List<QuyenTaiKhoan> quyenTaiKhoanList2 = taiKhoan.getQuyenTaiKhoanList();
         taiKhoan.setQuyenTaiKhoanList(null);
         taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
         TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
 
-        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
+        for (QuyenTaiKhoan qtk : quyenTaiKhoanList2) {
             qtk.setTaiKhoan(taiKhoanRs);
             quyenTaiKhoanService.save(qtk);
         }
 
-        return taiKhoanRs;
+        return ResponseEntity.ok(taiKhoanRs);
     }
 
     @Transactional
@@ -157,8 +235,9 @@ public class TaiKhoanService {
         String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
         if (Pattern.compile(PASSWORD_PATTERN).matcher(password).matches()) {
             return null;
-        } else
+        } else{
             return new Error("400","Mật khẩu có ít nhất 8 ký tự , phải có ít nhất 1 ký tự hoa, thường , số, đặc biệt.");
+        }
     }
 
 
@@ -233,5 +312,13 @@ public class TaiKhoanService {
 
     public List<TaiKhoan> getAll() {
         return taiKhoanReponsitory.findAll();
+    }
+
+    public ResponseEntity<Object> kiemTraTaiKhoanTonTai(HttpServletRequest httpServletRequest){
+        TaiKhoan taiKhoan = getTaiKhoanFromRequest(httpServletRequest);
+        if(taiKhoan == null){
+            return new ResponseEntity<>("Không tìm thấy thông tin người dùng với ID: "+taiKhoan, HttpStatus.UNAUTHORIZED);
+        }
+        return ResponseEntity.ok().build();
     }
 }

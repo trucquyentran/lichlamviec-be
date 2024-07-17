@@ -7,20 +7,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class NguoiDungDangNhapDTO {
+@NoArgsConstructor
+public class TaiKhoanNguoiDungDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private ObjectId donVi;
+    private String username;
     private String hoTen;
+    private Boolean gioiTinh;
+    private LocalDate ngaySinh;
     private String email;
     private String sdt;
-    private String ngaySinh;
-    private Boolean gioiTinh;
     private List<String> listQuyen;
     private String avatar;
-    private DonViNameDTO donVi;
+
 }

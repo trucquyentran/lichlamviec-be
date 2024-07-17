@@ -1,8 +1,6 @@
 package com.example.qllichlamviec.modal.dto;
 
-import com.example.qllichlamviec.util.TaiKhoan;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToEmptyObjectSerializer;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,12 +12,12 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LichCaNhanDTO {
+public class LichLamViecDonViDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId taiKhoan;
+    private ObjectId donVi;
 
     private String tieuDe;
     private String noiDung;
