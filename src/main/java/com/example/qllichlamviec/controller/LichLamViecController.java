@@ -100,6 +100,7 @@ public class LichLamViecController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/lich-tai-khoan")
     public ResponseEntity<Object> getLichTaiKhoan(HttpServletRequest httpServletRequest) {
         try {

@@ -146,7 +146,7 @@ public class TaiKhoanService {
         }
 //          Check password
         if (isStrongPassword(taiKhoan.getPassword())){
-            return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.OK);
+            return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.BAD_REQUEST);
         }
 
         List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
@@ -168,7 +168,7 @@ public class TaiKhoanService {
             quyenTaiKhoanService.save(qtk);
         }
 
-        return ResponseEntity.ok(taiKhoanRs);
+        return new  ResponseEntity<>("Tài khoản đã được tạo thành công",HttpStatus.OK);
     }
 
     @Transactional

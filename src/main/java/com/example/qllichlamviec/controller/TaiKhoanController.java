@@ -222,9 +222,9 @@ public class TaiKhoanController {
 //                taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
 //
 //            }
-           taiKhoanService.khoiTaoTaiKhoan(taiKhoanDTO);
+           return taiKhoanService.khoiTaoTaiKhoan(taiKhoanDTO);
 
-            return new ResponseEntity<>(new Error("201", "Tài khoản đã được tạo thành công"), HttpStatus.OK);
+//            return new ResponseEntity<>(new Error("201", "Tài khoản đã được tạo thành công"), HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<>(new Error("500", "Lỗi khi tạo người dùng và tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
