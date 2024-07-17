@@ -23,4 +23,5 @@ public class NguoiDungDangNhapDTO {
     private List<String> listQuyen;
     private String avatar;
     private DonViNameDTO donVi;
+
 }
