@@ -14,10 +14,10 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuyenTaiKhoanDTO {
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId _id;
-
-    private TaiKhoanDTO taiKhoan;
+//    @JsonSerialize(using = ToStringSerializer.class)
+//    private ObjectId _id;
+//
+//    private TaiKhoanDTO taiKhoan;
     @DocumentReference(lazy = false)
     private Quyen quyen;
 

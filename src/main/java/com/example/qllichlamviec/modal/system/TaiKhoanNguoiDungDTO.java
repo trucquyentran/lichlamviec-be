@@ -1,6 +1,9 @@
 package com.example.qllichlamviec.modal.system;
 
+import com.example.qllichlamviec.modal.dto.QuyenTaiKhoanDTO;
 import com.example.qllichlamviec.util.DonVi;
+import com.example.qllichlamviec.util.Quyen;
+import com.example.qllichlamviec.util.QuyenTaiKhoan;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -25,7 +28,7 @@ public class TaiKhoanNguoiDungDTO {
     private LocalDate ngaySinh;
     private String email;
     private String sdt;
-    private List<String> listQuyen;
+    private List<QuyenTaiKhoanDTO> listQuyen;
     private Integer trangThai;
     private LocalDateTime ngayTao;
     private String avatar;

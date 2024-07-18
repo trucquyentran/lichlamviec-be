@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.service;
 
+import com.example.qllichlamviec.modal.dto.QuyenTaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
@@ -115,7 +116,8 @@ public class TaiKhoanService {
 //        taiKhoanDTO.setDonVi(taiKhoan.getDonVi().get_id());
         taiKhoanDTO.setListQuyen(new ArrayList<>());
         for (QuyenTaiKhoan qtk : taiKhoan.getQuyenTaiKhoanList()) {
-            taiKhoanDTO.getListQuyen().add(qtk.getQuyen().getTenQuyen());
+            QuyenTaiKhoanDTO quyenTaiKhoanDTO = modelMapper.map(qtk, QuyenTaiKhoanDTO.class);
+            taiKhoanDTO.getListQuyen().add(quyenTaiKhoanDTO);
         }
         return taiKhoanDTO;
     }
