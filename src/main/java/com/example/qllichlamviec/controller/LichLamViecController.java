@@ -61,7 +61,10 @@ public class LichLamViecController {
     public ResponseEntity<Object> search(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
         try {
             if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
-                return new ResponseEntity<>(lichLamViecService.getById(search), HttpStatus.OK);
+                LichLamViec llv = lichLamViecService.getById(search);
+                LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
+                lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+                return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -124,20 +127,7 @@ public class LichLamViecController {
         }
     }
 
-//
-//
-//    @PutMapping
-//    public ResponseEntity<Object> update(@RequestBody LichLamViec lichLamViec, HttpServletRequest httpRequest){
-//        try {
-//            return new ResponseEntity<Object>(lichLamViecService.update(lichLamViec), HttpStatus.OK);
-//        }catch (Exception e){
-//            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
-//    -----------------------
-
-    @PostMapping("/them")
+    @PostMapping("/them-lich-donvi")
     public ResponseEntity<Object> themLichDonVi(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
         try {
             return ResponseEntity.ok(lichLamViecService.taoLich(lichLamViecDTO, httpRequest));
@@ -148,70 +138,10 @@ public class LichLamViecController {
 
     }
 
-    @PostMapping("/them-lich-donvi-quanly")
-    public ResponseEntity<Object> themLichDonViQuanLy(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
-        try {
-
-            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
-
-            if (taiKhoan == null) {
-                return new ResponseEntity<>("Không tìm thấy thông tin người dùng với ID: "+taiKhoan, HttpStatus.UNAUTHORIZED);
-            }
-
-            LichLamViec lichLamViec = new LichLamViec();
-            lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
-            lichLamViec.setThoiGianKT(lichLamViecDTO.getThoiGianKT());
-            lichLamViec.setThoiGianTao(LocalDateTime.now());
-            lichLamViec.setDiaDiem(lichLamViecDTO.getDiaDiem());
-            lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
-            lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
-            lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
-
-            // Check thời gian bắt đầu và kết thục lịch
-            lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
-
-            DonVi donVi = donViService.getById(taiKhoan.getDonVi().get_id().toString());
-            lichLamViec.setDonVi(donVi);
-
-            LichLamViec lichLamViecDaTao = lichLamViecService.themLichKemThongBao(lichLamViec);
-
-            return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>("Lỗi khi tạo lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
     @PutMapping("/edit-lich-donvi")
     public ResponseEntity<Object> EditLichDonVi(@RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
-
-            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
-            if (taiKhoan == null) {
-                return new ResponseEntity<>("Không tìm thấy thông tin người dùng", HttpStatus.UNAUTHORIZED);
-            }
-
-            LichLamViec lichLamViec = lichLamViecService.getById(idLich);
-            if (lichLamViec == null) {
-                return new ResponseEntity<>("Không tìm thấy lịch làm việc", HttpStatus.NOT_FOUND);
-            }
-
-            lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
-            lichLamViec.setThoiGianKT(lichLamViecDTO.getThoiGianKT());
-            lichLamViec.setDiaDiem(lichLamViecDTO.getDiaDiem());
-            lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
-            lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
-            lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
-            lichLamViec.setThoiGianTao(LocalDateTime.now());
-
-            // Check thời gian bắt đầu và kết thục lịch
-            lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
-
-
-            LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
-
-            return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
+            return ResponseEntity.ok(lichLamViecService.editLich(lichLamViecDTO, idLich, httpRequest));
 
         } catch (Exception e) {
             return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -232,33 +162,9 @@ public class LichLamViecController {
     }
 
     @PutMapping("/edit-lich-user")
-    public ResponseEntity<Object> EditLichUser(@RequestBody LichCaNhanDTO lichCaNhanDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> EditLichUser(@RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
-
-            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
-
-            LichLamViec lichLamViec = lichLamViecService.getById(idLich);
-
-            String tk = lichLamViec.getTaiKhoan().get_id().toHexString();
-            String tk2 = taiKhoan.get_id().toHexString();
-
-            if (tk2.equals(tk)) {
-                lichLamViec.setThoiGianBD(lichCaNhanDTO.getThoiGianBD());
-                lichLamViec.setThoiGianKT(lichCaNhanDTO.getThoiGianKT());
-                lichLamViec.setDiaDiem(lichCaNhanDTO.getDiaDiem());
-                lichLamViec.setNoiDung(lichCaNhanDTO.getNoiDung());
-                lichLamViec.setTieuDe(lichCaNhanDTO.getTieuDe());
-                lichLamViec.setGhiChu(lichCaNhanDTO.getGhiChu());
-
-                // Check thời gian bắt đầu và kết thục lịch
-                lichLamViecService.kiemTraThoiGianHopLe(lichLamViec);
-
-
-                LichLamViec lichLamViecDaTao = lichLamViecService.save(lichLamViec);
-                return new ResponseEntity<>(lichLamViecDaTao, HttpStatus.CREATED);
-            }else {
-                return new ResponseEntity<>("Đây là lịch cá nhân bạn không có quyền chỉnh sữa", HttpStatus.BAD_REQUEST);
-            }
+            return  ResponseEntity.ok(lichLamViecService.editLichCaNhan(lichLamViecDTO, idLich, httpRequest));
 
         } catch (Exception e) {
             return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

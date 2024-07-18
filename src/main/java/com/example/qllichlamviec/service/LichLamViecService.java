@@ -67,6 +67,7 @@ public class LichLamViecService {
         return lichLamViecList;
     }
 
+
     public LichLamViec getById(String id){
 
         LichLamViec lichLamViec = lichLamViecReponsitory.getByID(id);
@@ -237,6 +238,52 @@ public class LichLamViecService {
         LichLamViec lichLamViecDaTao = themLichKemThongBao(lichLamViec);
 
         return new ResponseEntity<>("Thêm lịch làm việc thành công!",HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<Object> editLich(LichLamViecDTO lichLamViecDTO, String idLich, HttpServletRequest httpServletRequest){
+
+        LichLamViec lichLamViec = getById(idLich);
+
+        lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
+        lichLamViec.setThoiGianKT(lichLamViecDTO.getThoiGianKT());
+        lichLamViec.setDiaDiem(lichLamViecDTO.getDiaDiem());
+        lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
+        lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
+        lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
+        lichLamViec.setThoiGianTao(LocalDateTime.now());
+
+        // Check thời gian bắt đầu và kết thục lịch
+        kiemTraThoiGianHopLe(lichLamViec);
+
+        save(lichLamViec);
+//
+//        List<ThongBao> thongBaoList = thongBaoService.getByIdLich(lichLamViec.get_id());
+//        for (ThongBao tb: thongBaoList){
+//            tb.setNoiDung(lichLamViec.getTieuDe());
+//            thongBaoService.save(tb);
+//        }
+
+        return new  ResponseEntity<>("Cập nhật lịch thành công", HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<Object> editLichCaNhan(LichLamViecDTO lichLamViecDTO, String idLich, HttpServletRequest httpServletRequest) {
+
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+
+        LichLamViec llv = getById(idLich);
+
+        String tk =  llv.getTaiKhoan().get_id().toHexString();
+        String tk2 = taiKhoan.get_id().toHexString();
+
+        if (tk2.equals(tk)) {
+            editLich(lichLamViecDTO, idLich, httpServletRequest);
+
+        } else {
+            return new ResponseEntity<>("Đây là lịch cá nhân bạn không có quyền chỉnh sữa", HttpStatus.BAD_REQUEST);
+        }
+        return new  ResponseEntity<>("Cập nhật lịch thành công", HttpStatus.OK);
 
     }
 

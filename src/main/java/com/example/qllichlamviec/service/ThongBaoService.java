@@ -6,6 +6,7 @@ import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.ThongBao;
+import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,6 +44,14 @@ public class ThongBaoService {
 
     public ThongBao save(ThongBao thongBao){
         return thongBaoReponsitory.save(thongBao);
+    }
+
+    public List<ThongBao> getByIdLich(ObjectId id){
+        List<ThongBao> thongBaoList = thongBaoReponsitory.getByLichId(id);
+        if (thongBaoList == null){
+            throw new RuntimeException("Hiện không có thông báo nào của lịch là việc trên");
+        }
+        return thongBaoList;
     }
 
 //    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần

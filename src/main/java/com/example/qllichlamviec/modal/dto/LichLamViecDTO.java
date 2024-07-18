@@ -1,5 +1,7 @@
 package com.example.qllichlamviec.modal.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +20,8 @@ public class LichLamViecDTO {
     private String ghiChu;
     private String noiDung;
     private String tieuDe;
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId taiKhoan;
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId donVi;
 }
