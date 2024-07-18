@@ -171,6 +171,7 @@ public class TaiKhoanController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/getall")
     public ResponseEntity<Object> ListTaiKhoan(){
         try {
@@ -181,9 +182,10 @@ public class TaiKhoanController {
         }
     }
 
-    @PutMapping("/edit-quyen-donvi")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/edit-tai-khoan")
     @Transactional
-    public ResponseEntity<Object> editQuyenOrDonVi(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO, @RequestParam String id){
+    public ResponseEntity<Object> editTaiKhoan(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO, @RequestParam String id){
         try {
             return ResponseEntity.ok(taiKhoanService.editTaiKhoan(taiKhoanDTO, httpServletRequest, id));
         }catch (Exception e){
@@ -192,6 +194,7 @@ public class TaiKhoanController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete-tai-khoan")
     public ResponseEntity<Object> deleteTaiKhoan(@RequestParam String id){
         try {

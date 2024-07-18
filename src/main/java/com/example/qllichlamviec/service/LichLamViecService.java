@@ -94,18 +94,18 @@ public class LichLamViecService {
         return lichLamViecReponsitory.searchLich(tuKhoa);
     }
 
-    public Error kiemTraThoiGianHopLe(LichLamViec lichLamViec) {
+    public void kiemTraThoiGianHopLe(LichLamViec lichLamViec) {
         LocalDateTime thoiGianBD = lichLamViec.getThoiGianBD();
         LocalDateTime thoiGianKT = lichLamViec.getThoiGianKT();
 
         LocalDateTime now = LocalDateTime.now();
 
         if (thoiGianBD.isBefore(now)) {
-            return new Error("400", "Lỗi: Thời gian bắt đầu không được nằm trong quá khứ.");
-        }
+            throw new RuntimeException("Thời gian bắt đầu không được nằm trong quá khứ.");
+        } else if (thoiGianBD.isAfter(thoiGianKT) || thoiGianBD.isEqual(thoiGianKT)) {
+            throw new RuntimeException("Vui lòng nhập đúng thời gian. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
+        }else {
 
-        if (thoiGianBD.isAfter(thoiGianKT) || thoiGianBD.isEqual(thoiGianKT)) {
-            return new Error("400", "Lỗi: Vui lòng nhập đúng thời gian. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc.");
         }
 
 //        List<LichLamViec> lichDaTonTai = lichLamViecReponsitory.getByIDTaiKhoan(taiKhoan.get_id());
@@ -118,7 +118,7 @@ public class LichLamViecService {
 //                return new Error("400", "Lỗi: Thời gian đã trùng với lịch làm việc khác.");
 //            }
 //        }
-        return null;
+//        return Error;
     }
 
     public LichLamViec themLichKemThongBao(LichLamViec lichLamViec) {
@@ -214,10 +214,7 @@ public class LichLamViecService {
         lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
 
         // Check thời gian bắt đầu và kết thục lịch
-        Error error = kiemTraThoiGianHopLe(lichLamViec);
-        if (error != null){
-            return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
-        }
+        kiemTraThoiGianHopLe(lichLamViec);
 
         if(lichLamViecDTO.getDonVi() == null){
             lichLamViec.setTaiKhoan(taiKhoan);
@@ -234,7 +231,7 @@ public class LichLamViecService {
 
         LichLamViec lichLamViecDaTao = themLichKemThongBao(lichLamViec);
 
-        return ResponseEntity.ok(lichLamViecDaTao);
+        return new ResponseEntity<>(lichLamViecDaTao,HttpStatus.OK);
 
     }
 
