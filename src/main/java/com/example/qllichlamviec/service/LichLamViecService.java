@@ -48,24 +48,50 @@ public class LichLamViecService {
         return lichLamViecReponsitory.save(lichLamViec);
     }
     public List<LichLamViec> getByTaiKhoanID(ObjectId taiKhoan){
-        return lichLamViecReponsitory.getByIDTaiKhoan(taiKhoan);
+
+        List<LichLamViec> lichLamViecList = lichLamViecReponsitory.getByIDTaiKhoan(taiKhoan);
+        if (lichLamViecList == null) {
+            throw new RuntimeException("Hiện tại tài khoản này không có lịch làm việc nào trên hệ thống.");
+        }
+        return lichLamViecList;
     }
 
     public List<LichLamViec> getByIdDonVi(ObjectId donVi){
-        return lichLamViecReponsitory.getByIdDonVi(donVi);
+
+        List<LichLamViec> lichLamViecList = lichLamViecReponsitory.getByIdDonVi(donVi);
+        if (lichLamViecList == null) {
+            throw new RuntimeException("Hiện tại đơn vị này không có lịch làm việc nào trên hệ thống.");
+        }
+        return lichLamViecList;
     }
 
     public LichLamViec getById(String id){
-        return lichLamViecReponsitory.getByID(id);
+
+        LichLamViec lichLamViec = lichLamViecReponsitory.getByID(id);
+        if (lichLamViec == null) {
+            throw new RuntimeException("Làm việc này không tồn tại trên hệ thống.");
+        }
+        return lichLamViec;
     }
     public List<LichLamViec>findAll(){
-        return lichLamViecReponsitory.findAll();
+
+        List<LichLamViec> lichLamViecList = lichLamViecReponsitory.findAll();
+        if (lichLamViecList == null) {
+            throw new RuntimeException("Hiện tại không có lịch làm việc nào trên hệ thống.");
+        }
+        return lichLamViecList;
     }
     public void deleteByID(String id){
+        getById(id);
         lichLamViecReponsitory.deleteById(new ObjectId(id));
     }
     public void deleteByNguoiDungID(ObjectId id){
+        taiKhoanService.findById(id);
         lichLamViecReponsitory.deleteByNguoiDungID(id);
+    }
+
+    public List<LichLamViec> search(String tuKhoa){
+        return lichLamViecReponsitory.searchLich(tuKhoa);
     }
 
     public Error kiemTraThoiGianHopLe(LichLamViec lichLamViec) {
@@ -198,9 +224,6 @@ public class LichLamViecService {
         }else {
 
             DonVi donVi = donViService.getById(lichLamViecDTO.getDonVi().toHexString());
-            if (donVi == null) {
-                return new ResponseEntity<>("Không tìm thấy thông tin đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
-            }
             if(taiKhoan.getDonVi().equals(donVi)){
                 lichLamViec.setDonVi(donVi);
             }else {
@@ -208,9 +231,6 @@ public class LichLamViecService {
             }
 
         }
-
-
-
 
         LichLamViec lichLamViecDaTao = themLichKemThongBao(lichLamViec);
 

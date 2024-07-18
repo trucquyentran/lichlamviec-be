@@ -32,7 +32,9 @@ public class QuyenTaiKhoanService {
     public void deleteByID(String id){
         quyenTaiKhoanReponsitory.deleteById(new ObjectId(id));
     }
+
     public void deleteByTaiKhoan(ObjectId id){
         quyenTaiKhoanReponsitory.deleteByTaiKhoanID(id);
     }
+
 }

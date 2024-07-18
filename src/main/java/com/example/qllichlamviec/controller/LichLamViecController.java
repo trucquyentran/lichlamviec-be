@@ -35,13 +35,27 @@ public class LichLamViecController {
     private TaiKhoanService taiKhoanService;
     @Autowired
     private DonViService donViService;
-//    @Autowired
-//    private ThongBaoService thongBaoService;
+
 
     @GetMapping(value = "/getall")
     public List<LichLamViec> getAlls(){
         return lichLamViecService.findAll();
     }
+
+    @GetMapping("/tim-kiem")
+    public ResponseEntity<?> timKiemLichLamViec(@RequestParam String tuKhoa) {
+        try {
+            List<LichLamViec> lichLamViecList = lichLamViecService.search(tuKhoa);
+            if (lichLamViecList.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(lichLamViecList);
+        } catch (Exception e) {
+            // Xử lý ngoại lệ và trả về thông báo lỗi phù hợp
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Đã xảy ra lỗi khi tìm kiếm lịch làm việc: " + e.getMessage());
+        }
+    }
+
 
     @GetMapping
     public ResponseEntity<Object> search(@RequestParam(required = false) String search, HttpServletRequest httpRequest){

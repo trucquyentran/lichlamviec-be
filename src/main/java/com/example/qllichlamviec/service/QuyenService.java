@@ -20,10 +20,18 @@ public class QuyenService {
         return quyenReponsitory.save(Quyen);
     }
     public Quyen getById(String id){
-        return quyenReponsitory.getByID(id);
+        Quyen quyen = quyenReponsitory.getByID(id);
+        if (quyen == null){
+            throw new RuntimeException("Không tìm thấy quyền này trong dữ liệu hệ thống, vui lòng kiểm tra lại.");
+        }
+        return quyen;
     }
     public List<Quyen> findAll(){
-        return quyenReponsitory.findAll();
+        List<Quyen> quyen = quyenReponsitory.findAll();
+        if (quyen == null){
+            throw new RuntimeException("Hiện tại không có quyền nào trong dữ liệu hệ thông, vui lòng kiểm tra lại.");
+        }
+        return quyen;
     }
     public void deleteByID(String id){
         quyenReponsitory.deleteById(new ObjectId(id));

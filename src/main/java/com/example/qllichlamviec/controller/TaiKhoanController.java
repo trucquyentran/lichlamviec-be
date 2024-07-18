@@ -10,6 +10,7 @@ import com.example.qllichlamviec.util.*;
 import com.example.qllichlamviec.util.pojo.Session;
 import lombok.extern.slf4j.Slf4j;
 import com.example.qllichlamviec.modal.system.Token;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,7 +127,7 @@ public class TaiKhoanController {
     @PutMapping("/edit-account")
     public ResponseEntity<Object> suaThongTinAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO){
         try {
-            TaiKhoan tkCapNhat = taiKhoanService.editAccount(taiKhoanDTO, httpServletRequest);
+            TaiKhoan tkCapNhat = taiKhoanService.editMyAccount(taiKhoanDTO, httpServletRequest);
             return new ResponseEntity<>(tkCapNhat, HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Error("500", "Lỗi khi sửa thông tin tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -184,40 +185,20 @@ public class TaiKhoanController {
     @Transactional
     public ResponseEntity<Object> editQuyenOrDonVi(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO, @RequestParam String id){
         try {
-            TaiKhoan taiKhoan = taiKhoanService.getByID(id);
-
-            // Lấy đơn vị từ cơ sở dữ liệu
-            DonVi donVi = donViService.getById2(taiKhoanDTO.getDonVi());
-            if (donVi == null) {
-                return new ResponseEntity<>(new Error("404", "Không tìm thấy đơn vị với ID: " + taiKhoanDTO.getDonVi()), HttpStatus.NOT_FOUND);
-            }
-
-            // Lấy danh sách quyền từ cơ sở dữ liệu
-            List<Quyen> quyenList = new ArrayList<>();
-            for (String quyenId : taiKhoanDTO.getListQuyen()) {
-                Quyen quyen = quyenService.getById(quyenId);
-                if (quyen != null) {
-                    quyenList.add(quyen);
-                } else {
-                    // Xử lý nếu quyền không tồn tại
-                    return new ResponseEntity<>(new Error("404", "Không tìm thấy quyền với ID: " + quyenId), HttpStatus.NOT_FOUND);
-                }
-            }
-
-            taiKhoan.setDonVi(donVi);
-
-            List<QuyenTaiKhoan> quyenTaiKhoanList = new ArrayList<>();
-            for (Quyen quyen : quyenList) {
-                quyenTaiKhoanList.add(new QuyenTaiKhoan(null, taiKhoan, quyen));
-                taiKhoan.setQuyenTaiKhoanList(quyenTaiKhoanList);
-
-            }
-
-            TaiKhoan capNhatUser = taiKhoanService.phanQuyenOrDonVi(taiKhoan);
-
-            return new ResponseEntity<>("Cập nhật thành công",HttpStatus.OK);
+            return ResponseEntity.ok(taiKhoanService.editTaiKhoan(taiKhoanDTO, httpServletRequest, id));
         }catch (Exception e){
-            return new ResponseEntity<>("Lỗi khi chỉnh sửa "+ e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Lỗi khi chỉnh sửa! "+ e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @DeleteMapping("/delete-tai-khoan")
+    public ResponseEntity<Object> deleteTaiKhoan(@RequestParam String id){
+        try {
+            taiKhoanService.deleteByID(id);
+            return new ResponseEntity<>("Xoá tài khoản thành công!",HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new Error("400","Lỗi khi xoá tài khoản! "+ e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
     }

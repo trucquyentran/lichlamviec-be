@@ -21,18 +21,31 @@ public class DonViService {
         return donViReponsitory.save(donVi);
     }
     public DonVi getById(String id){
-        return donViReponsitory.getByID(id);
+
+        DonVi donVi = donViReponsitory.getByID(id);
+        if (donVi == null){
+            throw new RuntimeException("Không tìm thấy tài khoản nào thuộc nhóm quyền này.");
+        }
+        return donVi;
     }
 
     public DonVi getById2(ObjectId id) {
-        return donViReponsitory.findById(id).orElse(null);
+        DonVi donVi = donViReponsitory.findById(id).orElse(null);
+        if (donVi == null) {
+            throw new RuntimeException("Đơn vị không tồn tại trong dữ liệu hệ thống, vui lòng kiểm tra lại.");
+        }
+        return donVi;
     }
-
 
     public List<DonVi> findAll(){
-        return donViReponsitory.findAll();
+        List<DonVi> donVi = donViReponsitory.findAll();
+        if (donVi == null) {
+            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
+        }
+        return donVi;
     }
     public void deleteByID(String id){
+        getById(id);
         donViReponsitory.deleteById(new ObjectId(id));
     }
 
