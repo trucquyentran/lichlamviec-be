@@ -16,14 +16,17 @@ public interface ThongBaoReponsitory extends MongoRepository<ThongBao, ObjectId>
     @Query("{'taiKhoan': ObjectId('?0')}")
     List<ThongBao> getByTaiKhoanId(ObjectId taiKhoan);
 
-    @Query("{'licLamViec': ObjectId('?0')}")
-    List<ThongBao> getByLichId(ObjectId licLamViec);
+    @Query("{'lichLamViec': ObjectId('?0')}")
+    List<ThongBao> getByLichId(ObjectId lichLamViec);
 
     @Query("{'taiKhoan._id': ?0, 'thoiGian': {$gte: ?1, $lt: ?2}}")
     List<ThongBao> findByThoiGianTK(String taiKhoanId, LocalDateTime tgbdStart);
 
     @Query("{'thoiGian': ?0 ")
     List<ThongBao> findByThoiGian(LocalDateTime tgbdStart);
+
+    @Query(value = "{'lichLamViec': ObjectId('?0')}", delete = true)
+    void deleteByIdLich(ObjectId  lichLamViec);
 
 
 }

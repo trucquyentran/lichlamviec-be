@@ -176,30 +176,7 @@ public class LichLamViecController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object>deleteByAdmin(@PathVariable String id, HttpServletRequest httpRequest){
         try {
-            TaiKhoan tk = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
-            LichLamViec lichLamViec = lichLamViecService.getById(id);
-
-            // Lấy Authentication hiện tại từ SecurityContext
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            taiKhoanService.kiemTraUserAdmin(authentication);
-            // Kiểm tra xem người dùng có phải là Admin hay không
-            if (!taiKhoanService.kiemTraUserAdmin(authentication)) {
-                // Kiểm tra xem lịch làm việc có thuộc về tài khoản đang đăng nhập không
-                if (!lichLamViec.getTaiKhoan().get_id().equals(tk.get_id())) {
-                    return new ResponseEntity<>("Bạn không có quyền xoá lịch làm việc này!", HttpStatus.FORBIDDEN);
-                }
-                // Xoá lịch làm việc
-                lichLamViecService.deleteByID(id);
-                return new ResponseEntity<>("Xoá thành công lịch làm việc với ID:"+id, HttpStatus.FORBIDDEN);
-            }else {
-
-                if (lichLamViec.getDonVi() != null || lichLamViec.getTaiKhoan().get_id().toString().equals(tk.get_id().toString())) {
-
-                    lichLamViecService.deleteByID(id);
-                }
-                return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: "+id, HttpStatus.OK);
-            }
-
+            return ResponseEntity.ok(lichLamViecService.deleteLich(id, httpRequest));
         }catch (Exception e){
             return new ResponseEntity<>(new Error("400","Bạn không có quyền xóa lịch làm việc này ", e.getMessage()), HttpStatus.BAD_REQUEST);
         }

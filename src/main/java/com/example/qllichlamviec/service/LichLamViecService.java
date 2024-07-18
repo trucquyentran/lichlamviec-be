@@ -257,12 +257,14 @@ public class LichLamViecService {
         kiemTraThoiGianHopLe(lichLamViec);
 
         save(lichLamViec);
-//
-//        List<ThongBao> thongBaoList = thongBaoService.getByIdLich(lichLamViec.get_id());
-//        for (ThongBao tb: thongBaoList){
-//            tb.setNoiDung(lichLamViec.getTieuDe());
-//            thongBaoService.save(tb);
-//        }
+
+        // Cập nhật lại thông báo
+        List<ThongBao> thongBaoList = thongBaoService.getByIdLich(lichLamViec.get_id());
+        for (ThongBao tb: thongBaoList){
+            tb.setNoiDung(lichLamViec.getTieuDe());
+            tb.setThoiGian(lichLamViec.getThoiGianBD().minusMinutes(10));
+            thongBaoService.save(tb);
+        }
 
         return new  ResponseEntity<>("Cập nhật lịch thành công", HttpStatus.OK);
 
@@ -286,5 +288,35 @@ public class LichLamViecService {
         return new  ResponseEntity<>("Cập nhật lịch thành công", HttpStatus.OK);
 
     }
+
+    public ResponseEntity<Object> deleteLich(String id,HttpServletRequest httpRequest){
+        TaiKhoan tk = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
+        LichLamViec lichLamViec = getById(id);
+
+        // Lấy Authentication hiện tại từ SecurityContext
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        taiKhoanService.kiemTraUserAdmin(authentication);
+        // Kiểm tra xem người dùng có phải là Admin hay không
+        if (!taiKhoanService.kiemTraUserAdmin(authentication)) {
+            // Kiểm tra xem lịch làm việc có thuộc về tài khoản đang đăng nhập không
+            if (!lichLamViec.getTaiKhoan().get_id().equals(tk.get_id())) {
+                return new ResponseEntity<>("Bạn không có quyền xoá lịch làm việc này!", HttpStatus.FORBIDDEN);
+            }
+            // Xoá lịch làm việc
+            deleteByID(id);
+            thongBaoService.deleteByLich(id);
+            return new ResponseEntity<>("Xoá thành công lịch làm việc với ID:"+id, HttpStatus.FORBIDDEN);
+        }else {
+
+            if (lichLamViec.getDonVi() != null || lichLamViec.getTaiKhoan().get_id().toString().equals(tk.get_id().toString())) {
+
+                deleteByID(id);
+                thongBaoService.deleteByLich(id);
+            }
+            return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: "+id, HttpStatus.OK);
+        }
+
+    }
+
 
 }

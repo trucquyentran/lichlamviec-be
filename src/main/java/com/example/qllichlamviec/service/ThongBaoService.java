@@ -53,6 +53,9 @@ public class ThongBaoService {
         }
         return thongBaoList;
     }
+    public void deleteByLich (String id){
+        thongBaoReponsitory.deleteByIdLich(new ObjectId(id));
+    }
 
 //    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
 //    public void kiemTraVaGuiThongBao() {
