@@ -12,6 +12,10 @@ import java.util.List;
 public interface DonViReponsitory extends MongoRepository<DonVi, ObjectId> {
     @Query("{'_id': ?0}")
     DonVi getByID(String id);
+
+    @Query("{'tenDonVi': {$regex: ?0, $options: 'iu'}}")
+    List<DonVi> getByTen(String id);
+
     @Query("{'donVi' : ?0}")
     List<DonViSelectDTO> getSelectDV(String donVi);
     @Query("{'_id' : ?0}")

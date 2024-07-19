@@ -34,10 +34,11 @@ public class DonViController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAll(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
+    public ResponseEntity<Object> chiTietDonVi(@RequestParam(required = false) String dv, HttpServletRequest httpRequest){
         try {
-            if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
-                return new ResponseEntity<>(donViService.getById(search), HttpStatus.OK);
+            if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(dv).matches()==true){
+
+                return new ResponseEntity<>(taiKhoanService.getTaiKhoanDonVi(dv), HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -45,6 +46,17 @@ public class DonViController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/tim-kiem")
+    public ResponseEntity<Object> searchDonVi(@RequestParam String keyword){
+        try {
+            return new ResponseEntity<>(donViService.search(keyword),HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(new Error("500","Lỗi khi tìm kiếm: "+e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @PostMapping()
     public ResponseEntity<Object> create(@RequestBody DonVi donVi, HttpServletRequest httpRequest){
         try {

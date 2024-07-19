@@ -1,19 +1,31 @@
 package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.DonViDTO;
+import com.example.qllichlamviec.modal.dto.LichDonViTaiKhoanDTO;
+import com.example.qllichlamviec.modal.dto.TaiKhoanDonViDTO;
+import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.TaiKhoan;
 import org.bson.types.ObjectId;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class DonViService {
     @Autowired
     private DonViReponsitory donViReponsitory;
+//    @Autowired
+//    private TaiKhoanService taiKhoanService;
+//    @Autowired
+//    private ModelMapper modelMapper;
+
+
     public DonVi save(DonVi donVi){
         return donViReponsitory.save(donVi);
     }
@@ -44,10 +56,21 @@ public class DonViService {
         }
         return donVi;
     }
+
+    public List<DonVi> search(String keyword){
+        List<DonVi> donViList = donViReponsitory.getByTen(keyword);
+        if (donViList.isEmpty()) {
+            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
+        }
+        return donViList;
+    }
+
     public void deleteByID(String id){
         getById(id);
         donViReponsitory.deleteById(new ObjectId(id));
     }
+
+
 
     public List<DonViDTO> getSelectToanBoDV(TaiKhoan taiKhoan) {
         return donViReponsitory.getDonViConFromDonViCha(taiKhoan.getDonVi().get_id().toHexString());

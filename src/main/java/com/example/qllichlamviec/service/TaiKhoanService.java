@@ -3,6 +3,7 @@ package com.example.qllichlamviec.service;
 import com.example.qllichlamviec.modal.dto.QuyenTaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDangNhapDTO;
+import com.example.qllichlamviec.modal.dto.TaiKhoanDonViDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
@@ -133,6 +134,19 @@ public class TaiKhoanService {
             taiKhoanDTO.getListQuyen().add(quyenTaiKhoanDTO);
         }
         return taiKhoanDTO;
+    }
+
+    public TaiKhoanDonViDTO getTaiKhoanDonVi(String donVi){
+        DonVi dv = donViService.getById(donVi);
+        List<TaiKhoan> taiKhoanCuaDVList = getByDonViID(dv.get_id());
+        TaiKhoanDonViDTO taiKhoanDonViDTO = modelMapper.map(dv, TaiKhoanDonViDTO.class);
+        taiKhoanDonViDTO.setTaiKhoanList(new ArrayList<>());
+        for (TaiKhoan tk: taiKhoanCuaDVList){
+            TaiKhoanNguoiDungDTO taiKhoanNguoiDungDTO = mapToTaiKhoanNguoiDungDTO(tk);
+            taiKhoanDonViDTO.getTaiKhoanList().add(taiKhoanNguoiDungDTO);
+        }
+        return taiKhoanDonViDTO;
+
     }
 
     public List<TaiKhoanNguoiDungDTO> findAllUser(){
@@ -390,5 +404,7 @@ public class TaiKhoanService {
             throw e;
         }
     }
+
+
 
 }
