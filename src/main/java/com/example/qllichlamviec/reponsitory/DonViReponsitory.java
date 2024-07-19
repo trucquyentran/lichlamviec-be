@@ -13,11 +13,15 @@ public interface DonViReponsitory extends MongoRepository<DonVi, ObjectId> {
     @Query("{'_id': ?0}")
     DonVi getByID(String id);
 
-    @Query("{'tenDonVi': {$regex: ?0, $options: 'iu'}}")
-    List<DonVi> getByTen(String id);
+    @Query("{'tenDonVi': {$regex: ?0, $options: 'i'}}")
+    List<DonVi> getByTen(String ten);
 
     @Query("{'donVi' : ?0}")
     List<DonViSelectDTO> getSelectDV(String donVi);
-    @Query("{'_id' : ?0}")
+
+    @Query("{ 'donViTrucThuoc' : { $eq: null } }")
     List<DonViDTO> getDonViConFromDonViCha(String search);
+
+    @Query("{ 'donViTrucThuoc' : ObjectId('?0') }")
+    List<DonViSelectDTO> getSelectDonViThuocTrucTiep(String search);
 }

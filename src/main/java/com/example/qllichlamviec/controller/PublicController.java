@@ -39,7 +39,7 @@ public class PublicController {
     @GetMapping("/khoitaouser")
     @Transactional
     public ResponseEntity<Object> khoiTaoAdmin() {
-        DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT"));
+        DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT",null));
         Quyen q = quyenService.save(new Quyen(null,"Admin"));
         TaiKhoan tk = new TaiKhoan();
         tk.setUsername("admin");

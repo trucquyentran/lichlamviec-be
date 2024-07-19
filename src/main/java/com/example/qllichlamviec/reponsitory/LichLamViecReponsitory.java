@@ -23,8 +23,15 @@ public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, Obj
     @Query("{'donVi': ?0}")
     List<LichLamViec> getByIdDonVi(ObjectId donVi);
 
-    @Query("{$or: [{'taiKhoan.hoTen': {$regex: ?0, $options: 'i'}}, {'donVi.tenDonVi': {$regex: ?0, $options: 'i'}}, {'tieuDe': {$regex: ?0, $options: 'i'}}]}")
-    List<LichLamViec> searchLich(String tuKhoa);
+    @Query("{ $or: [ " +
+            "{ 'taiKhoan': { $in: ?0 } }, " +
+            "{ 'donVi': { $in: ?1 } }, " +
+            "{ 'tieuDe': { $regex: ?2, $options: 'i' } }, " +
+            "{ 'diaDiem': { $regex: ?2, $options: 'i' } }, " +
+            "{ 'noiDung': { $regex: ?2, $options: 'i' } }, " +
+            "{ 'ghiChu': { $regex: ?2, $options: 'i' } } " +
+            "] }")
+    List<LichLamViec> searchLich(List<ObjectId> taiKhoan, List<ObjectId> donVi, String tuKhoa);
 
     @Query(value = "{'nguoiDung': ?0}",delete = true)
     void deleteByNguoiDungID(ObjectId nguoiDung);

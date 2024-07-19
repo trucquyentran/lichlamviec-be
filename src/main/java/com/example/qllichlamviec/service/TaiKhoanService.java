@@ -2,7 +2,6 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.QuyenTaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
-import com.example.qllichlamviec.modal.dto.TaiKhoanDangNhapDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDonViDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
@@ -12,9 +11,13 @@ import com.example.qllichlamviec.reponsitory.QuyenTaiKhoanReponsitory;
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.*;
 import com.example.qllichlamviec.util.pojo.Session;
+import com.example.qllichlamviec.util.pojo.RegexUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -112,10 +114,11 @@ public class TaiKhoanService {
 
 
     public List<TaiKhoanNguoiDungDTO> searchTaiKhoan(String tuKhoa){
-        List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.searchTaiKhoan(tuKhoa);
-        if (taiKhoanList == null || taiKhoanList.isEmpty()){
-            throw new RuntimeException("Không tìm thấy thông tin");
-        }
+        String regexKeyword = RegexUtils.convertToRegex(tuKhoa);
+        List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.searchTaiKhoan(regexKeyword);
+//        if (taiKhoanList == null || taiKhoanList.isEmpty()){
+//            throw new RuntimeException("Không tìm thấy thông tin");
+//        }
 
         List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
         for (TaiKhoan tk: taiKhoanList){
@@ -149,9 +152,12 @@ public class TaiKhoanService {
 
     }
 
-    public List<TaiKhoanNguoiDungDTO> findAllUser(){
+    public List<TaiKhoanNguoiDungDTO> findAllUser(int pageNumber){
+        // Tạo Pageable object để chỉ định số trang và kích thước trang
+        Pageable pageable = PageRequest.of(pageNumber, 3); // 3 là số dòng trên mỗi trang
 
-        List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll();
+        // Lấy trang dữ liệu từ repository
+        Page<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll(pageable);
 
         List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
         for (TaiKhoan tk: taiKhoanList){

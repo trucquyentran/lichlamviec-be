@@ -39,10 +39,9 @@ public class QuyenController {
     public ResponseEntity<Object> searchQuyen(@RequestParam(required = false) String search, HttpServletRequest httpServletRequest){
         try {
             if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches() == true){
-                List<Quyen> q = new ArrayList<>();
                 return new ResponseEntity<>(quyenService.getById(search), HttpStatus.OK);
             }else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(quyenService.searchTen(search),HttpStatus.BAD_REQUEST);
             }
         }catch (Exception e){
             return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);

@@ -6,6 +6,7 @@ import com.example.qllichlamviec.service.JwtService;
 import com.example.qllichlamviec.service.TaiKhoanService;
 import com.example.qllichlamviec.util.DonVi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,8 +30,8 @@ public class DonViController {
     private TaiKhoanService taiKhoanService;
 
     @GetMapping(value = "/getall")
-    public List<DonVi> getAlls(){
-         return donViService.findAll();
+    public List<DonVi> getAlls(@RequestParam int page){
+         return donViService.findAll(page);
     }
 
     @GetMapping
@@ -38,9 +39,10 @@ public class DonViController {
         try {
             if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(dv).matches()==true){
 
-                return new ResponseEntity<>(taiKhoanService.getTaiKhoanDonVi(dv), HttpStatus.OK);
+                return new ResponseEntity<>(donViService.getById(dv), HttpStatus.OK);
             }else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+                return new ResponseEntity<>(taiKhoanService.getTaiKhoanDonVi(dv),HttpStatus.BAD_REQUEST);
             }
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -60,7 +62,8 @@ public class DonViController {
     @PostMapping()
     public ResponseEntity<Object> create(@RequestBody DonVi donVi, HttpServletRequest httpRequest){
         try {
-            return new ResponseEntity<>(donViService.save(donVi), HttpStatus.OK);
+            donViService.save(donVi);
+            return new ResponseEntity<>("Thêm đơn vị thành công", HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
 
@@ -84,5 +87,15 @@ public class DonViController {
         }catch (Exception e){
             return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/select/truc-tiep")
+    public ResponseEntity<Object> getSelectDonViThuocTrucTiep(HttpServletRequest httpRequest) {
+        return new ResponseEntity<>(donViService.getSelectDonViThuocTrucTiep(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
+    }
+
+    @GetMapping("/select/gian-tiep")
+    public ResponseEntity<Object> getSelectToanBoDonViDuoi(HttpServletRequest httpRequest) {
+        return new ResponseEntity<>(donViService.getSelectToanBoDonViDuoi(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
     }
 }

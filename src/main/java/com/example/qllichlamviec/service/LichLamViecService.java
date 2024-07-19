@@ -6,10 +6,12 @@ import com.example.qllichlamviec.modal.dto.LichLamViecDTO;
 import com.example.qllichlamviec.modal.dto.LichLamViecDonViDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.NguoiDungDangNhapDTO;
+import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.util.*;
+import com.example.qllichlamviec.util.pojo.RegexUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class LichLamViecService {
@@ -93,8 +96,28 @@ public class LichLamViecService {
         lichLamViecReponsitory.deleteByNguoiDungID(id);
     }
 
-    public List<LichLamViec> search(String tuKhoa){
-        return lichLamViecReponsitory.searchLich(tuKhoa);
+    public List<LichLamViecDTO> search(String tuKhoa){
+        String regexKeyword = RegexUtils.convertToRegex(tuKhoa);
+
+        List<DonVi> donViList = donViService.search(tuKhoa);
+        List<ObjectId> donViIds = donViList.stream().map(DonVi::get_id).collect(Collectors.toList());
+
+        List<TaiKhoanNguoiDungDTO> taiKhoanNguoiDungDTOList = taiKhoanService.searchTaiKhoan(tuKhoa);
+        List<ObjectId> taiKhoanIds = taiKhoanNguoiDungDTOList.stream().map(TaiKhoanNguoiDungDTO::get_id).collect(Collectors.toList());
+
+
+        List<LichLamViec> lichLamViecList = lichLamViecReponsitory.searchLich(taiKhoanIds,donViIds,regexKeyword);
+        List<LichLamViecDTO> llvList = new ArrayList<>();
+        for (LichLamViec llv: lichLamViecList) {
+            LichLamViecDTO lichLamViecDTOList = modelMapper.map(llv,LichLamViecDTO.class);
+            if (llv.getTaiKhoan()!= null){
+                lichLamViecDTOList.setTaiKhoan(llv.getTaiKhoan().get_id());
+            }else {
+                lichLamViecDTOList.setDonVi(llv.getDonVi().get_id());
+            }
+            llvList.add(lichLamViecDTOList);
+        }
+        return llvList;
     }
 
     public void kiemTraThoiGianHopLe(LichLamViec lichLamViec) {

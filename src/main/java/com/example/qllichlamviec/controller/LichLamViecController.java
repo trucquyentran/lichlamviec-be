@@ -45,7 +45,7 @@ public class LichLamViecController {
     @GetMapping("/tim-kiem")
     public ResponseEntity<?> timKiemLichLamViec(@RequestParam String tuKhoa) {
         try {
-            List<LichLamViec> lichLamViecList = lichLamViecService.search(tuKhoa);
+            List<LichLamViecDTO> lichLamViecList = lichLamViecService.search(tuKhoa);
             if (lichLamViecList.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }

@@ -2,8 +2,12 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.reponsitory.QuyenReponsitory;
 import com.example.qllichlamviec.util.Quyen;
+import com.example.qllichlamviec.util.pojo.RegexUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +36,10 @@ public class QuyenService {
             throw new RuntimeException("Hiện tại không có quyền nào trong dữ liệu hệ thông, vui lòng kiểm tra lại.");
         }
         return quyen;
+    }
+    public List<Quyen> searchTen(String keyword){
+        String regexKeyword = RegexUtils.convertToRegex(keyword);
+        return quyenReponsitory.getByTen(regexKeyword);
     }
     public void deleteByID(String id){
         quyenReponsitory.deleteById(new ObjectId(id));

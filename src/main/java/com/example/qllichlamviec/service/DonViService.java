@@ -1,16 +1,21 @@
 package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.DonViDTO;
+import com.example.qllichlamviec.modal.dto.DonViSelectDTO;
 import com.example.qllichlamviec.modal.dto.LichDonViTaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDonViDTO;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.TaiKhoan;
+import com.example.qllichlamviec.util.pojo.RegexUtils;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +33,7 @@ public class DonViService {
 
     public DonVi save(DonVi donVi){
         return donViReponsitory.save(donVi);
+
     }
     public DonVi update(DonVi donVi){
         return donViReponsitory.save(donVi);
@@ -49,19 +55,21 @@ public class DonViService {
         return donVi;
     }
 
-    public List<DonVi> findAll(){
-        List<DonVi> donVi = donViReponsitory.findAll();
+    public List<DonVi> findAll(int pageNumber){
+        Pageable pageable = PageRequest.of(pageNumber,3);
+        Page<DonVi> donVi = donViReponsitory.findAll(pageable);
         if (donVi == null) {
             throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
         }
-        return donVi;
+        return donVi.getContent();
     }
 
     public List<DonVi> search(String keyword){
-        List<DonVi> donViList = donViReponsitory.getByTen(keyword);
-        if (donViList.isEmpty()) {
-            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
-        }
+        String regexKeyword = RegexUtils.convertToRegex(keyword);
+        List<DonVi> donViList = donViReponsitory.getByTen(regexKeyword);
+//        if (donViList.isEmpty()) {
+//            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
+//        }
         return donViList;
     }
 
@@ -70,9 +78,14 @@ public class DonViService {
         donViReponsitory.deleteById(new ObjectId(id));
     }
 
+    // Lay toan bo don vi con cua don vi dang quan ly
+    public List<DonViSelectDTO> getSelectDonViThuocTrucTiep(TaiKhoan taiKhoan) {
 
+        return donViReponsitory.getSelectDonViThuocTrucTiep(taiKhoan.getDonVi().get_id().toHexString());
+    }
 
-    public List<DonViDTO> getSelectToanBoDV(TaiKhoan taiKhoan) {
+    // Lay don vi dang thuoc
+    public List<DonViDTO> getSelectToanBoDonViDuoi(TaiKhoan taiKhoan) {
         return donViReponsitory.getDonViConFromDonViCha(taiKhoan.getDonVi().get_id().toHexString());
     }
 }
