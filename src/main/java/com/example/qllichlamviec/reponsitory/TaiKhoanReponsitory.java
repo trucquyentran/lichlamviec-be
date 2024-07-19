@@ -29,4 +29,7 @@ public interface TaiKhoanReponsitory extends MongoRepository<TaiKhoan, ObjectId>
     @Query("{ 'sdt' : ?0 }")
     TaiKhoan getBySdt(String sdt);
 
+    @Query("{$or: [{'hoTen': {$regex: ?0, $options: 'iu'}}, {'sdt': {$regex: ?0, $options: 'i'}}, {'email': {$regex: ?0, $options: 'i'}}]}")
+    List<TaiKhoan> searchTaiKhoan(String tuKhoa);
+
 }

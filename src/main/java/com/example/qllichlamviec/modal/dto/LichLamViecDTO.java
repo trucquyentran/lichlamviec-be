@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LichLamViecDTO {
+    @JsonSerialize(using = ToStringSerializer.class)
+    private ObjectId _id;
     private LocalDateTime thoiGianBD;
     private  LocalDateTime thoiGianKT;
     private LocalDateTime thoiGianTao;

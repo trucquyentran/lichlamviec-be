@@ -2,6 +2,7 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.QuyenTaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.TaiKhoanDTO;
+import com.example.qllichlamviec.modal.dto.TaiKhoanDangNhapDTO;
 import com.example.qllichlamviec.modal.system.Error;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
@@ -83,7 +84,7 @@ public class TaiKhoanService {
     public List<TaiKhoan> getByDonViID(ObjectId id) {
 
         List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.getByIdDonVi(id);
-        if(taiKhoanList == null){
+        if(taiKhoanList == null || taiKhoanList.isEmpty()){
             throw new RuntimeException("Không tìm thấy tài khoản nào thuộc đơn vị này.");
         }
         return taiKhoanList;
@@ -91,7 +92,7 @@ public class TaiKhoanService {
 
     public TaiKhoan findById(ObjectId id) {
          TaiKhoan taiKhoan = taiKhoanReponsitory.findById(id).orElse(null);
-        if (taiKhoan == null) {
+        if (taiKhoan == null ) {
             throw new RuntimeException("Tài khoản không tồn tại trong dữ liệu hệ thống, vui lòng kiểm tra lại.");
         }
         return taiKhoan;
@@ -100,15 +101,27 @@ public class TaiKhoanService {
 
     public List<TaiKhoan> getAll() {
         List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll();
-        if(taiKhoanList == null){
-            throw new RuntimeException("Không tìm thấy tài khoản nào.");
-        }
         return taiKhoanList;
     }
 
     public void deleteByID(String id){
         getByID(id);
         taiKhoanReponsitory.deleteById(new ObjectId(id));
+    }
+
+
+    public List<TaiKhoanNguoiDungDTO> searchTaiKhoan(String tuKhoa){
+        List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.searchTaiKhoan(tuKhoa);
+        if (taiKhoanList == null || taiKhoanList.isEmpty()){
+            throw new RuntimeException("Không tìm thấy thông tin");
+        }
+
+        List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
+        for (TaiKhoan tk: taiKhoanList){
+            TaiKhoanNguoiDungDTO taiKhoanDTO = mapToTaiKhoanNguoiDungDTO(tk);
+            taiKhoanDTOList.add(taiKhoanDTO);
+        }
+        return taiKhoanDTOList;
     }
 
     public TaiKhoanNguoiDungDTO mapToTaiKhoanNguoiDungDTO(TaiKhoan taiKhoan) {

@@ -140,6 +140,15 @@ public class TaiKhoanController {
         return new ResponseEntity<>(""+authentication.getAuthorities(),HttpStatus.OK);
     }
 
+    @GetMapping("/tim-kiem")
+    public ResponseEntity<Object> timTaiKhoan(@RequestParam String tuKhoa){
+        try {
+            return ResponseEntity.ok(taiKhoanService.searchTaiKhoan(tuKhoa));
+        }catch (Exception e){
+            return new ResponseEntity<>(new Error("500", "Lỗi khi tìm kiếm tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list-user")
     public List<TaiKhoanNguoiDungDTO> ListUser(){

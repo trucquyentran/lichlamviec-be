@@ -63,7 +63,11 @@ public class LichLamViecController {
             if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
                 LichLamViec llv = lichLamViecService.getById(search);
                 LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
-                lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+                if (llv.getTaiKhoan() != null){
+                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+                }else {
+                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
+                }
                 return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
