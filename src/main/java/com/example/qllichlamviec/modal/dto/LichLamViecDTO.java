@@ -22,6 +22,7 @@ public class LichLamViecDTO {
     private String ghiChu;
     private String noiDung;
     private String tieuDe;
+    private String bg;
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId taiKhoan;
     @JsonSerialize(using = ToStringSerializer.class)

@@ -238,6 +238,7 @@ public class LichLamViecService {
         lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
         lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
         lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
+        lichLamViec.setBg(lichLamViecDTO.getBg());
 
         // Check thời gian bắt đầu và kết thục lịch
         kiemTraThoiGianHopLe(lichLamViec);

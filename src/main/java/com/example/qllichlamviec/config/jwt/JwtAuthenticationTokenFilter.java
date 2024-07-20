@@ -97,7 +97,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     public static UserDetails getCurrentUser() {
         return authenticatedUser.get();
     }
-
+//
+//    public static UserDetails getCurrentUser() {
+//        return JwtAuthenticationTokenFilter.getCurrentUser();
+//    }
 
 }
 
