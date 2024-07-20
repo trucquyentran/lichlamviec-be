@@ -4,14 +4,12 @@ import com.example.qllichlamviec.modal.dto.LichCaNhanDTO;
 import com.example.qllichlamviec.modal.dto.LichDonViTaiKhoanDTO;
 import com.example.qllichlamviec.modal.dto.LichLamViecDTO;
 import com.example.qllichlamviec.modal.dto.LichLamViecDonViDTO;
-import com.example.qllichlamviec.modal.system.Error;
-import com.example.qllichlamviec.modal.system.NguoiDungDangNhapDTO;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.NguoiDungReponsitory;
 import com.example.qllichlamviec.util.*;
-import com.example.qllichlamviec.util.pojo.RegexUtils;
+import com.example.qllichlamviec.util.pojo.XuLyDauChuoiTimKiem;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.http.HttpClient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,7 +93,7 @@ public class LichLamViecService {
     }
 
     public List<LichLamViecDTO> search(String tuKhoa){
-        String regexKeyword = RegexUtils.convertToRegex(tuKhoa);
+        String regexKeyword = XuLyDauChuoiTimKiem.convertToRegex(tuKhoa);
 
         List<DonVi> donViList = donViService.search(tuKhoa);
         List<ObjectId> donViIds = donViList.stream().map(DonVi::get_id).collect(Collectors.toList());

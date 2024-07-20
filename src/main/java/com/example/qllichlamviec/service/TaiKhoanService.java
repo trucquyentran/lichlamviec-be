@@ -11,7 +11,7 @@ import com.example.qllichlamviec.reponsitory.QuyenTaiKhoanReponsitory;
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.*;
 import com.example.qllichlamviec.util.pojo.Session;
-import com.example.qllichlamviec.util.pojo.RegexUtils;
+import com.example.qllichlamviec.util.pojo.XuLyDauChuoiTimKiem;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,7 +114,7 @@ public class TaiKhoanService {
 
 
     public List<TaiKhoanNguoiDungDTO> searchTaiKhoan(String tuKhoa){
-        String regexKeyword = RegexUtils.convertToRegex(tuKhoa);
+        String regexKeyword = XuLyDauChuoiTimKiem.convertToRegex(tuKhoa);
         List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.searchTaiKhoan(regexKeyword);
 //        if (taiKhoanList == null || taiKhoanList.isEmpty()){
 //            throw new RuntimeException("Không tìm thấy thông tin");
@@ -167,11 +167,6 @@ public class TaiKhoanService {
         return taiKhoanDTOList;
     }
 
-//    public TaiKhoan getByIDNguoiDung(String idNguoiDung) {
-//
-//        return taiKhoanReponsitory.getByIDNguoiDung(idNguoiDung);
-//    }
-
     public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
 
         taiKhoan.setTrangThai(1);
@@ -216,11 +211,6 @@ public class TaiKhoanService {
         taiKhoan.setDonVi(donVi);
 
 //            Check username, email, sdt
-//        Error error = kiemTraTonTaiEmailHoacSdt(taiKhoan);
-//        if(error != null){
-//            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//
-//        }
         kiemTraTonTaiEmailHoacSdt(taiKhoan);
 //          Check password
         if (isStrongPassword(taiKhoan.getPassword())){

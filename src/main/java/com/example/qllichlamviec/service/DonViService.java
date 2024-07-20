@@ -2,23 +2,17 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.DonViDTO;
 import com.example.qllichlamviec.modal.dto.DonViSelectDTO;
-import com.example.qllichlamviec.modal.dto.LichDonViTaiKhoanDTO;
-import com.example.qllichlamviec.modal.dto.TaiKhoanDonViDTO;
-import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.TaiKhoan;
-import com.example.qllichlamviec.util.pojo.RegexUtils;
+import com.example.qllichlamviec.util.pojo.XuLyDauChuoiTimKiem;
 import org.bson.types.ObjectId;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -65,7 +59,7 @@ public class DonViService {
     }
 
     public List<DonVi> search(String keyword){
-        String regexKeyword = RegexUtils.convertToRegex(keyword);
+        String regexKeyword = XuLyDauChuoiTimKiem.convertToRegex(keyword);
         List<DonVi> donViList = donViReponsitory.getByTen(regexKeyword);
 //        if (donViList.isEmpty()) {
 //            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");

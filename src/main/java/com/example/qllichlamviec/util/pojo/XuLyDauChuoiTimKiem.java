@@ -3,7 +3,7 @@ package com.example.qllichlamviec.util.pojo;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegexUtils {
+public class XuLyDauChuoiTimKiem {
     private static final Map<Character, String> DIACRITIC_MAP = new HashMap<>();
 
     static {

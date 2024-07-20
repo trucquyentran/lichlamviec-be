@@ -2,12 +2,9 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.reponsitory.QuyenReponsitory;
 import com.example.qllichlamviec.util.Quyen;
-import com.example.qllichlamviec.util.pojo.RegexUtils;
+import com.example.qllichlamviec.util.pojo.XuLyDauChuoiTimKiem;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,7 +35,7 @@ public class QuyenService {
         return quyen;
     }
     public List<Quyen> searchTen(String keyword){
-        String regexKeyword = RegexUtils.convertToRegex(keyword);
+        String regexKeyword = XuLyDauChuoiTimKiem.convertToRegex(keyword);
         return quyenReponsitory.getByTen(regexKeyword);
     }
     public void deleteByID(String id){
