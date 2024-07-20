@@ -34,8 +34,14 @@ public class SchedulerExample {
 
     public TaiKhoan getCurrentTaiKhoan() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof TaiKhoan) {
-            return (TaiKhoan) authentication.getPrincipal();
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof TaiKhoan) {
+                return (TaiKhoan) principal;
+            } else {
+                // Log thông tin principal để kiểm tra
+                logger.warn("Principal không phải là TaiKhoan: " + principal);
+            }
         }
         return null; // hoặc throw exception nếu cần
     }

@@ -28,4 +28,5 @@ public class LichCaNhanDTO {
     private LocalDateTime thoiGianTao;
     private String diaDiem;
     private String ghiChu;
+    private String bg;
 }

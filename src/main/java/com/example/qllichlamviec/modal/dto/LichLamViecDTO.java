@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,6 +23,7 @@ public class LichLamViecDTO {
     private String ghiChu;
     private String noiDung;
     private String tieuDe;
+    @Size(max = 15, message = "Nội dung không được vượt quá 15 ký tự")
     private String bg;
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId taiKhoan;

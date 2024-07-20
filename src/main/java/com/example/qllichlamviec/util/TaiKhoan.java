@@ -52,7 +52,7 @@ public class TaiKhoan {
     @Email(message = "Email không hợp lệ")
     private String email;
 
-    @NotNull(message = "Không được để trống")
+    @NotNull(message = "Số điện thoai không được để trống")
     private String sdt;
     private Boolean gioiTinh;
     private LocalDate ngaySinh;

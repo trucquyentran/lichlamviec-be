@@ -24,14 +24,15 @@ public class LichLamViec {
     private LocalDateTime thoiGianBD;
     private  LocalDateTime thoiGianKT;
     private LocalDateTime thoiGianTao;
-    @Size(max = 700)
+    @Size(max = 300, message = "Tiêu đề không được vượt quá 300 ký tự")
     private String tieuDe;
-    @Size(max = 100)
+    @Size(max = 100, message = "Địa điểm không được vượt quá 100 ký tự")
     private String diaDiem;
-    @Size(max = 300)
+    @Size(max = 500,message = "Nội dung không được vượt quá 500 ký tự")
     private String noiDung;
-    @Size(max = 300)
+    @Size(max = 300, message = "Ghi chu không được vượt quá 300 ký tự")
     private String ghiChu;
+    @Size(max = 15, message = "Nội dung không được vượt quá 15 ký tự")
     private String bg;
     @DocumentReference (lazy = false)
     private TaiKhoan taiKhoan;
