@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -16,6 +17,7 @@ import java.util.List;
 public class TaiKhoanDonViDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
+    @Size(max = 100, message = "Tên đơn vị không được vượt quá 100 ký tự")
     private String tenDonVi;
     private List<TaiKhoanNguoiDungDTO> taiKhoanList;
 }

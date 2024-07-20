@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.modelmapper.ModelMapper;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +133,7 @@ public class LichLamViecController {
     }
 
     @PostMapping("/them-lich-donvi")
-    public ResponseEntity<Object> themLichDonVi(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> themLichDonVi(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
         try {
             return ResponseEntity.ok(lichLamViecService.taoLich(lichLamViecDTO, httpRequest));
 
@@ -143,7 +144,7 @@ public class LichLamViecController {
     }
 
     @PutMapping("/edit-lich-donvi")
-    public ResponseEntity<Object> EditLichDonVi(@RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> EditLichDonVi(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
             return ResponseEntity.ok(lichLamViecService.editLich(lichLamViecDTO, idLich, httpRequest));
 
@@ -155,7 +156,7 @@ public class LichLamViecController {
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/them-lich-user")
-    public ResponseEntity<Object> themLichUser(@RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> themLichUser(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
         try {
             return ResponseEntity.ok(lichLamViecService.taoLich(lichLamViecDTO, httpRequest));
 
@@ -166,7 +167,7 @@ public class LichLamViecController {
     }
 
     @PutMapping("/edit-lich-user")
-    public ResponseEntity<Object> EditLichUser(@RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> EditLichUser(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
             return  ResponseEntity.ok(lichLamViecService.editLichCaNhan(lichLamViecDTO, idLich, httpRequest));
 

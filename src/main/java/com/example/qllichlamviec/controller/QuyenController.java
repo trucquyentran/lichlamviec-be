@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -49,7 +50,7 @@ public class QuyenController {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> create(@RequestBody Quyen quyen, HttpServletRequest httpRequest){
+    public ResponseEntity<Object> create(@Valid @RequestBody Quyen quyen, HttpServletRequest httpRequest){
         try {
             return new ResponseEntity<>(quyenService.save(quyen), HttpStatus.OK);
         }catch (Exception e){
@@ -59,7 +60,7 @@ public class QuyenController {
     }
 
     @PutMapping
-    public ResponseEntity<Object> update(@RequestBody Quyen quyen, HttpServletRequest httpRequest){
+    public ResponseEntity<Object> update(@Valid @RequestBody Quyen quyen, HttpServletRequest httpRequest){
         try {
             return new ResponseEntity<Object>(quyenService.upadate(quyen), HttpStatus.OK);
         }catch (Exception e){

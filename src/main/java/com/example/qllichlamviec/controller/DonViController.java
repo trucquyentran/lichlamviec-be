@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -60,7 +61,7 @@ public class DonViController {
 
 
     @PostMapping()
-    public ResponseEntity<Object> create(@RequestBody DonVi donVi, HttpServletRequest httpRequest){
+    public ResponseEntity<Object> create(@Valid @RequestBody DonVi donVi, HttpServletRequest httpRequest){
         try {
             donViService.save(donVi);
             return new ResponseEntity<>("Thêm đơn vị thành công", HttpStatus.OK);
@@ -71,7 +72,7 @@ public class DonViController {
     }
 
     @PutMapping
-    public ResponseEntity<Object> update(@RequestBody DonVi donVi, HttpServletRequest httpRequest){
+    public ResponseEntity<Object> update(@Valid @RequestBody DonVi donVi, HttpServletRequest httpRequest){
         try {
             return new ResponseEntity<Object>(donViService.update(donVi), HttpStatus.OK);
         }catch (Exception e){

@@ -11,6 +11,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,11 +25,15 @@ public class TaiKhoanNguoiDungDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
     private DonVi donVi;
+    @Size(max = 50, message = "Username không hợp lệ, không được vượt quá 50 ký tự")
     private String username;
+    @Size(max = 70, message = "Tên không hợp lệ, không được vượt quá 70 ký tự")
     private String hoTen;
     private Boolean gioiTinh;
     private LocalDate ngaySinh;
+    @Email(message = "Email không hợp lệ")
     private String email;
+    @NotNull(message = "Số điện thoai không được để trống")
     private String sdt;
     private List<QuyenTaiKhoanDTO> listQuyen;
     private Integer trangThai;

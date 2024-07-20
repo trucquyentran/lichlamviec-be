@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -15,6 +16,7 @@ import java.util.List;
 public class TaiKhoanLichDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
+    @Size(max = 50, message = "Username không hợp lệ, không được vượt quá 50 ký tự")
     private String username;
     private List<String> listQuyen;
 }

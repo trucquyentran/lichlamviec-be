@@ -19,7 +19,7 @@ public class Quyen {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
-    @Size(max = 100)
+    @Size(max = 100, message = "Tên quyền không hợp lệ, không được vượt quá 100 ký tự")
     private String tenQuyen;
 
     public Quyen(ObjectId _id){

@@ -22,10 +22,11 @@ public class QuyenTaiKhoan {
     private ObjectId _id;
     @Getter(AccessLevel.NONE)
     @DocumentReference(lazy = false)
-    @NotNull
+    @NotNull(message = "Tài khoản không được để trống")
     private TaiKhoan taiKhoan;
 
     @DocumentReference(lazy = false)
+    @NotNull(message = "Quyền không được để trống")
     private Quyen quyen;
 
 

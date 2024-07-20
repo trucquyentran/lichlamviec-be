@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class ThongBao {
     private ObjectId _id;
     private LocalDateTime thoiGian;
     @DocumentReference(lazy = false)
+    @NotNull(message = "Tài khoản không được để trống")
     private TaiKhoan taiKhoan;
     @Size(max = 300)
     private String noiDung;

@@ -216,11 +216,12 @@ public class TaiKhoanService {
         taiKhoan.setDonVi(donVi);
 
 //            Check username, email, sdt
-        Error error = kiemTraTonTaiEmailHoacSdt(taiKhoan);
-        if(error != null){
-            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-
-        }
+//        Error error = kiemTraTonTaiEmailHoacSdt(taiKhoan);
+//        if(error != null){
+//            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//
+//        }
+        kiemTraTonTaiEmailHoacSdt(taiKhoan);
 //          Check password
         if (isStrongPassword(taiKhoan.getPassword())){
             return new ResponseEntity<>(new Error("400","Mật khẩu ít nhất 8 ký tự gồm chữ hoa, thường, số, đặc biệt"), HttpStatus.BAD_REQUEST);
@@ -274,22 +275,36 @@ public class TaiKhoanService {
         } else return true;
     }
 
-    public Error kiemTraTonTaiEmailHoacSdt(TaiKhoan taiKhoan) {
-        TaiKhoan tkUsername = taiKhoanReponsitory.getByUsername(taiKhoan.getUsername());
-        if (tkUsername != null){
-            return new Error("400","Đã tồn tại Username");
-        }
-        TaiKhoan tkEmail = taiKhoanReponsitory.getByEmail(taiKhoan.getEmail());
-        if (tkEmail != null) {
-            return new Error("400","Đã tồn tại email");
-        } else {
-            TaiKhoan tkSdt = taiKhoanReponsitory.getBySdt(taiKhoan.getSdt());
-            if (tkSdt != null) {
-                return new Error("400","Đã tồn tại số điện thoại");
-            } else {
-                return null;
+    public void kiemTraTonTaiEmailHoacSdt(TaiKhoan taiKhoan) {
+        try {
+            taiKhoan.validate();
+            TaiKhoan tkUsername = taiKhoanReponsitory.getByUsername(taiKhoan.getUsername());
+            if (tkUsername != null){
+                throw new RuntimeException("Đã tồn tại Username");
             }
+            // Biểu thức chính quy không cho phép khoảng trắng và dấu
+            String regex = "^[\\w]+$";
+            Pattern pattern = Pattern.compile(regex);
+
+            // Kiểm tra username có hợp lệ không
+            if (taiKhoan.getUsername() == null || !pattern.matcher(taiKhoan.getUsername()).matches()) {
+                throw new RuntimeException("Username không được chứa khoảng trắng hoặc dấu.");
+            }
+            TaiKhoan tkEmail = taiKhoanReponsitory.getByEmail(taiKhoan.getEmail());
+            if (tkEmail != null) {
+                throw new RuntimeException("Đã tồn tại email");
+            } else {
+                TaiKhoan tkSdt = taiKhoanReponsitory.getBySdt(taiKhoan.getSdt());
+                if (tkSdt != null) {
+                    throw new RuntimeException("Đã tồn tại số điện thoại");
+                } else {
+//                return null;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     public TaiKhoan save(TaiKhoan taiKhoan) {

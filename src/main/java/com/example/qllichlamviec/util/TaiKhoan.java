@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -31,14 +32,12 @@ public class TaiKhoan {
     private ObjectId _id;
 
     @Indexed(unique = true)
-    @Size(max = 50, message = "Username không hợp lệ")
+    @Size(max = 50, message = "Username không hợp lệ, không được vượt quá 50 ký tự")
     private String username;
 
     @Size(max = 100)
     private String password;
 
-//    @DocumentReference (lazy = false)
-//    private NguoiDung nguoiDung;
     @ReadOnlyProperty
     @DocumentReference(collection = "QuyenTaiKhoan", lookup = "{'taiKhoan':?#{#self._id}}")
     private List<QuyenTaiKhoan> quyenTaiKhoanList;
@@ -46,7 +45,7 @@ public class TaiKhoan {
     private Integer trangThai;
     private List<Session> listSession;
 
-    @Size(max = 50, message = "Tên không hợp lệ")
+    @Size(max = 70, message = "Tên không hợp lệ, không được vượt quá 70 ký tự")
     private String hoTen;
 
     @Email(message = "Email không hợp lệ")
@@ -64,11 +63,11 @@ public class TaiKhoan {
         this._id = _id;
     }
     public void validate() throws Exception{
-        if (getHoTen() == null || getHoTen().isEmpty() || getHoTen().length()>50){
+        if (getHoTen() == null || getHoTen().isEmpty() || getHoTen().length()>70){
             throw  new Exception("Tên không hợp lệ");
         }
-        if (getSdt() == null || !Pattern.compile("($|[0-9]{10})").matcher(getSdt()).matches()){
-            throw new Exception("Số điện thoại không hợp lệ");
+        if (getSdt().isEmpty() || getSdt() == null || !Pattern.compile("($|[0-9]{10})").matcher(getSdt()).matches()){
+            throw new Exception("Số điện thoại không được để trống và có độ dài 10 kí tự");
         }
         if (getEmail() == null && !getEmail().isEmpty()){
             if (!Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$").matcher(getEmail()).matches()){

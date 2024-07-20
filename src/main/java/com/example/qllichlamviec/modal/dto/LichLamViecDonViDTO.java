@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
@@ -18,12 +19,18 @@ public class LichLamViecDonViDTO {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId donVi;
-
-    private String tieuDe;
-    private String noiDung;
     private LocalDateTime thoiGianBD;
     private LocalDateTime thoiGianKT;
-    private LocalDateTime thoiGianTao;
+    @Size(max = 300, message = "Tiêu đề không được vượt quá 300 ký tự")
+    private String tieuDe;
+    @Size(max = 100, message = "Địa điểm không được vượt quá 100 ký tự")
     private String diaDiem;
+    @Size(max = 500,message = "Nội dung không được vượt quá 500 ký tự")
+    private String noiDung;
+    @Size(max = 300, message = "Ghi chu không được vượt quá 300 ký tự")
     private String ghiChu;
+    @Size(max = 15, message = "Background không được vượt quá 15 ký tự")
+    private String bg;
+    private LocalDateTime thoiGianTao;
+
 }

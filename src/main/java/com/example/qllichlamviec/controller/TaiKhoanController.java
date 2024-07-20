@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +52,7 @@ public class TaiKhoanController {
     private ThongBaoService thongBaoService;
 
     @PostMapping("/dang-nhap")
-    public ResponseEntity<Object> dangnhap(@RequestBody TaiKhoanDangNhapDTO taiKhoan){
+    public ResponseEntity<Object> dangnhap(@Valid @RequestBody TaiKhoanDangNhapDTO taiKhoan){
         TaiKhoan taiKhoan1 = taiKhoanService.getByUsername(taiKhoan.getUsername());
         if (taiKhoan1 != null){
             if (taiKhoan1.getTrangThai() == 0){
@@ -97,7 +98,7 @@ public class TaiKhoanController {
     }
 
     @PostMapping("doi-mk")
-    public ResponseEntity<Object> doiMatKhau(HttpServletRequest httpRequest, @RequestBody TaiKhoanDangNhapDTO taiKhoanDTO){
+    public ResponseEntity<Object> doiMatKhau( HttpServletRequest httpRequest, @Valid @RequestBody TaiKhoanDangNhapDTO taiKhoanDTO){
         TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
         if (passwordEncoder.matches(taiKhoanDTO.getOldPassword(), taiKhoan.getPassword())){
             if (taiKhoanService.isStrongPassword(taiKhoanDTO.getNewPassword())){
@@ -125,7 +126,7 @@ public class TaiKhoanController {
     }
 
     @PutMapping("/edit-account")
-    public ResponseEntity<Object> suaThongTinAccount(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO){
+    public ResponseEntity<Object> suaThongTinAccount(HttpServletRequest httpServletRequest, @Valid @RequestBody TaiKhoanDTO taiKhoanDTO){
         try {
             TaiKhoan tkCapNhat = taiKhoanService.editMyAccount(taiKhoanDTO, httpServletRequest);
             return new ResponseEntity<>(tkCapNhat, HttpStatus.OK);
@@ -172,9 +173,9 @@ public class TaiKhoanController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("add-user")
     @Transactional
-    public ResponseEntity<Object> themNguoiDung(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO) {
+    public ResponseEntity<Object> themNguoiDung(HttpServletRequest httpServletRequest, @Valid @RequestBody TaiKhoanDTO taiKhoanDTO) {
         try {
-           return taiKhoanService.themTaiKhoan(taiKhoanDTO);
+           return ResponseEntity.ok(taiKhoanService.themTaiKhoan(taiKhoanDTO));
         } catch (Exception e) {
             return new ResponseEntity<>(new Error("500", "Lỗi khi tạo người dùng và tài khoản: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -194,7 +195,7 @@ public class TaiKhoanController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/edit-tai-khoan")
     @Transactional
-    public ResponseEntity<Object> editTaiKhoan(HttpServletRequest httpServletRequest, @RequestBody TaiKhoanDTO taiKhoanDTO, @RequestParam String id){
+    public ResponseEntity<Object> editTaiKhoan(HttpServletRequest httpServletRequest, @Valid @RequestBody TaiKhoanDTO taiKhoanDTO, @RequestParam String id){
         try {
             return ResponseEntity.ok(taiKhoanService.editTaiKhoan(taiKhoanDTO, httpServletRequest, id));
         }catch (Exception e){
