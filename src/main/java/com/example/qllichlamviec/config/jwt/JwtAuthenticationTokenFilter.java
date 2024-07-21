@@ -2,6 +2,7 @@ package com.example.qllichlamviec.config.jwt;
 
 import com.example.qllichlamviec.service.JwtService;
 import com.example.qllichlamviec.service.TaiKhoanService;
+import com.example.qllichlamviec.service.ThongBaoService;
 import com.example.qllichlamviec.util.QuyenTaiKhoan;
 import com.example.qllichlamviec.util.TaiKhoan;
 import lombok.SneakyThrows;
@@ -71,8 +72,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     UserDetails userDetail = new User(taiKhoan.get_id().toHexString(), taiKhoan.getPassword(), enabled, accountNonExpired,
                             credentialsNonExpired, accountNonLocked, autho);
 
+
                     // Lưu trữ người dùng đã được xác thực trong ThreadLocal để truy cập sau
                     authenticatedUser.set(userDetail);
+                    getCurrentUser();
+
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,
                             null, userDetail.getAuthorities());
@@ -89,18 +93,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } finally {
             // Dọn dẹp ThreadLocal sau khi quá trình xử lý yêu cầu hoàn tất
-            authenticatedUser.remove();
-            SecurityContextHolder.clearContext();
+//            authenticatedUser.remove();
+//            SecurityContextHolder.clearContext();
         }
     }
 
     public static UserDetails getCurrentUser() {
-        return authenticatedUser.get();
+        log.info("Thong tin: "+authenticatedUser.get());
+         return authenticatedUser.get();
     }
-//
-//    public static UserDetails getCurrentUser() {
-//        return JwtAuthenticationTokenFilter.getCurrentUser();
-//    }
 
 }
 

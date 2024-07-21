@@ -67,7 +67,7 @@ public class ThongBaoService {
     }
 
 
-//    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
+    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
     public void kiemTraVaGuiThongBao() {
         logger.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
 

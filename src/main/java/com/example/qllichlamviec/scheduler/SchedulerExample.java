@@ -1,13 +1,16 @@
 package com.example.qllichlamviec.scheduler;
 
+import com.example.qllichlamviec.config.jwt.JwtAuthenticationTokenFilter;
 import com.example.qllichlamviec.service.TaiKhoanService;
 import com.example.qllichlamviec.service.ThongBaoService;
 import com.example.qllichlamviec.util.TaiKhoan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +27,9 @@ public class SchedulerExample {
 
     @Autowired
     private TaiKhoanService taiKhoanService;
+
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -58,4 +64,9 @@ public class SchedulerExample {
             logger.error("Lỗi khi kiểm tra thông báo: ", e);
         }
     }
+    ApplicationRunner applicationRunner(UserDetails userDetails){
+        logger.info("Thong tin tai khoan"+userDetails.getUsername());
+        return null;
+    }
+
 }

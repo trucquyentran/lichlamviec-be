@@ -152,6 +152,8 @@ public class TaiKhoanService {
 
     }
 
+
+
     public List<TaiKhoanNguoiDungDTO> findAllUser(int pageNumber){
         // Tạo Pageable object để chỉ định số trang và kích thước trang
         Pageable pageable = PageRequest.of(pageNumber, 3); // 3 là số dòng trên mỗi trang
@@ -273,7 +275,7 @@ public class TaiKhoanService {
                 throw new RuntimeException("Đã tồn tại Username");
             }
             // Biểu thức chính quy không cho phép khoảng trắng và dấu
-            String regex = "^[\\w]+$";
+            String regex = "^[a-zA-Z0-9]+$";
             Pattern pattern = Pattern.compile(regex);
 
             // Kiểm tra username có hợp lệ không

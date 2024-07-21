@@ -51,11 +51,17 @@ public class DonViService {
 
     public List<DonVi> findAll(int pageNumber){
         Pageable pageable = PageRequest.of(pageNumber,3);
-        Page<DonVi> donVi = donViReponsitory.findAll(pageable);
-        if (donVi == null) {
-            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
+        if (pageNumber == 0){
+            List<DonVi> donVi = donViReponsitory.findAll();
+            return donVi;
+        }else {
+            Page<DonVi> donVi = donViReponsitory.findAll(pageable);
+            if (donVi == null) {
+                throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
+            }
+            return donVi.getContent();
+
         }
-        return donVi.getContent();
     }
 
     public List<DonVi> search(String keyword){
