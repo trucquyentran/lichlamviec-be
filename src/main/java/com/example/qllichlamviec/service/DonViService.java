@@ -51,17 +51,12 @@ public class DonViService {
 
     public List<DonVi> findAll(int pageNumber){
         Pageable pageable = PageRequest.of(pageNumber,3);
-        if (pageNumber == 0){
-            List<DonVi> donVi = donViReponsitory.findAll();
-            return donVi;
-        }else {
-            Page<DonVi> donVi = donViReponsitory.findAll(pageable);
-            if (donVi == null) {
-                throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
-            }
-            return donVi.getContent();
 
+        Page<DonVi> donVi = donViReponsitory.findAll(pageable);
+        if (donVi == null) {
+            throw new RuntimeException("Hiện tại không có đơn vị nào trong hệ thống.");
         }
+        return donVi.getContent();
     }
 
     public List<DonVi> search(String keyword){
@@ -85,7 +80,7 @@ public class DonViService {
     }
 
     // Lay don vi dang thuoc
-    public List<DonViDTO> getSelectToanBoDonViDuoi(TaiKhoan taiKhoan) {
-        return donViReponsitory.getDonViConFromDonViCha(taiKhoan.getDonVi().get_id().toHexString());
+    public List<DonVi> getSelectToanBoDonVi() {
+        return donViReponsitory.findAll();
     }
 }

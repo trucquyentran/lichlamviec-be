@@ -95,8 +95,8 @@ public class DonViController {
         return new ResponseEntity<>(donViService.getSelectDonViThuocTrucTiep(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
     }
 
-    @GetMapping("/select/gian-tiep")
-    public ResponseEntity<Object> getSelectToanBoDonViDuoi(HttpServletRequest httpRequest) {
-        return new ResponseEntity<>(donViService.getSelectToanBoDonViDuoi(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
+    @GetMapping("/select/toan-bo-donvi")
+    public ResponseEntity<Object> getSelectToanBoDonVi() {
+        return new ResponseEntity<>(donViService.getSelectToanBoDonVi(), HttpStatus.OK);
     }
 }
