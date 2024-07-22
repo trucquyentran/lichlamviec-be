@@ -101,9 +101,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
     }
 
+//    public static UserDetails getCurrentUser() {
+//        log.info("Thong tin: "+authenticatedUser.get());
+//         return authenticatedUser.get();
+//    }
+
     public static UserDetails getCurrentUser() {
-        log.info("Thong tin: "+authenticatedUser.get());
-         return authenticatedUser.get();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            log.info("Thong tin: "+authentication.getPrincipal());
+            return (UserDetails) authentication.getPrincipal();
+        }
+        return null;
     }
 
 }

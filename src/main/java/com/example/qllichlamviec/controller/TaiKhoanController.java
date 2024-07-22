@@ -181,16 +181,16 @@ public class TaiKhoanController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/getall")
-    public ResponseEntity<Object> ListTaiKhoan(){
-        try {
-            List<TaiKhoan> taiKhoanList = taiKhoanService.getAll();
-            return new ResponseEntity<>(taiKhoanList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Lỗi khi hiển thị danh sách"+ e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @GetMapping("/getall")
+//    public ResponseEntity<Object> ListTaiKhoan(){
+//        try {
+//            List<TaiKhoan> taiKhoanList = taiKhoanService.getAll();
+//            return new ResponseEntity<>(taiKhoanList, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>("Lỗi khi hiển thị danh sách"+ e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/edit-tai-khoan")

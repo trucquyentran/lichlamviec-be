@@ -152,21 +152,29 @@ public class TaiKhoanService {
 
     }
 
-
-
     public List<TaiKhoanNguoiDungDTO> findAllUser(int pageNumber){
         // Tạo Pageable object để chỉ định số trang và kích thước trang
         Pageable pageable = PageRequest.of(pageNumber, 3); // 3 là số dòng trên mỗi trang
-
-        // Lấy trang dữ liệu từ repository
-        Page<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll(pageable);
-
-        List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
-        for (TaiKhoan tk: taiKhoanList){
-            TaiKhoanNguoiDungDTO taiKhoanDTO = mapToTaiKhoanNguoiDungDTO(tk);
-            taiKhoanDTOList.add(taiKhoanDTO);
+        if (pageNumber == 0){
+            List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll();
+            List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
+            for (TaiKhoan tk: taiKhoanList){
+                TaiKhoanNguoiDungDTO taiKhoanDTO = mapToTaiKhoanNguoiDungDTO(tk);
+                taiKhoanDTOList.add(taiKhoanDTO);
+            }
+            return taiKhoanDTOList;
+        }else {
+            Page<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll(pageable);
+            List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
+            for (TaiKhoan tk: taiKhoanList){
+                TaiKhoanNguoiDungDTO taiKhoanDTO = mapToTaiKhoanNguoiDungDTO(tk);
+                taiKhoanDTOList.add(taiKhoanDTO);
+            }
+            return taiKhoanDTOList;
         }
-        return taiKhoanDTOList;
+        // Lấy trang dữ liệu từ repository
+
+
     }
 
     public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
