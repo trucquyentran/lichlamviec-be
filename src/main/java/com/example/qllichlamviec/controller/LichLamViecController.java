@@ -166,6 +166,7 @@ public class LichLamViecController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/edit-lich-user")
     public ResponseEntity<Object> EditLichUser(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
