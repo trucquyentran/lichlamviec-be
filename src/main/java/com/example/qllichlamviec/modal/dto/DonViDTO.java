@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.modal.dto;
 
+import com.example.qllichlamviec.util.DonVi;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,8 @@ public class DonViDTO {
 
     @Size(max = 100, message = "Tên đơn vị không được vượt quá 100 ký tự")
     private String tenDonVi;
+
+    private DonVi donViTrucThuoc;
 
 
 }

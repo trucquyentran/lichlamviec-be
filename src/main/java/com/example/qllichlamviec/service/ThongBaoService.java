@@ -72,7 +72,12 @@ public class ThongBaoService {
         logger.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
 
         UserDetails currentUser = getCurrentUser();
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            logger.info("Thong tin Authentication: " + authentication.getPrincipal());
+        }else {
+            logger.info("khong co Authentication: ");
+        }
 
         if (currentUser == null) {
             logger.info("Authentication is null or user is not authenticated");

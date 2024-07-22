@@ -72,28 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
-//    ****
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> {
-            // Tạo UserDetails từ cơ sở dữ liệu hoặc một nguồn khác
-            // Đây là một ví dụ với user trong bộ nhớ
-            if ("user".equals(username)) {
-                return org.springframework.security.core.userdetails.User.withUsername("user")
-                        .password("{noop}password") // {noop} để không mã hóa password
-                        .roles("USER")
-                        .build();
-            } else {
-                throw new UsernameNotFoundException("User not found");
-            }
-        };
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService());
-    }
 
     //JWT
     protected void configure(final HttpSecurity http) throws Exception {
@@ -109,13 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().accessDeniedHandler(userAccessDeniedHandler());
-        http
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .and()
-                .httpBasic();
+
 
     }
 

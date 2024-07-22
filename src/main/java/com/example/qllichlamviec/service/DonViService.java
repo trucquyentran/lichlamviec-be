@@ -79,6 +79,7 @@ public class DonViService {
         return donViReponsitory.getSelectDonViThuocTrucTiep(taiKhoan.getDonVi().get_id().toHexString());
     }
 
+
     // Lay don vi dang thuoc
     public List<DonVi> getSelectToanBoDonVi() {
         return donViReponsitory.findAll();
