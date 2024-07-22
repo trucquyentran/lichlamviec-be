@@ -61,20 +61,21 @@ public class LichLamViecController {
     @GetMapping
     public ResponseEntity<Object> chiTietLich(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
         try {
-            if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
-                LichLamViec llv = lichLamViecService.getById(search);
-                LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
-                if (llv.getTaiKhoan() != null){
-                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
-                }else {
-                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
-                }
-                return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
-            }else {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+//            if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
+//                LichLamViec llv = lichLamViecService.getById(search);
+//                LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
+//                if (llv.getTaiKhoan() != null){
+//                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+//                }else {
+//                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
+//                }
+//                return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
+//            }else {
+//                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//            }
+            return ResponseEntity.ok(lichLamViecService.getChiTietLich(search,httpRequest));
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 

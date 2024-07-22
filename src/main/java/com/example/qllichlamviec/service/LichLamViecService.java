@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,6 +76,41 @@ public class LichLamViecService {
         }
         return lichLamViec;
     }
+
+    public ResponseEntity<Object> getChiTietLich (String search, HttpServletRequest httpServletRequest){
+        if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true) {
+            try {
+            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+            LichLamViec lichLamViec = lichLamViecReponsitory.getByID(search);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            // Kiểm tra quyền truy cập
+            boolean hasAccess = (lichLamViec.getTaiKhoan() != null && taiKhoan.get_id().equals(lichLamViec.getTaiKhoan().get_id())) ||
+                    (lichLamViec.getDonVi() != null && taiKhoan.getDonVi() != null && taiKhoan.getDonVi().get_id().equals(lichLamViec.getDonVi().get_id())) ||
+                    taiKhoanService.kiemTraUserAdmin(authentication);
+
+            if (hasAccess) {
+                LichLamViec llv = getById(search);
+
+                LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
+                if (llv.getTaiKhoan() != null) {
+                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+                } else {
+                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
+                }
+                return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
+            } else {
+                throw new RuntimeException("Lịch này không thuộc quyền quản lý của bạn");
+            }
+        }catch (RuntimeException e) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Trả về Forbidden nếu người dùng không có quyền
+            }
+
+        }else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     public List<LichLamViec>findAll(){
 
         List<LichLamViec> lichLamViecList = lichLamViecReponsitory.findAll();
