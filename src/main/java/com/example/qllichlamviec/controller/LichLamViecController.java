@@ -59,7 +59,7 @@ public class LichLamViecController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
-    public ResponseEntity<Object> search(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
+    public ResponseEntity<Object> chiTietLich(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
         try {
             if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true){
                 LichLamViec llv = lichLamViecService.getById(search);

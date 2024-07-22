@@ -91,7 +91,7 @@ public class ThongBaoService {
 //        logger.info("thong tin tai khoan " + authentication.getPrincipal());
 
         // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
-        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), now);
+//        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), now);
 //
 //        if (!thongBaoList.isEmpty()) {
 //            for (ThongBao thongBao : thongBaoList) {
