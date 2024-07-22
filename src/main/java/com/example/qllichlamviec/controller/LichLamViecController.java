@@ -57,7 +57,7 @@ public class LichLamViecController {
         }
     }
 
-
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
     public ResponseEntity<Object> search(@RequestParam(required = false) String search, HttpServletRequest httpRequest){
         try {

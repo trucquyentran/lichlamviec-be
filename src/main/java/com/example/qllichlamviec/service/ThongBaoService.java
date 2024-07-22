@@ -44,9 +44,6 @@ public class ThongBaoService {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    @Autowired
-    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
-
     public ThongBao save(ThongBao thongBao){
         return thongBaoReponsitory.save(thongBao);
     }
@@ -67,43 +64,46 @@ public class ThongBaoService {
     }
 
 
-    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
+//    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
     public void kiemTraVaGuiThongBao() {
         logger.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
 
         UserDetails currentUser = getCurrentUser();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            logger.info("Thong tin Authentication: " + authentication.getPrincipal());
-        }else {
-            logger.info("khong co Authentication: ");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null) {
+//            logger.info("Thong tin Authentication: " + authentication.getPrincipal());
+//        }else {
+//            logger.info("khong co Authentication: ");
+//        }
 
         if (currentUser == null) {
             logger.info("Authentication is null or user is not authenticated");
         } else {
-            SecurityContextHolder.getContext().setAuthentication(
-                    new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities())
-            );
-            logger.info("User is authenticated: " + currentUser.getUsername());
+//            SecurityContextHolder.getContext().setAuthentication(
+//                    new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities())
+//            );
+            logger.info("User is authenticated 1: " + currentUser.getUsername());
             // Thêm logic của bạn khi xác thực thành công
         }
 
 
 //        logger.info("thong tin tai khoan " + authentication.getPrincipal());
-//        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(taiKhoan.toString(), now);
 
-//        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGian(now);
+        // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
+        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), now);
 //
-//        for (ThongBao tbl : thongBaoList) {
-//           taoThongBao(tbl.getTaiKhoan());
+//        if (!thongBaoList.isEmpty()) {
+//            for (ThongBao thongBao : thongBaoList) {
+//                logger.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
+//            }
 //        }
 
     }
 
-    public void guiThongBaoLichLamViec(TaiKhoan taiKhoan, LichLamViec lichLamViec) {
+    public void guiThongBaoLichLamViec(TaiKhoan taiKhoan, ThongBao thongBao) {
         // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
-        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + lichLamViec.getThoiGianBD();
+        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + thongBao.getThoiGian();
          }
 
 //    public void taoThongBao(TaiKhoan tk, HttpServletRequest httpServletRequest){

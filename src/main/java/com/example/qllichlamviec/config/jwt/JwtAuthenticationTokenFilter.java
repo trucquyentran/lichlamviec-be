@@ -7,6 +7,8 @@ import com.example.qllichlamviec.util.QuyenTaiKhoan;
 import com.example.qllichlamviec.util.TaiKhoan;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,9 +37,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private JwtService jwtService;
     @Autowired
     private TaiKhoanService taiKhoanService;
+    @Autowired
+    private ThongBaoService thongBaoService;
 
     public static final ThreadLocal<UserDetails> authenticatedUser = new ThreadLocal<>();
-
 
     @SneakyThrows
     @Override
@@ -81,10 +84,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     getCurrentUser();
 
 
+
+
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,
                             null, userDetail.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                   thongBaoService.kiemTraVaGuiThongBao();
                 }
             }
 
@@ -101,20 +107,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
     }
 
-//    public static UserDetails getCurrentUser() {
-//        log.info("Thong tin: "+authenticatedUser.get());
-//         return authenticatedUser.get();
-//    }
-
     public static UserDetails getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            log.info("Thong tin: "+authentication.getPrincipal());
-            return (UserDetails) authentication.getPrincipal();
-        }
-        return null;
+        log.info("Thong tin: "+authenticatedUser.get());
+         return authenticatedUser.get();
     }
+
+
 
 }
 
