@@ -33,40 +33,40 @@ public class SchedulerExample {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    @PostConstruct
-    public void startScheduler() {
-        scheduler.scheduleAtFixedRate(this::checkNotifications, 0, 1, TimeUnit.MINUTES);
-    }
-
-    public TaiKhoan getCurrentTaiKhoan() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof TaiKhoan) {
-                return (TaiKhoan) principal;
-            } else {
-                // Log thông tin principal để kiểm tra
-                logger.warn("Principal không phải là TaiKhoan: " + principal);
-            }
-        }
-        return null; // hoặc throw exception nếu cần
-    }
-
-    private void checkNotifications() {
-        try {
-            TaiKhoan taiKhoan = getCurrentTaiKhoan(); // Cần phải có phương thức để lấy tài khoản hiện tại
-            if (taiKhoan != null) {
-                thongBaoService.checkAndNotify(taiKhoan);
-            } else {
-                logger.warn("Không có tài khoản hiện tại để kiểm tra thông báo.");
-            }
-        } catch (Exception e) {
-            logger.error("Lỗi khi kiểm tra thông báo: ", e);
-        }
-    }
-    ApplicationRunner applicationRunner(UserDetails userDetails){
-        logger.info("Thong tin tai khoan"+userDetails.getUsername());
-        return null;
-    }
+//    @PostConstruct
+//    public void startScheduler() {
+//        scheduler.scheduleAtFixedRate(this::checkNotifications, 0, 1, TimeUnit.MINUTES);
+//    }
+//
+//    public TaiKhoan getCurrentTaiKhoan() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null) {
+//            Object principal = authentication.getPrincipal();
+//            if (principal instanceof TaiKhoan) {
+//                return (TaiKhoan) principal;
+//            } else {
+//                // Log thông tin principal để kiểm tra
+//                logger.warn("Principal không phải là TaiKhoan: " + principal);
+//            }
+//        }
+//        return null; // hoặc throw exception nếu cần
+//    }
+//
+//    private void checkNotifications() {
+//        try {
+//            TaiKhoan taiKhoan = getCurrentTaiKhoan(); // Cần phải có phương thức để lấy tài khoản hiện tại
+//            if (taiKhoan != null) {
+//                thongBaoService.checkAndNotify(taiKhoan);
+//            } else {
+//                logger.warn("Không có tài khoản hiện tại để kiểm tra thông báo.");
+//            }
+//        } catch (Exception e) {
+//            logger.error("Lỗi khi kiểm tra thông báo: ", e);
+//        }
+//    }
+//    ApplicationRunner applicationRunner(UserDetails userDetails){
+//        logger.info("Thong tin tai khoan"+userDetails.getUsername());
+//        return null;
+//    }
 
 }

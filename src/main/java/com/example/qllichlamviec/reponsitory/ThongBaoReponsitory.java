@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface ThongBaoReponsitory extends MongoRepository<ThongBao, ObjectId> {
@@ -19,8 +20,8 @@ public interface ThongBaoReponsitory extends MongoRepository<ThongBao, ObjectId>
     @Query("{'lichLamViec': ObjectId('?0')}")
     List<ThongBao> getByLichId(ObjectId lichLamViec);
 
-    @Query("{'taiKhoan._id': ?0, 'thoiGian': {$gte: ?1, $lt: ?2}}")
-    List<ThongBao> findByThoiGianTK(String taiKhoanId, LocalDateTime tgbdStart);
+    @Query("{'taiKhoan': ObjectId('?0'), 'thoiGian': {$gte: ?1, $lt: ?2}}")
+    List<ThongBao> findByThoiGianTK(String taiKhoanId, LocalDateTime tgbdStart, LocalDateTime tgbdEnd);
 
     @Query("{'thoiGian': ?0 ")
     List<ThongBao> findByThoiGian(LocalDateTime tgbdStart);

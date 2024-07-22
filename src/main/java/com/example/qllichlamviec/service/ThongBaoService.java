@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.service;
 
+import ch.qos.logback.core.util.TimeUtil;
 import com.example.qllichlamviec.config.jwt.JwtAuthenticationTokenFilter;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.ThongBaoReponsitory;
@@ -7,9 +8,12 @@ import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.ThongBao;
+import com.example.qllichlamviec.util.pojo.FormatTime;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,16 +23,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.slf4j.Logger;
+import java.util.concurrent.ScheduledExecutorService;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 
+import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
-
+@Slf4j
 @Service
 public class ThongBaoService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ThongBaoService.class);
+//    private static final Logger logger = LoggerFactory.getLogger(ThongBaoService.class);
 
     @Autowired
     private LichLamViecReponsitory lichLamViecRepository;
@@ -43,6 +51,11 @@ public class ThongBaoService {
 
     @Autowired
     private HttpServletRequest httpServletRequest;
+
+    private UserDetails currentUser;
+
+//    @Autowired
+    private ScheduledExecutorService executorService;
 
     public ThongBao save(ThongBao thongBao){
         return thongBaoReponsitory.save(thongBao);
@@ -63,75 +76,55 @@ public class ThongBaoService {
         return JwtAuthenticationTokenFilter.getCurrentUser();
     }
 
+    public void setCurrentUser(UserDetails user) {
+        this.currentUser = user;
+    }
+
+    public void startScheduledTask() {
+        if (executorService != null && !executorService.isShutdown()) {
+            return; // Nếu đã có tác vụ đang chạy thì không khởi động lại
+        }
+        executorService = Executors.newScheduledThreadPool(1);
+        executorService.scheduleAtFixedRate(this::kiemTraVaGuiThongBao, 0,1 , TimeUnit.MINUTES);
+        log.info("Tác vụ định kỳ đã được khởi động.");
+    }
+
+    public void stopScheduledTask() {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+            log.info("Tác vụ định kỳ đã được dừng.");
+        }
+    }
 
 //    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
-    public void kiemTraVaGuiThongBao() {
-        logger.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
-        LocalDateTime now = LocalDateTime.now();
+public ResponseEntity<Object> kiemTraVaGuiThongBao() {
+    log.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
+    LocalDateTime now = LocalDateTime.now();
+    if (currentUser == null) {
+        log.info("Authentication is null or user is not authenticated");
+        return null; // Kết thúc phương thức nếu người dùng không được xác thực
+    }
 
-        UserDetails currentUser = getCurrentUser();
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null) {
-//            logger.info("Thong tin Authentication: " + authentication.getPrincipal());
-//        }else {
-//            logger.info("khong co Authentication: ");
-//        }
+    log.info("User is authenticated: " + currentUser.getUsername());
 
-        if (currentUser == null) {
-            logger.info("Authentication is null or user is not authenticated");
-        } else {
-//            SecurityContextHolder.getContext().setAuthentication(
-//                    new UsernamePasswordAuthenticationToken(currentUser, null, currentUser.getAuthorities())
-//            );
-            logger.info("User is authenticated 1: " + currentUser.getUsername());
-            // Thêm logic của bạn khi xác thực thành công
+    LocalDateTime tgbdStart = FormatTime.roundToMinute(now); // Thay đổi phạm vi thời gian theo yêu cầu
+    LocalDateTime tgbdEnd = FormatTime.roundToMinute(now.plusMinutes(1)); // Thời gian hiện tại
+
+    // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
+    List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), tgbdStart, tgbdEnd);
+
+    if (thongBaoList != null && !thongBaoList.isEmpty()) {
+        for (ThongBao thongBao : thongBaoList) {
+            log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
+            return new ResponseEntity<>("Nhắc lịch: Bạn có lịch: "+ thongBao.getNoiDung()+" diễn ra vào lúc "+ thongBao.getThoiGian().minusMinutes(10), HttpStatus.OK);
+            // Thêm logic để gửi thông báo nếu cần
         }
-
-
-//        logger.info("thong tin tai khoan " + authentication.getPrincipal());
-
-        // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
-//        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), now);
-//
-//        if (!thongBaoList.isEmpty()) {
-//            for (ThongBao thongBao : thongBaoList) {
-//                logger.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
-//            }
-//        }
-
+    } else {
+        log.info("Không có thông báo nào trùng với thời gian hiện tại.");
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+    return null;
+}
 
-    public void guiThongBaoLichLamViec(TaiKhoan taiKhoan, ThongBao thongBao) {
-        // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
-        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + thongBao.getThoiGian();
-         }
-
-//    public void taoThongBao(TaiKhoan tk, HttpServletRequest httpServletRequest){
-//        LocalDateTime now = LocalDateTime.now();
-//
-////        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(taiKhoan.toString(), now);
-//
-////        for (ThongBao tb : thongBaoList) {
-////            guiThongBao(tb.getTaiKhoan());
-////        }
-//    }
-
-    public void guiThongBao(TaiKhoan taiKhoan, ThongBao thongBao) {
-        // Thay bằng logic gửi thông báo thực tế, ví dụ như gửi email, SMS, thông báo đẩy, v.v.
-        String noiDungThongBao = "Bạn có lịch làm việc vào lúc " + thongBao.getThoiGian();
-    }
-
-    public void checkAndNotify(TaiKhoan taiKhoan) {
-        LocalDateTime now = LocalDateTime.now();
-
-        // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
-        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(taiKhoan.get_id().toHexString(), now);
-
-        if (!thongBaoList.isEmpty()) {
-            for (ThongBao thongBao : thongBaoList) {
-                logger.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
-            }
-        }
-    }
 }
 

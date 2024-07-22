@@ -81,7 +81,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
                     // Lưu trữ người dùng đã được xác thực trong ThreadLocal để truy cập sau
                     authenticatedUser.set(userDetail);
-                    getCurrentUser();
 
 
 
@@ -90,7 +89,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                             null, userDetail.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                   thongBaoService.kiemTraVaGuiThongBao();
+                    thongBaoService.setCurrentUser(userDetail);
+                    thongBaoService.startScheduledTask();
                 }
             }
 
