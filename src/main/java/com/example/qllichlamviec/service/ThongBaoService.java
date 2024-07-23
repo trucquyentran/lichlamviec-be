@@ -85,7 +85,7 @@ public class ThongBaoService {
             return; // Nếu đã có tác vụ đang chạy thì không khởi động lại
         }
         executorService = Executors.newScheduledThreadPool(1);
-        executorService.scheduleAtFixedRate(this::kiemTraVaGuiThongBao, 0,1 , TimeUnit.MINUTES);
+        executorService.scheduleAtFixedRate(this::kiemTraVaGuiThongBao, 0,10 , TimeUnit.SECONDS);
         log.info("Tác vụ định kỳ đã được khởi động.");
     }
 
@@ -96,35 +96,41 @@ public class ThongBaoService {
         }
     }
 
-//    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
-public ResponseEntity<Object> kiemTraVaGuiThongBao() {
-    log.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
-    LocalDateTime now = LocalDateTime.now();
-    if (currentUser == null) {
-        log.info("Authentication is null or user is not authenticated");
-        return null; // Kết thúc phương thức nếu người dùng không được xác thực
-    }
+    public ResponseEntity<Object> kiemTraVaGuiThongBao() {
+        log.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
+        LocalDateTime now = LocalDateTime.now();
 
-    log.info("User is authenticated: " + currentUser.getUsername());
-
-    LocalDateTime tgbdStart = FormatTime.roundToMinute(now); // Thay đổi phạm vi thời gian theo yêu cầu
-    LocalDateTime tgbdEnd = FormatTime.roundToMinute(now.plusMinutes(1)); // Thời gian hiện tại
-
-    // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
-    List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), tgbdStart, tgbdEnd);
-
-    if (thongBaoList != null && !thongBaoList.isEmpty()) {
-        for (ThongBao thongBao : thongBaoList) {
-            log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
-            return new ResponseEntity<>("Nhắc lịch: Bạn có lịch: "+ thongBao.getNoiDung()+" diễn ra vào lúc "+ thongBao.getThoiGian().minusMinutes(10), HttpStatus.OK);
-            // Thêm logic để gửi thông báo nếu cần
+        if (currentUser == null) {
+            log.info("Authentication is null or user is not authenticated");
+            return new ResponseEntity<>("Người dùng không được xác thực.", HttpStatus.UNAUTHORIZED);
         }
-    } else {
-        log.info("Không có thông báo nào trùng với thời gian hiện tại.");
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        log.info("User is authenticated: " + currentUser.getUsername());
+
+        LocalDateTime tgbdStart = FormatTime.roundToMinute(now.minusMinutes(5));
+        LocalDateTime tgbdEnd = FormatTime.roundToMinute(now.plusMinutes(5));
+
+        // Lấy danh sách thông báo có thời gian nhắc trùng với thời gian hiện tại và tài khoản đang đăng nhập
+        List<ThongBao> thongBaoList = thongBaoReponsitory.findByThoiGianTK(currentUser.getUsername(), tgbdStart, tgbdEnd);
+
+        if (thongBaoList != null && !thongBaoList.isEmpty()) {
+            StringBuilder responseMessage = new StringBuilder();
+            for (ThongBao thongBao : thongBaoList) {
+                log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
+                responseMessage.append("Nhắc lịch: Bạn có lịch: ")
+                        .append(thongBao.getNoiDung())
+                        .append(" diễn ra vào lúc ")
+                        .append(thongBao.getThoiGian().minusMinutes(10))
+                        .append("\n");
+                // Thêm logic để gửi thông báo nếu cần
+            }
+            return new ResponseEntity<>(responseMessage.toString().trim(), HttpStatus.OK);
+        } else {
+            log.info("Không có thông báo nào trùng với thời gian hiện tại.");
+            return new ResponseEntity<>("Không có thông báo nào trùng với thời gian hiện tại.", HttpStatus.NO_CONTENT);
+        }
     }
-    return null;
-}
+
 
 }
 

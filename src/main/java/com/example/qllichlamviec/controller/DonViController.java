@@ -90,13 +90,18 @@ public class DonViController {
         }
     }
 
-    @GetMapping("/select/truc-tiep")
-    public ResponseEntity<Object> getSelectDonViThuocTrucTiep(HttpServletRequest httpRequest) {
-        return new ResponseEntity<>(donViService.getSelectDonViThuocTrucTiep(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
+    @GetMapping("/select/donvi-tructhuoc")
+    public ResponseEntity<Object> selectDonViTrucThuoc(HttpServletRequest httpRequest) {
+        return new ResponseEntity<>(donViService.getSelectDonViTrucThuoc(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
+    }
+
+    @GetMapping("/select/donvi-cha")
+    public ResponseEntity<Object> selectDonViCha() {
+        return new ResponseEntity<>(donViService.getSelectDonViCha(), HttpStatus.OK);
     }
 
     @GetMapping("/select/toan-bo-donvi")
-    public ResponseEntity<Object> getSelectToanBoDonVi() {
+    public ResponseEntity<Object> selectToanBoDonVi() {
         return new ResponseEntity<>(donViService.getSelectToanBoDonVi(), HttpStatus.OK);
     }
 }

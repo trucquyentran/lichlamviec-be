@@ -1,11 +1,17 @@
 package com.example.qllichlamviec.modal.dto;
 
+import com.example.qllichlamviec.util.DonVi;
+import com.example.qllichlamviec.util.TaiKhoan;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -33,8 +39,6 @@ public class LichLamViecDTO {
     private String bg;
     private LocalDateTime thoiGianTao;
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId taiKhoan;
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId donVi;
+    private NguoiDungDTO taiKhoan;
+    private DonVi donVi;
 }

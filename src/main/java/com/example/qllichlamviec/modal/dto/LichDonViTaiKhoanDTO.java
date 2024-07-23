@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.modal.dto;
 
+import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.TaiKhoan;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LichDonViTaiKhoanDTO {
-    private TaiKhoan taiKhoan;
-    private List<LichLamViec> lichLamViecList;
+    private TaiKhoanNguoiDungDTO taiKhoan;
+    private List<LichLamViecDTO> lichLamViecList;
 }

@@ -1,9 +1,6 @@
 package com.example.qllichlamviec.service;
 
-import com.example.qllichlamviec.modal.dto.LichCaNhanDTO;
-import com.example.qllichlamviec.modal.dto.LichDonViTaiKhoanDTO;
-import com.example.qllichlamviec.modal.dto.LichLamViecDTO;
-import com.example.qllichlamviec.modal.dto.LichLamViecDonViDTO;
+import com.example.qllichlamviec.modal.dto.*;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
@@ -93,11 +90,11 @@ public class LichLamViecService {
                 LichLamViec llv = getById(search);
 
                 LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
-                if (llv.getTaiKhoan() != null) {
-                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
-                } else {
-                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
-                }
+//                if (llv.getTaiKhoan() != null) {
+//                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+//                } else {
+//                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
+//                }
                 return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
             } else {
                 throw new RuntimeException("Lịch này không thuộc quyền quản lý của bạn");
@@ -128,6 +125,31 @@ public class LichLamViecService {
         lichLamViecReponsitory.deleteByNguoiDungID(id);
     }
 
+    public ResponseEntity<Object> getLichByNguoiDung(ObjectId taiKhoanId){
+        List<LichLamViec> llvList = getByTaiKhoanID(taiKhoanId);
+        List<LichLamViecDTO> lichLamViecDTOList = new ArrayList<>();
+        for (LichLamViec lichLamViec: llvList) {
+            LichLamViecDTO lichLamViecList = modelMapper.map(lichLamViec, LichLamViecDTO.class);
+
+            // Ánh xạ tài khoản và quyền của tài khoản
+            NguoiDungDTO nguoiDungDTO = modelMapper.map(lichLamViec.getTaiKhoan(), NguoiDungDTO.class);
+
+            // Khởi tạo danh sách quyền và ánh xạ quyền từ QuyenTaiKhoan
+            List<QuyenTaiKhoanDTO> quyenList = new ArrayList<>();
+            for (QuyenTaiKhoan qtk : lichLamViec.getTaiKhoan().getQuyenTaiKhoanList()) {
+                QuyenTaiKhoanDTO quyenTaiKhoanDTO = modelMapper.map(qtk, QuyenTaiKhoanDTO.class);
+                quyenList.add(quyenTaiKhoanDTO);
+            }
+            nguoiDungDTO.setQuyenList(quyenList);
+            lichLamViecList.setTaiKhoan(nguoiDungDTO);
+
+
+            lichLamViecDTOList.add(lichLamViecList);
+
+        }
+        return new ResponseEntity<>(lichLamViecDTOList, HttpStatus.OK);
+    }
+
     public List<LichLamViecDTO> search(String tuKhoa){
         String regexKeyword = XuLyDauChuoiTimKiem.convertToRegex(tuKhoa);
 
@@ -142,11 +164,11 @@ public class LichLamViecService {
         List<LichLamViecDTO> llvList = new ArrayList<>();
         for (LichLamViec llv: lichLamViecList) {
             LichLamViecDTO lichLamViecDTOList = modelMapper.map(llv,LichLamViecDTO.class);
-            if (llv.getTaiKhoan()!= null){
-                lichLamViecDTOList.setTaiKhoan(llv.getTaiKhoan().get_id());
-            }else {
-                lichLamViecDTOList.setDonVi(llv.getDonVi().get_id());
-            }
+//            if (llv.getTaiKhoan()!= null){
+//                lichLamViecDTOList.setTaiKhoan(llv.getTaiKhoan().get_id());
+//            }else {
+//                lichLamViecDTOList.setDonVi(llv.getDonVi().get_id());
+//            }
             llvList.add(lichLamViecDTOList);
         }
         return llvList;
@@ -218,10 +240,18 @@ public class LichLamViecService {
         for (TaiKhoan tk : taiKhoanList) {
 
             List<LichLamViec> lichLamViecCuaTaiKhoan = getByTaiKhoanID(tk.get_id());
+            List<LichLamViecDTO> lichLamViecDTOList = new ArrayList<>();
+            for (LichLamViec lich: lichLamViecCuaTaiKhoan){
+                LichLamViecDTO lichLamViecDTO = modelMapper.map(lich,LichLamViecDTO.class);
+                lichLamViecDTOList.add(lichLamViecDTO);
+
+            }
+            TaiKhoanNguoiDungDTO taiKhoan1 = modelMapper.map(tk,TaiKhoanNguoiDungDTO.class);
 
             LichDonViTaiKhoanDTO llv = new LichDonViTaiKhoanDTO();
-            llv.setTaiKhoan(tk);
-            llv.setLichLamViecList(lichLamViecCuaTaiKhoan);
+
+            llv.setTaiKhoan(taiKhoan1);
+            llv.setLichLamViecList(lichLamViecDTOList);
 
             lichDonViTaiKhoanDTOList.add(llv);
 
@@ -237,7 +267,7 @@ public class LichLamViecService {
         List<LichLamViecDonViDTO> lichLamViecDTOList = new ArrayList<>();
         for (LichLamViec llv: lichDonViList){
             LichLamViecDonViDTO lichLamViecDonViDTO = modelMapper.map(llv, LichLamViecDonViDTO.class);
-            lichLamViecDonViDTO.setDonVi(taiKhoan.getDonVi().get_id());
+//            lichLamViecDonViDTO.setDonVi(taiKhoan.getDonVi().get_id());
             lichLamViecDTOList.add(lichLamViecDonViDTO);
         }
         return lichLamViecDTOList;
@@ -281,7 +311,7 @@ public class LichLamViecService {
         }else {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            DonVi donVi = donViService.getById(lichLamViecDTO.getDonVi().toHexString());
+            DonVi donVi = donViService.getById(lichLamViecDTO.getDonVi().get_id().toHexString());
 
             if(taiKhoan.getDonVi().equals(donVi) && taiKhoanService.kiemTraUserAdmin(authentication) == true){
                 lichLamViec.setDonVi(donVi);

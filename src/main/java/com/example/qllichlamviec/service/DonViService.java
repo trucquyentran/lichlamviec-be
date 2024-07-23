@@ -74,14 +74,19 @@ public class DonViService {
     }
 
     // Lay toan bo don vi con cua don vi dang quan ly
-    public List<DonViSelectDTO> getSelectDonViThuocTrucTiep(TaiKhoan taiKhoan) {
+    public List<DonViSelectDTO> getSelectDonViTrucThuoc(TaiKhoan taiKhoan) {
 
-        return donViReponsitory.getSelectDonViThuocTrucTiep(taiKhoan.getDonVi().get_id().toHexString());
+        return donViReponsitory.getSelectDonViCon(taiKhoan.getDonVi().get_id().toHexString());
     }
 
 
-    // Lay don vi dang thuoc
+    // Lay don vi toan bo don vi
     public List<DonVi> getSelectToanBoDonVi() {
         return donViReponsitory.findAll();
+    }
+
+    // Lay don List vi cha
+    public List<DonVi> getSelectDonViCha() {
+        return donViReponsitory.getSelectDonViCha();
     }
 }

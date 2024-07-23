@@ -20,8 +20,8 @@ public interface DonViReponsitory extends MongoRepository<DonVi, ObjectId> {
     List<DonViSelectDTO> getSelectDV(String donVi);
 
     @Query("{ 'donViTrucThuoc' : { $eq: null } }")
-    List<DonViDTO> getDonViConFromDonViCha(String search);
+    List<DonVi> getSelectDonViCha();
 
     @Query("{ 'donViTrucThuoc' : ObjectId('?0') }")
-    List<DonViSelectDTO> getSelectDonViThuocTrucTiep(String search);
+    List<DonViSelectDTO> getSelectDonViCon(String search);
 }

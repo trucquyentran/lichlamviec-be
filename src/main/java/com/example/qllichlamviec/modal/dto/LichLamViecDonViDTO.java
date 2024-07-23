@@ -17,8 +17,7 @@ public class LichLamViecDonViDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId donVi;
+    private DonViDTO donVi;
     private LocalDateTime thoiGianBD;
     private LocalDateTime thoiGianKT;
     @Size(max = 300, message = "Tiêu đề không được vượt quá 300 ký tự")

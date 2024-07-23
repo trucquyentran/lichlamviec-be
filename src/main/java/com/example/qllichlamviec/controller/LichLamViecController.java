@@ -112,11 +112,10 @@ public class LichLamViecController {
     }
 
 
-    @GetMapping ("/lich-user/{taiKhoanId}")
-    public ResponseEntity<Object> getLichByNguoiDung(@PathVariable ObjectId taiKhoanId){
+    @GetMapping ("/lich-user")
+    public ResponseEntity<Object> lichByIdNguoiDung(@RequestParam ObjectId tk){
         try {
-            List<LichLamViec> llv = lichLamViecService.getByTaiKhoanID(taiKhoanId);
-            return new ResponseEntity<>(llv, HttpStatus.OK);
+            return ResponseEntity.ok(lichLamViecService.getLichByNguoiDung(tk));
 
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
