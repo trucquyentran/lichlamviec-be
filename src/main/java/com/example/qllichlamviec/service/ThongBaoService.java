@@ -120,15 +120,16 @@ public void kiemTraVaGuiThongBao() {
 
     if (thongBaoList != null && !thongBaoList.isEmpty()) {
         for (ThongBao thongBao : thongBaoList) {
-            log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung());
+            log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung()+ " diễn ra vào lúc " + thongBao.getThoiGian().plusMinutes(10));
             try {
-                notificationHandler.sendNotification("Nhắc lịch: Bạn có lịch: " + thongBao.getNoiDung() + " diễn ra vào lúc " + thongBao.getThoiGian().minusMinutes(10));
+                notificationHandler.sendNotification("Nhắc lịch: Bạn có lịch: " + thongBao.getNoiDung() + " diễn ra vào lúc " + thongBao.getThoiGian().plusMinutes(10));
             } catch (IOException e) {
                 log.error("Error sending notification: ", e);
             }
         }
     } else {
         log.info("Không có thông báo nào trùng với thời gian hiện tại.");
+
     }
 }
 
