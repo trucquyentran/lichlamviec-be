@@ -164,11 +164,6 @@ public class LichLamViecService {
         List<LichLamViecDTO> llvList = new ArrayList<>();
         for (LichLamViec llv: lichLamViecList) {
             LichLamViecDTO lichLamViecDTOList = modelMapper.map(llv,LichLamViecDTO.class);
-//            if (llv.getTaiKhoan()!= null){
-//                lichLamViecDTOList.setTaiKhoan(llv.getTaiKhoan().get_id());
-//            }else {
-//                lichLamViecDTOList.setDonVi(llv.getDonVi().get_id());
-//            }
             llvList.add(lichLamViecDTOList);
         }
         return llvList;

@@ -138,7 +138,6 @@ public class TaiKhoanController {
     @GetMapping("/roles")
     public ResponseEntity<Object> getQuyenTaiKhoan(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        thongBaoService.kiemTraVaGuiThongBao();
         return new ResponseEntity<>(authentication.getAuthorities(),HttpStatus.OK);
     }
 
