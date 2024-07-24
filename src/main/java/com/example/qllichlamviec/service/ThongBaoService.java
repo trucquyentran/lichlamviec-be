@@ -101,9 +101,10 @@ public class ThongBaoService {
         }
     }
 
-//    @Scheduled(fixedRate = 60000)  // Chạy mỗi phút một lần
 public void kiemTraVaGuiThongBao() {
     log.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
+    // Định dạng thời gian
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     LocalDateTime now = LocalDateTime.now();
     if (currentUser == null) {
         log.info("Authentication is null or user is not authenticated");
@@ -120,9 +121,11 @@ public void kiemTraVaGuiThongBao() {
 
     if (thongBaoList != null && !thongBaoList.isEmpty()) {
         for (ThongBao thongBao : thongBaoList) {
-            log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung()+ " diễn ra vào lúc " + thongBao.getThoiGian().plusMinutes(10));
+            LocalDateTime thoiGian = thongBao.getThoiGian().plusMinutes(10);
+            String formattedDate = thoiGian.format(formatter);
+            log.info("Nhắc lịch: Thông báo nội dung: " + thongBao.getNoiDung()+ " diễn ra vào lúc " + formattedDate);
             try {
-                notificationHandler.sendNotification("Nhắc lịch: Bạn có lịch: " + thongBao.getNoiDung() + " diễn ra vào lúc " + thongBao.getThoiGian().plusMinutes(10));
+                notificationHandler.sendNotification("Nhắc lịch: Bạn có lịch: " + thongBao.getNoiDung() + " diễn ra vào lúc " + formattedDate);
             } catch (IOException e) {
                 log.error("Error sending notification: ", e);
             }

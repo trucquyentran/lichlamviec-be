@@ -152,9 +152,9 @@ public class TaiKhoanService {
 
     }
 
-    public List<TaiKhoanNguoiDungDTO> findAllUser(int pageNumber){
+    public List<TaiKhoanNguoiDungDTO> findAllUser(int pageNumber, int size){
         // Tạo Pageable object để chỉ định số trang và kích thước trang
-        Pageable pageable = PageRequest.of(pageNumber, 3); // 3 là số dòng trên mỗi trang
+        Pageable pageable = PageRequest.of(pageNumber, size); // 3 là số dòng trên mỗi trang
         if (pageNumber == 0){
             List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll();
             List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();

@@ -49,8 +49,8 @@ public class DonViService {
         return donVi;
     }
 
-    public List<DonVi> findAll(int pageNumber){
-        Pageable pageable = PageRequest.of(pageNumber,3);
+    public List<DonVi> findAll(int pageNumber , int size){
+        Pageable pageable = PageRequest.of(pageNumber,size);
 
         Page<DonVi> donVi = donViReponsitory.findAll(pageable);
         if (donVi == null) {

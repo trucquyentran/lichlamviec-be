@@ -31,8 +31,8 @@ public class DonViController {
     private TaiKhoanService taiKhoanService;
 
     @GetMapping(value = "/getall")
-    public List<DonVi> getAlls(@RequestParam int page){
-         return donViService.findAll(page);
+    public List<DonVi> getAlls(@RequestParam int page, int size){
+         return donViService.findAll(page,size);
     }
 
     @GetMapping

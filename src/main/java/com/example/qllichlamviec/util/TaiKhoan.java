@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.util;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -12,13 +13,13 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import com.example.qllichlamviec.util.pojo.Session;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,8 @@ public class TaiKhoan {
     @ReadOnlyProperty
     @DocumentReference(collection = "QuyenTaiKhoan", lookup = "{'taiKhoan':?#{#self._id}}")
     private List<QuyenTaiKhoan> quyenTaiKhoanList;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime ngayTao;
     private Integer trangThai;
     private List<Session> listSession;
@@ -54,6 +57,8 @@ public class TaiKhoan {
     @NotNull(message = "Số điện thoai không được để trống")
     private String sdt;
     private Boolean gioiTinh;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate ngaySinh;
 
     @DocumentReference(lazy = false)

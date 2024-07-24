@@ -152,8 +152,8 @@ public class TaiKhoanController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/list-user")
-    public List<TaiKhoanNguoiDungDTO> ListUser(@RequestParam int page){
-        return taiKhoanService.findAllUser(page);
+    public List<TaiKhoanNguoiDungDTO> ListUser(@RequestParam int page, int size){
+        return taiKhoanService.findAllUser(page, size);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
