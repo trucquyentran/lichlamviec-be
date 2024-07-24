@@ -433,6 +433,22 @@ public class TaiKhoanService {
         }
     }
 
+    public boolean kiemTraManager(Authentication authentication) {
+        try {
+            List<GrantedAuthority> authorities = new ArrayList<>(authentication.getAuthorities());
+            List<String> roles = new ArrayList<>();
+            for (GrantedAuthority authority : authorities) {
+                if (authority.getAuthority().equals("ROLE_MANAGER")) {
+                    return true;
+                }
+            }
+            return false;
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 
 
 }

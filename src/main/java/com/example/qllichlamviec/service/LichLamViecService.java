@@ -89,13 +89,13 @@ public class LichLamViecService {
             if (hasAccess) {
                 LichLamViec llv = getById(search);
 
-                LichLamViecDTO lichLamViecDTO = modelMapper.map(llv, LichLamViecDTO.class);
+                LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(llv, LichLamViecHienThiDTO.class);
 //                if (llv.getTaiKhoan() != null) {
 //                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
 //                } else {
 //                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
 //                }
-                return new ResponseEntity<>(lichLamViecDTO, HttpStatus.OK);
+                return new ResponseEntity<>(lichLamViecHienThiDTO, HttpStatus.OK);
             } else {
                 throw new RuntimeException("Lịch này không thuộc quyền quản lý của bạn");
             }
@@ -127,9 +127,9 @@ public class LichLamViecService {
 
     public ResponseEntity<Object> getLichByNguoiDung(ObjectId taiKhoanId){
         List<LichLamViec> llvList = getByTaiKhoanID(taiKhoanId);
-        List<LichLamViecDTO> lichLamViecDTOList = new ArrayList<>();
+        List<LichLamViecHienThiDTO> lichLamViecHienThiDTOList = new ArrayList<>();
         for (LichLamViec lichLamViec: llvList) {
-            LichLamViecDTO lichLamViecList = modelMapper.map(lichLamViec, LichLamViecDTO.class);
+            LichLamViecHienThiDTO lichLamViecList = modelMapper.map(lichLamViec, LichLamViecHienThiDTO.class);
 
             // Ánh xạ tài khoản và quyền của tài khoản
             NguoiDungDTO nguoiDungDTO = modelMapper.map(lichLamViec.getTaiKhoan(), NguoiDungDTO.class);
@@ -144,13 +144,13 @@ public class LichLamViecService {
             lichLamViecList.setTaiKhoan(nguoiDungDTO);
 
 
-            lichLamViecDTOList.add(lichLamViecList);
+            lichLamViecHienThiDTOList.add(lichLamViecList);
 
         }
-        return new ResponseEntity<>(lichLamViecDTOList, HttpStatus.OK);
+        return new ResponseEntity<>(lichLamViecHienThiDTOList, HttpStatus.OK);
     }
 
-    public List<LichLamViecDTO> search(String tuKhoa){
+    public List<LichLamViecHienThiDTO> search(String tuKhoa){
         String regexKeyword = XuLyDauChuoiTimKiem.convertToRegex(tuKhoa);
 
         List<DonVi> donViList = donViService.search(tuKhoa);
@@ -161,10 +161,10 @@ public class LichLamViecService {
 
 
         List<LichLamViec> lichLamViecList = lichLamViecReponsitory.searchLich(taiKhoanIds,donViIds,regexKeyword);
-        List<LichLamViecDTO> llvList = new ArrayList<>();
+        List<LichLamViecHienThiDTO> llvList = new ArrayList<>();
         for (LichLamViec llv: lichLamViecList) {
-            LichLamViecDTO lichLamViecDTOList = modelMapper.map(llv,LichLamViecDTO.class);
-            llvList.add(lichLamViecDTOList);
+            LichLamViecHienThiDTO lichLamViecHienThiDTOList = modelMapper.map(llv, LichLamViecHienThiDTO.class);
+            llvList.add(lichLamViecHienThiDTOList);
         }
         return llvList;
     }
@@ -235,10 +235,10 @@ public class LichLamViecService {
         for (TaiKhoan tk : taiKhoanList) {
 
             List<LichLamViec> lichLamViecCuaTaiKhoan = getByTaiKhoanID(tk.get_id());
-            List<LichLamViecDTO> lichLamViecDTOList = new ArrayList<>();
+            List<LichLamViecHienThiDTO> lichLamViecHienThiDTOList = new ArrayList<>();
             for (LichLamViec lich: lichLamViecCuaTaiKhoan){
-                LichLamViecDTO lichLamViecDTO = modelMapper.map(lich,LichLamViecDTO.class);
-                lichLamViecDTOList.add(lichLamViecDTO);
+                LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(lich, LichLamViecHienThiDTO.class);
+                lichLamViecHienThiDTOList.add(lichLamViecHienThiDTO);
 
             }
             TaiKhoanNguoiDungDTO taiKhoan1 = modelMapper.map(tk,TaiKhoanNguoiDungDTO.class);
@@ -246,7 +246,7 @@ public class LichLamViecService {
             LichDonViTaiKhoanDTO llv = new LichDonViTaiKhoanDTO();
 
             llv.setTaiKhoan(taiKhoan1);
-            llv.setLichLamViecList(lichLamViecDTOList);
+            llv.setLichLamViecList(lichLamViecHienThiDTOList);
 
             lichDonViTaiKhoanDTOList.add(llv);
 
@@ -285,6 +285,8 @@ public class LichLamViecService {
 
     public ResponseEntity<Object> taoLich(LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest){
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
 
         LichLamViec lichLamViec = new LichLamViec();
@@ -297,21 +299,54 @@ public class LichLamViecService {
         lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
         lichLamViec.setBg(lichLamViecDTO.getBg());
 
-        // Check thời gian bắt đầu và kết thục lịch
+        //  Check thời gian bắt đầu và kết thục lịch
         kiemTraThoiGianHopLe(lichLamViec);
 
-        if(lichLamViecDTO.getDonVi() == null){
+        boolean isManager = taiKhoanService.kiemTraManager(authentication);
+        boolean isAdmin = taiKhoanService.kiemTraUserAdmin(authentication);
+
+        //  Them lich ca nhan
+        if(lichLamViecDTO.getDonVi() == null && lichLamViecDTO.getTaiKhoan() == null){
             lichLamViec.setTaiKhoan(taiKhoan);
 
-        }else {
+        }
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //  Them lich cho nhan vien
+        if (lichLamViecDTO.getDonVi() == null && lichLamViecDTO.getTaiKhoan() != null && isManager || isAdmin){
+            TaiKhoan tk = taiKhoanService.getByID(lichLamViecDTO.getTaiKhoan().toHexString());
+
+            String donViTaiKhoan = taiKhoan.getDonVi().get_id().toHexString();
+            String donViNhanVien = tk.getDonVi().get_id().toHexString();
+            String donViTrucThuocNV = tk.getDonVi().getDonViTrucThuoc().get_id().toHexString();
+
+            if (isManager || isAdmin) {
+                if (isManager && (!donViTaiKhoan.equals(donViNhanVien) )&& (!donViTaiKhoan.equals(donViTrucThuocNV))) {
+                    return new ResponseEntity<>("Bạn không thể thêm lịch cho nhân viên này vì bạn không có quyền quản lý đơn vị: " + tk.getDonVi().getTenDonVi(), HttpStatus.UNAUTHORIZED);
+                }
+                lichLamViec.setTaiKhoan(tk);
+            } else {
+                return new ResponseEntity<>("Bạn không có quyền thực hiện hành động này.", HttpStatus.UNAUTHORIZED);
+            }
+
+        }
+
+        //  Them lich cho don vi
+        if (lichLamViecDTO.getDonVi() != null && lichLamViecDTO.getTaiKhoan() == null){
+        //  Check quyen quan ly (phai la Admim va cung don vi voi don vi duoc them lich)
             DonVi donVi = donViService.getById(lichLamViecDTO.getDonVi().get_id().toHexString());
+            DonVi donViTrucThuoc = donVi.getDonViTrucThuoc();
+            List<TaiKhoan> taiKhoanList = taiKhoanService.getByDonViID(donVi.get_id());
 
-            if(taiKhoan.getDonVi().equals(donVi) && taiKhoanService.kiemTraUserAdmin(authentication) == true){
-                lichLamViec.setDonVi(donVi);
-            }else {
-                return new ResponseEntity<>("Bạn không có quền quản lý đơn vị này nên không thể thêm lịch cho đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
+            if (isManager || isAdmin){
+                if(isManager && !taiKhoan.getDonVi().equals(donVi) && !taiKhoan.getDonVi().equals(donViTrucThuoc)){
+                    return new ResponseEntity<>("Bạn không có quền quản lý đơn vị này nên không thể thêm lịch cho đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
+                }else {
+                    if (taiKhoanList == null){
+                        return new ResponseEntity<>("Hiện tại đơn vị " +donVi.getTenDonVi()+" chưa có thành viên nào nên không thể tạo lịch", HttpStatus.UNAUTHORIZED);
+                    }else {
+                        lichLamViec.setDonVi(donVi);
+                    }
+                }
             }
 
         }
@@ -322,23 +357,61 @@ public class LichLamViecService {
 
     }
 
-    public ResponseEntity<Object> editLich(LichLamViecDTO lichLamViecDTO, String idLich, HttpServletRequest httpServletRequest){
+    public ResponseEntity<Object> editLich(LichLamViecHienThiDTO lichLamViecHienThiDTO, String idLich, HttpServletRequest httpServletRequest){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+
+        boolean isManager = taiKhoanService.kiemTraManager(authentication);
 
         LichLamViec lichLamViec = getById(idLich);
 
-        lichLamViec.setThoiGianBD(lichLamViecDTO.getThoiGianBD());
-        lichLamViec.setThoiGianKT(lichLamViecDTO.getThoiGianKT());
-        lichLamViec.setDiaDiem(lichLamViecDTO.getDiaDiem());
-        lichLamViec.setNoiDung(lichLamViecDTO.getNoiDung());
-        lichLamViec.setTieuDe(lichLamViecDTO.getTieuDe());
-        lichLamViec.setGhiChu(lichLamViecDTO.getGhiChu());
+        lichLamViec.setThoiGianBD(lichLamViecHienThiDTO.getThoiGianBD());
+        lichLamViec.setThoiGianKT(lichLamViecHienThiDTO.getThoiGianKT());
+        lichLamViec.setDiaDiem(lichLamViecHienThiDTO.getDiaDiem());
+        lichLamViec.setNoiDung(lichLamViecHienThiDTO.getNoiDung());
+        lichLamViec.setTieuDe(lichLamViecHienThiDTO.getTieuDe());
+        lichLamViec.setGhiChu(lichLamViecHienThiDTO.getGhiChu());
 
-        lichLamViec.setBg(lichLamViecDTO.getBg());
+        lichLamViec.setBg(lichLamViecHienThiDTO.getBg());
 
         // Check thời gian bắt đầu và kết thục lịch
         kiemTraThoiGianHopLe(lichLamViec);
 
-        save(lichLamViec);
+        //  Cap nhat lich nhan vien
+        if (lichLamViec.getDonVi() == null && lichLamViec.getTaiKhoan() != null) {
+
+            TaiKhoan tk = taiKhoanService.getByID(lichLamViec.getTaiKhoan().get_id().toHexString());
+            DonVi donVi = donViService.getById(lichLamViec.getDonVi().get_id().toHexString());
+
+
+            String donViTaiKhoan = taiKhoan.getDonVi().get_id().toHexString();
+            String donViNhanVien = tk.getDonVi().get_id().toHexString();
+            String donViTrucThuocNV = tk.getDonVi().getDonViTrucThuoc().get_id().toHexString();
+            if (isManager && (!donViTaiKhoan.equals(donViNhanVien) )&& (!donViTaiKhoan.equals(donViTrucThuocNV))) {
+                return new ResponseEntity<>("Bạn không thể thêm lịch cho nhân viên này vì bạn không có quyền quản lý đơn vị: " + tk.getDonVi().getTenDonVi(), HttpStatus.UNAUTHORIZED);
+            }
+            save(lichLamViec);
+        }
+
+        // Cap nhat lich don vi
+        if (lichLamViec.getDonVi() != null && lichLamViec.getTaiKhoan() == null){
+            //  Check quyen quan ly (phai la Admim va cung don vi voi don vi duoc them lich)
+            DonVi donVi = donViService.getById(lichLamViec.getDonVi().get_id().toHexString());
+            DonVi donViTrucThuoc = donVi.getDonViTrucThuoc();
+            List<TaiKhoan> taiKhoanList = taiKhoanService.getByDonViID(donVi.get_id());
+
+            if(isManager && !taiKhoan.getDonVi().equals(donVi) && !taiKhoan.getDonVi().equals(donViTrucThuoc)){
+                return new ResponseEntity<>("Bạn không có quền quản lý đơn vị này nên không thể thêm lịch cho đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
+            }else {
+                //  Check don vi co nhan vien nao chua
+                if (taiKhoanList == null){
+                    return new ResponseEntity<>("Hiện tại đơn vị " +donVi.getTenDonVi()+" chưa có thành viên nào nên không thể tạo lịch", HttpStatus.UNAUTHORIZED);
+                }else {
+                    save(lichLamViec);
+                }
+            }
+
+        }
 
         // Cập nhật lại thông báo
         List<ThongBao> thongBaoList = thongBaoService.getByIdLich(lichLamViec.get_id());
@@ -352,7 +425,7 @@ public class LichLamViecService {
 
     }
 
-    public ResponseEntity<Object> editLichCaNhan(LichLamViecDTO lichLamViecDTO, String idLich, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Object> editLichCaNhan(LichLamViecHienThiDTO lichLamViecHienThiDTO, String idLich, HttpServletRequest httpServletRequest) {
 
         TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
 
@@ -362,7 +435,7 @@ public class LichLamViecService {
         String tk2 = taiKhoan.get_id().toHexString();
 
         if (tk2.equals(tk)) {
-            editLich(lichLamViecDTO, idLich, httpServletRequest);
+            editLich(lichLamViecHienThiDTO, idLich, httpServletRequest);
 
         } else {
             return new ResponseEntity<>("Đây là lịch cá nhân bạn không có quyền chỉnh sữa", HttpStatus.BAD_REQUEST);

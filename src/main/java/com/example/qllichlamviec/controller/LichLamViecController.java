@@ -2,7 +2,6 @@ package com.example.qllichlamviec.controller;
 
 import com.example.qllichlamviec.modal.dto.*;
 import com.example.qllichlamviec.modal.system.Error;
-import com.example.qllichlamviec.modal.system.NguoiDungDangNhapDTO;
 import com.example.qllichlamviec.service.*;
 import com.example.qllichlamviec.util.*;
 import org.bson.types.ObjectId;
@@ -41,7 +40,7 @@ public class LichLamViecController {
     @GetMapping("/tim-kiem")
     public ResponseEntity<?> timKiemLichLamViec(@RequestParam String tuKhoa) {
         try {
-            List<LichLamViecDTO> lichLamViecList = lichLamViecService.search(tuKhoa);
+            List<LichLamViecHienThiDTO> lichLamViecList = lichLamViecService.search(tuKhoa);
             if (lichLamViecList.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -115,6 +114,7 @@ public class LichLamViecController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
     @PostMapping("/them-lich-donvi")
     public ResponseEntity<Object> themLichDonVi(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
         try {
@@ -126,10 +126,35 @@ public class LichLamViecController {
 
     }
 
-    @PutMapping("/edit-lich-donvi")
-    public ResponseEntity<Object> EditLichDonVi(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
+    @PostMapping("/them-lich-nhan-vien")
+    public ResponseEntity<Object> themLichNhanVien(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, HttpServletRequest httpRequest) {
         try {
-            return ResponseEntity.ok(lichLamViecService.editLich(lichLamViecDTO, idLich, httpRequest));
+            return ResponseEntity.ok(lichLamViecService.taoLich(lichLamViecDTO, httpRequest));
+
+        } catch (Exception e) {
+            return new ResponseEntity<>("Lỗi khi tạo lịch: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
+    @PutMapping("/edit-lich-donvi")
+    public ResponseEntity<Object> editLichDonVi(@Valid @RequestBody LichLamViecHienThiDTO lichLamViecHienThiDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+        try {
+            return ResponseEntity.ok(lichLamViecService.editLich(lichLamViecHienThiDTO, idLich, httpRequest));
+
+        } catch (Exception e) {
+            return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
+    @PutMapping("/edit-lich-nhan-vien")
+    public ResponseEntity<Object> editLichNhanVien(@Valid @RequestBody LichLamViecHienThiDTO lichLamViecHienThiDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+        try {
+            return ResponseEntity.ok(lichLamViecService.editLich(lichLamViecHienThiDTO, idLich, httpRequest));
 
         } catch (Exception e) {
             return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,9 +176,9 @@ public class LichLamViecController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/edit-lich-user")
-    public ResponseEntity<Object> EditLichUser(@Valid @RequestBody LichLamViecDTO lichLamViecDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
+    public ResponseEntity<Object> EditLichUser(@Valid @RequestBody LichLamViecHienThiDTO lichLamViecHienThiDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
-            return  ResponseEntity.ok(lichLamViecService.editLichCaNhan(lichLamViecDTO, idLich, httpRequest));
+            return  ResponseEntity.ok(lichLamViecService.editLichCaNhan(lichLamViecHienThiDTO, idLich, httpRequest));
 
         } catch (Exception e) {
             return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -171,29 +196,4 @@ public class LichLamViecController {
         }
     }
 
-
-
-//    @PreAuthorize("hasRole('ROLE_USER')")
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<Object> deleteByUser(@PathVariable String id, HttpServletRequest httpRequest) {
-//        try {
-//            // Lấy thông tin tài khoản từ httpRequest
-//            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpRequest);
-//
-//            // Lấy thông tin lịch làm việc cần xoá từ id
-//            LichLamViec lichLamViec = lichLamViecService.getById(id);
-//
-//            // Kiểm tra xem lịch làm việc có thuộc về tài khoản đang đăng nhập không
-//            if (!lichLamViec.getTaiKhoan().get_id().equals(taiKhoan.get_id())) {
-//                return new ResponseEntity<>("Bạn không có quyền xoá lịch làm việc này.", HttpStatus.FORBIDDEN);
-//            }
-//
-//            // Xoá lịch làm việc
-//            lichLamViecService.deleteByID(id);
-//
-//            return new ResponseEntity<>("Xoá thành công lịch làm việc với ID: " + id, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(new Error("400", e.getMessage()), HttpStatus.BAD_REQUEST);
-//        }
-//    }
 }

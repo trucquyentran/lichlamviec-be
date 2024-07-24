@@ -1,8 +1,7 @@
 package com.example.qllichlamviec.modal.dto;
 
 import com.example.qllichlamviec.util.DonVi;
-import com.example.qllichlamviec.util.TaiKhoan;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -16,9 +15,9 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class LichLamViecDTO {
+@AllArgsConstructor
+public class LichLamViecHienThiDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
     @NotNull(message = "Thời gian bắt đầu không được để trống")
@@ -44,6 +43,6 @@ public class LichLamViecDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGianTao;
 
-    private ObjectId taiKhoan;
+    private NguoiDungDTO taiKhoan;
     private DonVi donVi;
 }
