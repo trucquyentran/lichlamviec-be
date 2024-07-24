@@ -20,10 +20,10 @@ public class LichLamViecDonViDTO {
     private ObjectId _id;
 
     private DonViDTO donVi;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGianBD;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGianKT;
     @Size(max = 300, message = "Tiêu đề không được vượt quá 300 ký tự")
@@ -36,7 +36,7 @@ public class LichLamViecDonViDTO {
     private String ghiChu;
     @Size(max = 15, message = "Background không được vượt quá 15 ký tự")
     private String bg;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGianTao;
 

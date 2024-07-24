@@ -24,11 +24,11 @@ public class LichLamViecDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
     @NotNull(message = "Thời gian bắt đầu không được để trống")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGianBD;
     @NotNull(message = "Thời gian kết thúc không được để trống")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private  LocalDateTime thoiGianKT;
     @Size(max = 300, message = "Tiêu đề không được vượt quá 300 ký tự")
@@ -42,7 +42,7 @@ public class LichLamViecDTO {
     @Size(max = 15, message = "Background không được vượt quá 15 ký tự")
     private String bg;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGianTao;
 

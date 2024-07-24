@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ThongBaoDTO {
     private String noiDung;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGian;
     private List<ObjectId> listNguoiDung;
