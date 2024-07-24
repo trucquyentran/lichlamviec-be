@@ -71,17 +71,17 @@ public class ThongBaoService {
     }
 
     public List<ThongBaoDTO> getThongBaoByTaiKhoan(TaiKhoan taiKhoan){
-        List<LichLamViec> lichLamViecList = lichLamViecRepository.getByIDTaiKhoan(taiKhoan.get_id());
+        List<ThongBao> thongBaoList = thongBaoReponsitory.getByTaiKhoanId(taiKhoan.get_id());
 
         LocalDateTime now = LocalDateTime.now();
         List<ThongBaoDTO> lichLamViecDTO = new ArrayList<>();
-        for (LichLamViec llv: lichLamViecList){
+        for (ThongBao tb: thongBaoList){
+            LichLamViec lichLamViec = lichLamViecRepository.getByID(tb.getLichLamViec().get_id().toHexString());
+            if (lichLamViec.getThoiGianBD().isBefore(now) || lichLamViec.getThoiGianBD().isEqual(now)) {
+                LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(lichLamViec,LichLamViecHienThiDTO.class);
 
-            if (llv.getThoiGianBD().isBefore(now) || llv.getThoiGianBD().isEqual(now)) {
-                LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(llv,LichLamViecHienThiDTO.class);
-
-                ThongBaoDTO lichLamViecDTO1 = modelMapper.map(llv, ThongBaoDTO.class);
-                lichLamViecDTO1.setThoiGian(llv.getThoiGianBD().minusMinutes(10));
+                ThongBaoDTO lichLamViecDTO1 = modelMapper.map(lichLamViec, ThongBaoDTO.class);
+                lichLamViecDTO1.setThoiGian(tb.getThoiGian());
                 lichLamViecDTO1.setLichLamViec(lichLamViecHienThiDTO);
 
                 lichLamViecDTO.add(lichLamViecDTO1);
@@ -89,6 +89,27 @@ public class ThongBaoService {
         }
         return lichLamViecDTO;
     }
+
+    public ThongBaoDTO getChiTiet(String tbId) {
+        // Lấy thông báo từ repository bằng ID
+        ThongBao thongBao = thongBaoReponsitory.getByID(tbId);
+
+        // Lấy lịch làm việc từ repository bằng ID của lịch làm việc trong thông báo
+        LichLamViec lichLamViec = lichLamViecRepository.getByID(thongBao.getLichLamViec().get_id().toHexString());
+
+        // Ánh xạ đối tượng LichLamViec thành DTO
+        LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(lichLamViec, LichLamViecHienThiDTO.class);
+
+        // Ánh xạ đối tượng ThongBao thành DTO
+        ThongBaoDTO thongBaoDTO = modelMapper.map(thongBao, ThongBaoDTO.class);
+
+        // Thiết lập thời gian và lịch làm việc vào DTO
+        thongBaoDTO.setThoiGian(thongBao.getThoiGian());
+        thongBaoDTO.setLichLamViec(lichLamViecHienThiDTO);
+
+        return thongBaoDTO;
+    }
+
 
     public void deleteByLich (String id){
         thongBaoReponsitory.deleteByIdLich(new ObjectId(id));

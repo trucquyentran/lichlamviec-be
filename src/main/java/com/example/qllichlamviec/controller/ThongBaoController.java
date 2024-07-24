@@ -35,4 +35,14 @@ public class ThongBaoController {
         }
 
     }
+
+    @GetMapping("chi-tiet-thong-bao")
+    public ResponseEntity<Object> chiTietThongBao(@RequestParam String tb, HttpServletRequest httpServletRequest){
+        try {
+            return ResponseEntity.ok(thongBaoService.getChiTiet(tb));
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
 }
