@@ -27,7 +27,7 @@ public class ThongBao {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime thoiGian;
     @DocumentReference(lazy = false)

@@ -50,7 +50,7 @@ public class DonViService {
     }
 
     public List<DonVi> findAll(int pageNumber , int size){
-        Pageable pageable = PageRequest.of(pageNumber,size);
+        Pageable pageable = PageRequest.of(pageNumber-1,size);
 
         Page<DonVi> donVi = donViReponsitory.findAll(pageable);
         if (donVi == null) {

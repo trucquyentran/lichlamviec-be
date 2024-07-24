@@ -153,9 +153,7 @@ public class TaiKhoanService {
     }
 
     public List<TaiKhoanNguoiDungDTO> findAllUser(int pageNumber, int size){
-        // Tạo Pageable object để chỉ định số trang và kích thước trang
-        Pageable pageable = PageRequest.of(pageNumber, size); // 3 là số dòng trên mỗi trang
-        if (pageNumber == 0){
+        if (pageNumber == 0 && size == 0){
             List<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll();
             List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
             for (TaiKhoan tk: taiKhoanList){
@@ -164,7 +162,16 @@ public class TaiKhoanService {
             }
             return taiKhoanDTOList;
         }else {
-            Page<TaiKhoan> taiKhoanList = taiKhoanReponsitory.findAll(pageable);
+            // Tạo Pageable object để chỉ định số trang và kích thước trang
+            Pageable pageable = PageRequest.of(pageNumber-1, size); // size là số dòng trên mỗi trang
+
+            Page<TaiKhoan> taiKhoanListPage = taiKhoanReponsitory.findAll(pageable);
+
+            int currentPage = taiKhoanListPage.getNumber()+1;
+            int totalPages = taiKhoanListPage.getTotalPages();
+            long totalElements = taiKhoanListPage.getTotalElements();
+
+            List<TaiKhoan> taiKhoanList = taiKhoanListPage.getContent();
             List<TaiKhoanNguoiDungDTO> taiKhoanDTOList = new ArrayList<>();
             for (TaiKhoan tk: taiKhoanList){
                 TaiKhoanNguoiDungDTO taiKhoanDTO = mapToTaiKhoanNguoiDungDTO(tk);
