@@ -3,6 +3,8 @@ package com.example.qllichlamviec.service;
 import com.example.qllichlamviec.config.jwt.JwtAuthenticationTokenFilter;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.ThongBaoReponsitory;
+import com.example.qllichlamviec.util.LichLamViec;
+import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.ThongBao;
 import com.example.qllichlamviec.util.pojo.FormatTime;
 import com.example.qllichlamviec.websocket.NotificationHandler;
@@ -59,6 +61,11 @@ public class ThongBaoService {
         }
         return thongBaoList;
     }
+
+    public List<ThongBao> getThongBaoByTaiKhoan(TaiKhoan taiKhoan){
+        return thongBaoReponsitory.getByTaiKhoanId(taiKhoan.get_id());
+    }
+
     public void deleteByLich (String id){
         thongBaoReponsitory.deleteByIdLich(new ObjectId(id));
     }
@@ -90,7 +97,7 @@ public class ThongBaoService {
 public void kiemTraVaGuiThongBao() {
     log.info("Thực thi hàm kiemTraVaGuiThongBao tại " + LocalDateTime.now());
     // Định dạng thời gian
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
     LocalDateTime now = LocalDateTime.now();
     if (currentUser == null) {
         log.info("Xác thực là null hoặc người dùng không được xác thực");
@@ -106,11 +113,15 @@ public void kiemTraVaGuiThongBao() {
 
     if (thongBaoList != null && !thongBaoList.isEmpty()) {
         for (ThongBao thongBao : thongBaoList) {
-            LocalDateTime thoiGian = thongBao.getThoiGian().plusMinutes(10);
-            String formattedDate = thoiGian.format(formatter);
-            log.info("Bạn có lịch: " + thongBao.getNoiDung()+ " diễn ra vào lúc " + formattedDate);
+            LichLamViec lichLamViec = lichLamViecRepository.getByID(thongBao.getLichLamViec().get_id().toHexString());
+            LocalDateTime thoiGianBD = lichLamViec.getThoiGianBD();
+            LocalDateTime thoiGianKT = lichLamViec.getThoiGianKT();
+            String formattedDateBD = thoiGianBD.format(formatter);
+            String formattedDateKT = thoiGianKT.format(formatter);
+
+            log.info(thongBao.getNoiDung()+ "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
             try {
-                notificationHandler.sendNotification("Bạn có lịch: " + thongBao.getNoiDung() + " diễn ra vào lúc " + formattedDate);
+                notificationHandler.sendNotification("<a href='#'>"+thongBao.getNoiDung() + "</a>\n<h3>Diễn ra từ</h3> " + formattedDateBD + formattedDateBD+" đến "+formattedDateKT);
             } catch (IOException e) {
                 log.error("Lỗi gửi thông báo: ", e);
             }
