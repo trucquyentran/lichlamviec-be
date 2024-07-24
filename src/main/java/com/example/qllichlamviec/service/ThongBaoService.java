@@ -1,6 +1,9 @@
 package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.config.jwt.JwtAuthenticationTokenFilter;
+import com.example.qllichlamviec.modal.dto.LichLamViecDTO;
+import com.example.qllichlamviec.modal.dto.LichLamViecHienThiDTO;
+import com.example.qllichlamviec.modal.dto.ThongBaoDTO;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 import com.example.qllichlamviec.reponsitory.ThongBaoReponsitory;
 import com.example.qllichlamviec.util.LichLamViec;
@@ -10,6 +13,7 @@ import com.example.qllichlamviec.util.pojo.FormatTime;
 import com.example.qllichlamviec.websocket.NotificationHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -47,6 +52,9 @@ public class ThongBaoService {
     @Autowired
     private NotificationHandler notificationHandler;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 //    @Autowired
     private ScheduledExecutorService executorService;
 
@@ -62,8 +70,24 @@ public class ThongBaoService {
         return thongBaoList;
     }
 
-    public List<ThongBao> getThongBaoByTaiKhoan(TaiKhoan taiKhoan){
-        return thongBaoReponsitory.getByTaiKhoanId(taiKhoan.get_id());
+    public List<ThongBaoDTO> getThongBaoByTaiKhoan(TaiKhoan taiKhoan){
+        List<LichLamViec> lichLamViecList = lichLamViecRepository.getByIDTaiKhoan(taiKhoan.get_id());
+
+        LocalDateTime now = LocalDateTime.now();
+        List<ThongBaoDTO> lichLamViecDTO = new ArrayList<>();
+        for (LichLamViec llv: lichLamViecList){
+
+            if (llv.getThoiGianBD().isBefore(now) || llv.getThoiGianBD().isEqual(now)) {
+                LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(llv,LichLamViecHienThiDTO.class);
+
+                ThongBaoDTO lichLamViecDTO1 = modelMapper.map(llv, ThongBaoDTO.class);
+                lichLamViecDTO1.setThoiGian(llv.getThoiGianBD().minusMinutes(10));
+                lichLamViecDTO1.setLichLamViec(lichLamViecHienThiDTO);
+
+                lichLamViecDTO.add(lichLamViecDTO1);
+            }
+        }
+        return lichLamViecDTO;
     }
 
     public void deleteByLich (String id){
@@ -121,7 +145,7 @@ public void kiemTraVaGuiThongBao() {
 
             log.info(thongBao.getNoiDung()+ "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
             try {
-                notificationHandler.sendNotification("<a href='#'>"+thongBao.getNoiDung() + "</a>\n<h3>Diễn ra từ</h3> " + formattedDateBD + formattedDateBD+" đến "+formattedDateKT);
+                notificationHandler.sendNotification(thongBao.getNoiDung() + "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
             } catch (IOException e) {
                 log.error("Lỗi gửi thông báo: ", e);
             }
