@@ -166,7 +166,7 @@ public void kiemTraVaGuiThongBao() {
 
             log.info(thongBao.getNoiDung()+ "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
             try {
-                notificationHandler.sendNotification("<h4><b>"+thongBao.getNoiDung() + "</b></h4></br><p>Diễn ra từ " + formattedDateBD+" đến "+formattedDateKT+"</p>");
+                notificationHandler.sendNotification("<p style='color:#3b6f9e'><b>"+thongBao.getNoiDung() + "</b></p></br><p>Diễn ra từ " + formattedDateBD+" đến "+formattedDateKT+"</p>");
             } catch (IOException e) {
                 log.error("Lỗi gửi thông báo: ", e);
             }
