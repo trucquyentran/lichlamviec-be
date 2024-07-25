@@ -164,9 +164,9 @@ public void kiemTraVaGuiThongBao() {
             String formattedDateBD = thoiGianBD.format(formatter);
             String formattedDateKT = thoiGianKT.format(formatter);
 
-            log.info(thongBao.getNoiDung()+ "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
+            log.info(thongBao.getNoiDung()+ "Diễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
             try {
-                notificationHandler.sendNotification("<p style='color:#3b6f9e'><b>"+thongBao.getNoiDung() + "</b></p></br><p>Diễn ra từ " + formattedDateBD+" đến "+formattedDateKT+"</p>");
+                notificationHandler.sendNotification("<p style='color:#3b6f9e;font-size:13px'><b>"+thongBao.getNoiDung() + "</b></p><p style='font-size:12.5px'>\uD83D\uDCC5 Từ " + formattedDateBD+" đến "+formattedDateKT+"</br>\uD83D\uDEA9 "+lichLamViec.getDiaDiem()+"</p>");
             } catch (IOException e) {
                 log.error("Lỗi gửi thông báo: ", e);
             }
