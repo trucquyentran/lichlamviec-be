@@ -1,0 +1,218 @@
+
+.fc .fc-col-header-cell {
+    padding: 10px;
+    font-size: 1.2em; 
+  }
+  .fc .fc-toolbar-title {
+    font-size: 1.2em; 
+  }
+
+
+.fc .fc-today-button:disabled {
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border: none; 
+    background-color: #177E89 !important;
+    pointer-events: none;
+
+  }
+  .fc .fc-today-button {
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border: none; 
+    background-color: #177E89 !important;
+    
+
+  }
+  .fc .fc-button.fc-prev-button,
+.fc .fc-button.fc-next-button ,  .fc-timeGridWeek-button, .fc-timeGridDay-button, .fc-dayGridMonth-button , .fc-listWeek-button , .fc-multiMonthYear-button{
+
+  font-size: 0.7em  !important;
+  background-color: #177E89  !important;
+  border: none !important;
+  font-weight: 600  !important;
+}
+
+.fc .fc-button.fc-prev-button:hover ,
+.fc .fc-button.fc-next-button:hover,
+.fc .fc-today-button:hover {
+    background-color:#1896a4 !important;
+  }
+
+  .fc .fc-daygrid-day-number{
+    padding: 9px 12px 0 0;
+    position: relative;
+    z-index: 4;
+    color: #177E89 !important;
+    font-weight: 900;
+  }
+
+  .fc .fc-col-header-cell-cushion {
+    display: inline-block;
+    padding: 2px 4px;
+    font-weight: 900;
+  }
+
+
+  .fc-day-today {
+    background: #f4eae5 !important;
+    border: none !important;
+  
+} 
+
+.fc .fc-toolbar-title{
+  font-size: 20px; 
+}
+
+
+@media (max-width: 768px) {
+  .fc .fc-toolbar-title,  .fc-col-header-cell-cushion  {
+    font-size: 17px;
+  }
+}
+@media (max-width: 620px) {
+    .fc .fc-toolbar-title,  .fc-col-header-cell-cushion  {
+      font-size: 15px;
+    }
+  }
+
+@media (max-width: 576px) {
+  .fc .fc-toolbar-title,  .fc-col-header-cell-cushion , .fc .fc-today-button:disabled {
+    font-size: 17px;
+  }
+}
+
+
+@media (max-width: 576px) {
+    .fc .fc-today-button:disabled {
+      font-size: 14px;
+    }
+  }
+
+@media (max-width: 476px) {
+   .fc-col-header-cell-cushion  {
+    font-size: 15px;
+  }
+}
+@media (max-width: 476px) {
+     .fc .fc-toolbar-title  {
+     font-size: 16px;
+   }
+ }
+
+@media (max-width: 400px) {
+     .fc .fc-today-button:disabled {
+      font-size: 12px;
+    }
+  }
+  
+
+  @media (max-width: 400px) {
+    .fc .fc-toolbar-title,  .fc-col-header-cell-cushion  {
+      font-size: 13px;
+    }
+  }
+
+.fc-col-header-cell-cushion {
+  color: black;
+}
+
+.fc .fc-timegrid-slot-label-cushion{
+  font-weight: 600;
+}
+
+.fc .fc-timegrid-axis-cushion {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.weekday{
+  font-weight: 500;
+}
+
+@media (max-width: 476px) {
+  .fc .fc-button.fc-prev-button, .fc .fc-button.fc-next-button   {
+    font-size: 0.4em  !important;
+    background-color: #177E89  !important;
+    border: none !important;
+    font-weight: 600  !important;
+  }
+}
+
+
+@media (max-width: 476px) {
+     .fc-timeGridWeek-button, .fc-timeGridDay-button ,.fc-dayGridMonth-button, .fc-listWeek-button , .fc-multiMonthYear-button  {
+      font-size: 14px  !important;
+      background-color: #177E89  !important;
+      border: none !important;
+      font-weight: 600  !important;
+    }
+  }
+
+  @media (max-width: 428px) {
+    .fc-timeGridWeek-button, .fc-timeGridDay-button , .fc-dayGridMonth-button , .fc-listWeek-button , .fc-multiMonthYear-button {
+     font-size: 12px  !important;
+     background-color: #177E89  !important;
+     border: none !important;
+     font-weight: 600  !important;
+   }
+ }
+
+ @media (max-width: 380px) {
+    .fc-timeGridWeek-button, .fc-timeGridDay-button, .fc-dayGridMonth-button, .fc-listWeek-button , .fc-multiMonthYear-button  {
+     font-size: 10px  !important;
+     background-color: #177E89  !important;
+     border: none !important;
+     font-weight: 600  !important;
+   }
+ }
+
+.fc .fc-button .fc-icon {
+    color: white !important;
+}
+
+.fc .fc-button-group > .fc-button.fc-button-active {
+    z-index: 0 !important;
+}
+
+
+.fc .fc-col-header-cell.fc-day-sun .fc-col-header-cell-cushion {
+  color: red;
+}
+
+ .fc-v-event{
+    background-color: #277DA1;
+    border: 1px solid #277DA1;
+} 
+.fc-daygrid-event, .fc-daygrid-dot-event{
+  color: #177E89;
+}
+.fc-v-event .fc-event-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+
+.fc-event {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-event .fc-event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-event .fc-event-time {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-event .fc-event-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
