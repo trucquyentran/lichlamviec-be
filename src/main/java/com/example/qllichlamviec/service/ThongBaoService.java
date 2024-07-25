@@ -115,9 +115,9 @@ public class ThongBaoService {
         thongBaoReponsitory.deleteByIdLich(new ObjectId(id));
     }
 
-    public UserDetails getCurrentUser() {
-        return JwtAuthenticationTokenFilter.getCurrentUser();
-    }
+//    public UserDetails getCurrentUser() {
+//        return JwtAuthenticationTokenFilter.getCurrentUser();
+//    }
 
     public void setCurrentUser(UserDetails user) {
         this.currentUser = user;
@@ -166,7 +166,7 @@ public void kiemTraVaGuiThongBao() {
 
             log.info(thongBao.getNoiDung()+ "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
             try {
-                notificationHandler.sendNotification(thongBao.getNoiDung() + "\nDiễn ra từ " + formattedDateBD+" đến "+formattedDateKT);
+                notificationHandler.sendNotification("<h4><b>"+thongBao.getNoiDung() + "</b></h4></br><p>Diễn ra từ " + formattedDateBD+" đến "+formattedDateKT+"</p>");
             } catch (IOException e) {
                 log.error("Lỗi gửi thông báo: ", e);
             }
