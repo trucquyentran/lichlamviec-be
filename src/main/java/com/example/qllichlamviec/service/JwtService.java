@@ -32,7 +32,6 @@ public class JwtService {
 
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
             builder.claim(TAIKHOANID, idTaiKhoan);
-//            builder.claim(NGUOIDUNGID, nguoiDungID);
             builder.claim(TRANGTHAI, trangThai);
             builder.claim(TYPE, "0");
             builder.expirationTime(generateExpirationDate());
@@ -53,7 +52,6 @@ public class JwtService {
             JWSSigner signer = new MACSigner(generateShareSecret());
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
             builder.claim(TAIKHOANID, idTaiKhoan);
-//            builder.claim(NGUOIDUNGID, nguoiDungID);
             builder.claim(TRANGTHAI, trangThai);
             builder.claim(TYPE,"1");
             builder.expirationTime(new Date(System.currentTimeMillis() + 86400000*3));
@@ -129,7 +127,7 @@ public class JwtService {
         String id = null;
         try {
             JWTClaimsSet claims = getClaimsFromToken(token);
-            id = claims.getStringClaim(NGUOIDUNGID);
+            id = claims.getStringClaim(TAIKHOANID);
         } catch (Exception e) {
 //			log.info("Token không hợp lệ");
         }

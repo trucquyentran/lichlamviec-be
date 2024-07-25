@@ -185,19 +185,19 @@ public class TaiKhoanService {
     }
 
     public TaiKhoan khoiTaoTaiKhoan(TaiKhoan taiKhoan) {
+            taiKhoan.setTrangThai(1);
 
-        taiKhoan.setTrangThai(1);
+            List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
+            taiKhoan.setQuyenTaiKhoanList(null);
+            taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
+            TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
 
-        List<QuyenTaiKhoan> quyenTaiKhoanList = taiKhoan.getQuyenTaiKhoanList();
-        taiKhoan.setQuyenTaiKhoanList(null);
-        taiKhoan.setPassword(passwordEncoder.encode(taiKhoan.getPassword()));
-        TaiKhoan taiKhoanRs = taiKhoanReponsitory.save(taiKhoan);
+            for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
+                qtk.setTaiKhoan(taiKhoanRs);
+                quyenTaiKhoanService.save(qtk);
+            }
+            return taiKhoanRs;
 
-        for (QuyenTaiKhoan qtk : quyenTaiKhoanList) {
-            qtk.setTaiKhoan(taiKhoanRs);
-            quyenTaiKhoanService.save(qtk);
-        }
-        return taiKhoanRs;
     }
 
     @Transactional

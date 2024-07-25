@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/public")
+@RequestMapping("/ql-lich/public")
 @Slf4j
 public class PublicController {
     @Autowired
@@ -31,15 +31,13 @@ public class PublicController {
     private QuyenService quyenService;
     @Autowired
     private QuyenTaiKhoanService quyenTaiKhoanService;
-//    @Autowired
-//    private ModuleLayer moduleLayer;
-//    @Autowired
-//    private JwtService jwtService;
 
     @GetMapping("/khoitaouser")
     @Transactional
     public ResponseEntity<Object> khoiTaoAdmin() {
-        DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT",null));
+
+        DonVi dvGoc = donViService.save(new DonVi(null,"VNPT Long An",null));
+        DonVi dv = donViService.save(new DonVi(null,"Trung tâm CNTT",dvGoc));
         Quyen q = quyenService.save(new Quyen(null,"Admin"));
         TaiKhoan tk = new TaiKhoan();
         tk.setUsername("admin");

@@ -154,7 +154,7 @@ public class LichLamViecController {
     @PutMapping("/edit-lich-nhan-vien")
     public ResponseEntity<Object> editLichNhanVien(@Valid @RequestBody LichLamViecHienThiDTO lichLamViecHienThiDTO, @RequestParam String idLich, HttpServletRequest httpRequest) {
         try {
-            return ResponseEntity.ok(lichLamViecService.editLich(lichLamViecHienThiDTO, idLich, httpRequest));
+            return ResponseEntity.ok(lichLamViecService.editLichDonViOrNhanVien(lichLamViecHienThiDTO, idLich, httpRequest));
 
         } catch (Exception e) {
             return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
