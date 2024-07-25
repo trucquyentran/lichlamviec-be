@@ -358,10 +358,6 @@ public class LichLamViecService {
     }
 
     public ResponseEntity<Object> editLich(LichLamViecHienThiDTO lichLamViecHienThiDTO, String idLich, HttpServletRequest httpServletRequest){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
-
-//        boolean isManager = taiKhoanService.kiemTraManager(authentication);
 
         LichLamViec lichLamViec = getById(idLich);
 
@@ -377,43 +373,9 @@ public class LichLamViecService {
         // Check thời gian bắt đầu và kết thục lịch
         kiemTraThoiGianHopLe(lichLamViec);
 
-
-
-//        //  Cap nhat lich nhan vien
-//        if (lichLamViec.getDonVi() == null && lichLamViec.getTaiKhoan() != null) {
-//
-//            TaiKhoan tk = taiKhoanService.getByID(lichLamViec.getTaiKhoan().get_id().toHexString());
-//            DonVi donVi = donViService.getById(lichLamViec.getDonVi().get_id().toHexString());
-//
-//
-//            String donViTaiKhoan = taiKhoan.getDonVi().get_id().toHexString();
-//            String donViNhanVien = tk.getDonVi().get_id().toHexString();
-//            String donViTrucThuocNV = tk.getDonVi().getDonViTrucThuoc().get_id().toHexString();
-//            if (isManager && (!donViTaiKhoan.equals(donViNhanVien) )&& (!donViTaiKhoan.equals(donViTrucThuocNV))) {
-//                return new ResponseEntity<>("Bạn không thể thêm lịch cho nhân viên này vì bạn không có quyền quản lý đơn vị: " + tk.getDonVi().getTenDonVi(), HttpStatus.UNAUTHORIZED);
-//            }
-//            save(lichLamViec);
-//        }
-//
-//        // Cap nhat lich don vi
-//        if (lichLamViec.getDonVi() != null && lichLamViec.getTaiKhoan() == null){
-//            //  Check quyen quan ly (phai la Admim va cung don vi voi don vi duoc them lich)
-//            DonVi donVi = donViService.getById(lichLamViec.getDonVi().get_id().toHexString());
-//            DonVi donViTrucThuoc = donVi.getDonViTrucThuoc();
-//            List<TaiKhoan> taiKhoanList = taiKhoanService.getByDonViID(donVi.get_id());
-//
-//            if(isManager && !taiKhoan.getDonVi().equals(donVi) && !taiKhoan.getDonVi().equals(donViTrucThuoc)){
-//                return new ResponseEntity<>("Bạn không có quền quản lý đơn vị này nên không thể thêm lịch cho đơn vị: " +donVi.getTenDonVi(), HttpStatus.UNAUTHORIZED);
-//            }else {
-//                //  Check don vi co nhan vien nao chua
-//                if (taiKhoanList == null){
-//                    return new ResponseEntity<>("Hiện tại đơn vị " +donVi.getTenDonVi()+" chưa có thành viên nào nên không thể tạo lịch", HttpStatus.UNAUTHORIZED);
-//                }else {
-//                    save(lichLamViec);
-//                }
-//            }
-//
-//        }
+        if (lichLamViecHienThiDTO.getDonVi() != null){
+            lichLamViec.setDonVi(lichLamViecHienThiDTO.getDonVi());
+        }
 
         save(lichLamViec);
 
