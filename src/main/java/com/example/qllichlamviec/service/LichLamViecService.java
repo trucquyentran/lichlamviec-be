@@ -312,7 +312,7 @@ public class LichLamViecService {
         }
 
         //  Them lich cho nhan vien
-        if (lichLamViecDTO.getDonVi() == null && lichLamViecDTO.getTaiKhoan() != null && isManager || isAdmin){
+        if (lichLamViecDTO.getDonVi() == null && lichLamViecDTO.getTaiKhoan() != null && isManager || lichLamViecDTO.getDonVi() == null && lichLamViecDTO.getTaiKhoan() != null  && isAdmin){
             TaiKhoan tk = taiKhoanService.getByID(lichLamViecDTO.getTaiKhoan().toHexString());
 
             String donViTaiKhoan = taiKhoan.getDonVi().get_id().toHexString();
@@ -358,10 +358,10 @@ public class LichLamViecService {
     }
 
     public ResponseEntity<Object> editLich(LichLamViecHienThiDTO lichLamViecHienThiDTO, String idLich, HttpServletRequest httpServletRequest){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
 
-        boolean isManager = taiKhoanService.kiemTraManager(authentication);
+//        boolean isManager = taiKhoanService.kiemTraManager(authentication);
 
         LichLamViec lichLamViec = getById(idLich);
 
