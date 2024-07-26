@@ -24,4 +24,7 @@ public interface DonViReponsitory extends MongoRepository<DonVi, ObjectId> {
 
     @Query("{ 'donViTrucThuoc' : ObjectId('?0') }")
     List<DonViSelectDTO> getSelectDonViCon(String search);
+
+    @Query("{ 'donViTrucThuoc' : ObjectId('?0') }")
+    List<DonVi> getDonViCon(String search);
 }

@@ -2,17 +2,20 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.DonViDTO;
 import com.example.qllichlamviec.modal.dto.DonViSelectDTO;
+import com.example.qllichlamviec.modal.dto.DonViTrucThuocDTO;
 import com.example.qllichlamviec.reponsitory.DonViReponsitory;
 import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.pojo.XuLyDauChuoiTimKiem;
 import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,8 +24,8 @@ public class DonViService {
     private DonViReponsitory donViReponsitory;
 //    @Autowired
 //    private TaiKhoanService taiKhoanService;
-//    @Autowired
-//    private ModelMapper modelMapper;
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     public DonVi save(DonVi donVi){
@@ -88,5 +91,23 @@ public class DonViService {
     // Lay don List vi cha
     public List<DonVi> getSelectDonViCha() {
         return donViReponsitory.getSelectDonViCha();
+    }
+
+    public Object getDonViTrucThuocById(String dv) {
+        List<DonVi> toanBoDV = donViReponsitory.findAll();
+        List<DonViTrucThuocDTO> donViTrucThuocDTOS = new ArrayList<>();
+        for (DonVi dv0: toanBoDV){
+            List<DonVi> listDonVi = donViReponsitory.getDonViCon(dv0.get_id().toHexString());
+
+            for (DonVi donVi1: listDonVi){
+
+                    List<DonVi> donViList = donViReponsitory.getDonViCon(donVi1.get_id().toHexString());
+                DonViTrucThuocDTO donViTrucThuocDTO = modelMapper.map(donVi1,DonViTrucThuocDTO.class);
+                donViTrucThuocDTO.setDonViCon(donViList);
+                donViTrucThuocDTOS.add(donViTrucThuocDTO);
+            }
+        }
+
+        return donViTrucThuocDTOS;
     }
 }

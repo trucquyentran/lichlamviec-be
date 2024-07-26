@@ -95,6 +95,11 @@ public class DonViController {
         return new ResponseEntity<>(donViService.getSelectDonViTrucThuoc(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
     }
 
+    @GetMapping("/donvi-tructhuoc")
+    public ResponseEntity<Object> selectDonViTrucThuocById(String dv) {
+        return new ResponseEntity<>(donViService.getDonViTrucThuocById(dv), HttpStatus.OK);
+    }
+
     @GetMapping("/select/donvi-cha")
     public ResponseEntity<Object> selectDonViCha() {
         return new ResponseEntity<>(donViService.getSelectDonViCha(), HttpStatus.OK);

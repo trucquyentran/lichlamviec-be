@@ -12,9 +12,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -74,37 +76,37 @@ public class LichLamViecService {
         return lichLamViec;
     }
 
-    public ResponseEntity<Object> getChiTietLich (String search, HttpServletRequest httpServletRequest){
+    public LichLamViecHienThiDTO getChiTietLich (String search, HttpServletRequest httpServletRequest){
         if (Pattern.compile("^[0-9a-fA-F]{24}$").matcher(search).matches()==true) {
             try {
-            TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
-            LichLamViec lichLamViec = lichLamViecReponsitory.getByID(search);
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                TaiKhoan taiKhoan = taiKhoanService.getTaiKhoanFromRequest(httpServletRequest);
+                LichLamViec lichLamViec = getById(search);
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            // Kiểm tra quyền truy cập
-            boolean hasAccess = (lichLamViec.getTaiKhoan() != null && taiKhoan.get_id().equals(lichLamViec.getTaiKhoan().get_id())) ||
-                    (lichLamViec.getDonVi() != null && taiKhoan.getDonVi() != null && taiKhoan.getDonVi().get_id().equals(lichLamViec.getDonVi().get_id())) ||
-                    taiKhoanService.kiemTraUserAdmin(authentication);
+                // Kiểm tra quyền truy cập
+                boolean hasAccess = (lichLamViec.getTaiKhoan() != null && taiKhoan.get_id().equals(lichLamViec.getTaiKhoan().get_id())) ||
+                        (lichLamViec.getDonVi() != null && taiKhoan.getDonVi() != null && taiKhoan.getDonVi().get_id().equals(lichLamViec.getDonVi().get_id())) ||
+                        taiKhoanService.kiemTraUserAdmin(authentication);
 
-            if (hasAccess) {
-                LichLamViec llv = getById(search);
+                if (hasAccess) {
+                    LichLamViec llv = getById(search);
 
-                LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(llv, LichLamViecHienThiDTO.class);
-//                if (llv.getTaiKhoan() != null) {
-//                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
-//                } else {
-//                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
-//                }
-                return new ResponseEntity<>(lichLamViecHienThiDTO, HttpStatus.OK);
-            } else {
-                throw new RuntimeException("Lịch này không thuộc quyền quản lý của bạn");
-            }
-        }catch (RuntimeException e) {
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN); // Trả về Forbidden nếu người dùng không có quyền
-            }
+                    LichLamViecHienThiDTO lichLamViecHienThiDTO = modelMapper.map(llv, LichLamViecHienThiDTO.class);
+    //                if (llv.getTaiKhoan() != null) {
+    //                    lichLamViecDTO.setTaiKhoan(llv.getTaiKhoan().get_id());
+    //                } else {
+    //                    lichLamViecDTO.setDonVi(llv.getDonVi().get_id());
+    //                }
+                    return lichLamViecHienThiDTO;
+                } else {
+                    throw new RuntimeException("Lịch này không thuộc quyền quản lý của bạn");
+                }
+            }catch (AccessDeniedException e) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage()); // Trả về Forbidden nếu người dùng không có quyền
+                }
 
         }else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new RuntimeException("Id lịch không hợp lệ!");
         }
     }
 
@@ -125,7 +127,7 @@ public class LichLamViecService {
         lichLamViecReponsitory.deleteByNguoiDungID(id);
     }
 
-    public ResponseEntity<Object> getLichByNguoiDung(ObjectId taiKhoanId){
+    public List<LichLamViecHienThiDTO> getLichByNguoiDung(ObjectId taiKhoanId){
         List<LichLamViec> llvList = getByTaiKhoanID(taiKhoanId);
         List<LichLamViecHienThiDTO> lichLamViecHienThiDTOList = new ArrayList<>();
         for (LichLamViec lichLamViec: llvList) {
@@ -147,7 +149,7 @@ public class LichLamViecService {
             lichLamViecHienThiDTOList.add(lichLamViecList);
 
         }
-        return new ResponseEntity<>(lichLamViecHienThiDTOList, HttpStatus.OK);
+        return lichLamViecHienThiDTOList;
     }
 
     public List<LichLamViecHienThiDTO> search(String tuKhoa){
