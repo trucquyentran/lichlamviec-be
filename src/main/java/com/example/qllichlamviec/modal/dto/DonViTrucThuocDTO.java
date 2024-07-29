@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -19,5 +20,6 @@ public class DonViTrucThuocDTO {
     private ObjectId _id;
     private String tenDonVi;
 
+    @DocumentReference(collection = "DonVi", lookup = "{'donViTrucThuoc':?#{#self._id}}")
     private List<DonVi> donViCon;
 }

@@ -94,18 +94,21 @@ public class DonViService {
     }
 
     public Object getDonViTrucThuocById(String dv) {
-        List<DonVi> toanBoDV = donViReponsitory.findAll();
+        List<DonVi> toanBoDV = donViReponsitory.getDonViCon(dv);
         List<DonViTrucThuocDTO> donViTrucThuocDTOS = new ArrayList<>();
         for (DonVi dv0: toanBoDV){
-            List<DonVi> listDonVi = donViReponsitory.getDonViCon(dv0.get_id().toHexString());
+//            List<DonVi> listDonVi = donViReponsitory.getDonViCon(dv0.get_id().toHexString());
 
-            for (DonVi donVi1: listDonVi){
-
-                    List<DonVi> donViList = donViReponsitory.getDonViCon(donVi1.get_id().toHexString());
-                DonViTrucThuocDTO donViTrucThuocDTO = modelMapper.map(donVi1,DonViTrucThuocDTO.class);
-                donViTrucThuocDTO.setDonViCon(donViList);
+                DonViTrucThuocDTO donViTrucThuocDTO = modelMapper.map(dv0,DonViTrucThuocDTO.class);
+//                donViTrucThuocDTO.setDonViCon(donViList);
                 donViTrucThuocDTOS.add(donViTrucThuocDTO);
-            }
+
+//            for (DonVi donVi1: listDonVi){
+//                List<DonVi> donViList = donViReponsitory.getDonViCon(donVi1.get_id().toHexString());
+//                DonViTrucThuocDTO donViTrucThuocDTO = modelMapper.map(donVi1,DonViTrucThuocDTO.class);
+//                donViTrucThuocDTO.setDonViCon(donViList);
+//                donViTrucThuocDTOS.add(donViTrucThuocDTO);
+//            }
         }
 
         return donViTrucThuocDTOS;
