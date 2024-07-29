@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public interface TaiKhoanReponsitory extends MongoRepository<TaiKhoan, ObjectId> {
@@ -39,5 +40,6 @@ public interface TaiKhoanReponsitory extends MongoRepository<TaiKhoan, ObjectId>
             "]}")
 
     List<TaiKhoan> searchTaiKhoan(String tuKhoa);
+
 
 }
