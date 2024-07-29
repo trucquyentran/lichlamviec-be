@@ -16,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DonViService {
@@ -82,35 +84,40 @@ public class DonViService {
         return donViReponsitory.getSelectDonViCon(taiKhoan.getDonVi().get_id().toHexString());
     }
 
+    public List<DonViTrucThuocDTO> getDonViConById(String dv) {
+        return donViReponsitory.getAll(dv);
+    }
 
     // Lay don vi toan bo don vi
-    public List<DonVi> getSelectToanBoDonVi() {
-        return donViReponsitory.findAll();
+    public List<DonViTrucThuocDTO> getSelectToanBoDonVi() {
+        DonVi donViRoot = donViReponsitory.getDonViRoot();
+        List<DonViTrucThuocDTO> donViTrucThuocDTOList = donViReponsitory.getAll(donViRoot.get_id().toHexString());
+
+        return donViTrucThuocDTOList;
     }
 
-    // Lay don List vi cha
-    public List<DonVi> getSelectDonViCha() {
-        return donViReponsitory.getSelectDonViCha();
-    }
-
-    public Object getDonViTrucThuocById(String dv) {
-        List<DonVi> toanBoDV = donViReponsitory.getDonViCon(dv);
-        List<DonViTrucThuocDTO> donViTrucThuocDTOS = new ArrayList<>();
-        for (DonVi dv0: toanBoDV){
-//            List<DonVi> listDonVi = donViReponsitory.getDonViCon(dv0.get_id().toHexString());
-
-                DonViTrucThuocDTO donViTrucThuocDTO = modelMapper.map(dv0,DonViTrucThuocDTO.class);
-//                donViTrucThuocDTO.setDonViCon(donViList);
-                donViTrucThuocDTOS.add(donViTrucThuocDTO);
-
-//            for (DonVi donVi1: listDonVi){
-//                List<DonVi> donViList = donViReponsitory.getDonViCon(donVi1.get_id().toHexString());
-//                DonViTrucThuocDTO donViTrucThuocDTO = modelMapper.map(donVi1,DonViTrucThuocDTO.class);
-//                donViTrucThuocDTO.setDonViCon(donViList);
-//                donViTrucThuocDTOS.add(donViTrucThuocDTO);
-//            }
+    // Lấy cấu trúc cây của đơn vị
+    public DonViTrucThuocDTO getDonViTree(ObjectId rootId) {
+        List<DonViTrucThuocDTO> allDonVi = donViReponsitory.getAll(rootId.toHexString());
+        Map<ObjectId, DonViTrucThuocDTO> donViMap = new HashMap<>();
+        for (DonViTrucThuocDTO donVi : allDonVi) {
+            donViMap.put(donVi.get_id(), donVi);
         }
 
-        return donViTrucThuocDTOS;
+        // Xây dựng cấu trúc cây
+        return buildTree(rootId, donViMap);
     }
+
+    private DonViTrucThuocDTO buildTree(ObjectId rootId, Map<ObjectId, DonViTrucThuocDTO> donViMap) {
+        DonViTrucThuocDTO root = donViMap.get(rootId);
+        if (root == null) {
+            return null;
+        }
+        return root;
+    }
+
+
+
+
+
 }

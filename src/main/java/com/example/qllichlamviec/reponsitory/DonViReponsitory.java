@@ -2,6 +2,7 @@ package com.example.qllichlamviec.reponsitory;
 
 import com.example.qllichlamviec.modal.dto.DonViDTO;
 import com.example.qllichlamviec.modal.dto.DonViSelectDTO;
+import com.example.qllichlamviec.modal.dto.DonViTrucThuocDTO;
 import com.example.qllichlamviec.util.DonVi;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -19,8 +20,11 @@ public interface DonViReponsitory extends MongoRepository<DonVi, ObjectId> {
     @Query("{'donVi' : ?0}")
     List<DonViSelectDTO> getSelectDV(String donVi);
 
+    @Query("{'_id' : ?0}")
+    List<DonViTrucThuocDTO> getAll(String donVi);
+
     @Query("{ 'donViTrucThuoc' : { $eq: null } }")
-    List<DonVi> getSelectDonViCha();
+    DonVi getDonViRoot();
 
     @Query("{ 'donViTrucThuoc' : ObjectId('?0') }")
     List<DonViSelectDTO> getSelectDonViCon(String search);

@@ -21,5 +21,5 @@ public class DonViTrucThuocDTO {
     private String tenDonVi;
 
     @DocumentReference(collection = "DonVi", lookup = "{'donViTrucThuoc':?#{#self._id}}")
-    private List<DonVi> donViCon;
+    private List<DonViTrucThuocDTO> donViCon;
 }

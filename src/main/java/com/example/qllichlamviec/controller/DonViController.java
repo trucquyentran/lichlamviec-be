@@ -5,6 +5,7 @@ import com.example.qllichlamviec.service.DonViService;
 import com.example.qllichlamviec.service.JwtService;
 import com.example.qllichlamviec.service.TaiKhoanService;
 import com.example.qllichlamviec.util.DonVi;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -90,23 +91,18 @@ public class DonViController {
         }
     }
 
-    @GetMapping("/select/donvi-tructhuoc")
+    @GetMapping("/donvi-con-quanly")
     public ResponseEntity<Object> selectDonViTrucThuoc(HttpServletRequest httpRequest) {
         return new ResponseEntity<>(donViService.getSelectDonViTrucThuoc(taiKhoanService.getTaiKhoanFromRequest(httpRequest)), HttpStatus.OK);
     }
 
-    @GetMapping("/donvi-tructhuoc")
-    public ResponseEntity<Object> selectDonViTrucThuocById(String dv) {
-        return new ResponseEntity<>(donViService.getDonViTrucThuocById(dv), HttpStatus.OK);
+    @GetMapping("/donvi-con")
+    public ResponseEntity<Object> toanBoDonViCon(String dv) {
+        return new ResponseEntity<>(donViService.getDonViConById(dv), HttpStatus.OK);
     }
 
-    @GetMapping("/select/donvi-cha")
-    public ResponseEntity<Object> selectDonViCha() {
-        return new ResponseEntity<>(donViService.getSelectDonViCha(), HttpStatus.OK);
-    }
-
-    @GetMapping("/select/toan-bo-donvi")
-    public ResponseEntity<Object> selectToanBoDonVi() {
+    @GetMapping("/donvi-tree")
+    public ResponseEntity<Object> donViTree() {
         return new ResponseEntity<>(donViService.getSelectToanBoDonVi(), HttpStatus.OK);
     }
 }

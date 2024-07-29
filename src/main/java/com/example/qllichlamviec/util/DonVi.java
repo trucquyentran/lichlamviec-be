@@ -25,12 +25,10 @@ public class DonVi {
     @Size(max = 300)
     private String tenDonVi;
 
+
     @DocumentReference(lazy = false)
     private DonVi donViTrucThuoc;
 
-//    public DonVi(ObjectId _id){
-//        this._id = _id;
-//    }
     public DonVi(String id) {
         this._id = new ObjectId(id);
     }
