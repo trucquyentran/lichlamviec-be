@@ -19,7 +19,9 @@ public class DonViTrucThuocDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId _id;
     private String tenDonVi;
+    @DocumentReference(lazy = false)
+    private DonViDTO donViTrucThuoc;
 
     @DocumentReference(collection = "DonVi", lookup = "{'donViTrucThuoc':?#{#self._id}}")
-    private List<DonViTrucThuocDTO> donViCon;
+    private List<DonViTrucThuocDTO> children;
 }

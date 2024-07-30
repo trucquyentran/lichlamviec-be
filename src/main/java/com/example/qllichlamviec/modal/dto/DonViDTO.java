@@ -17,14 +17,14 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DonViDTO {
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId _id;
+//    @JsonSerialize(using = ToStringSerializer.class)
+//    private ObjectId _id;
 
     @Size(max = 100, message = "Tên đơn vị không được vượt quá 100 ký tự")
     private String tenDonVi;
 
-    @DocumentReference(lazy = false)
-    private DonVi donViTrucThuoc;
+//    @DocumentReference(lazy = false)
+//    private DonVi donViTrucThuoc;
 
 
 }
