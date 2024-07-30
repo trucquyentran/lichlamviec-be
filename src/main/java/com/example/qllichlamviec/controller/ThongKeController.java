@@ -6,11 +6,10 @@ import com.example.qllichlamviec.util.pojo.FormatTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -33,4 +32,15 @@ public class ThongKeController {
     public List<ThongKeNhanVienDvDTO> countByDonVi() {
         return thongKeService.countByDonVi();
     }
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
+//    @GetMapping("/count-emp-have-event-today")
+//    public ResponseEntity<Object> countEmpHaveEventToday() {
+//        try {
+//            return ResponseEntity.ok(thongKeService.countUserHaveEventToday());
+//
+//        } catch (Exception e) {
+//            return new ResponseEntity<>("Lỗi khi sửa lịch làm việc: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//    }
 }

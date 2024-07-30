@@ -1,5 +1,6 @@
 package com.example.qllichlamviec.reponsitory;
 
+import com.example.qllichlamviec.modal.dto.LichLamViecHomNayDTO;
 import com.example.qllichlamviec.util.DonVi;
 import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.NguoiDung;
@@ -9,7 +10,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, ObjectId> {
@@ -36,8 +39,12 @@ public interface LichLamViecReponsitory extends MongoRepository<LichLamViec, Obj
     @Query(value = "{'nguoiDung': ?0}",delete = true)
     void deleteByNguoiDungID(ObjectId nguoiDung);
 
-    @Query("{ 'thoiGianBD': {$gte: ?1, $lt: ?2}}")
-    List<LichLamViec> findByThoiGianBDBetween( LocalDateTime thoiGianBD);
+    @Query("{ 'thoiGianBD': {$gte: ?0, $lt: ?1}}")
+    List<LichLamViec> findByThoiGianBDBetween(LocalDate ngayBatDau, LocalDate ngayKetThuc);
+
+    @Query(value = "{ 'thoiGianBD': { $gte: ?0, $lt: ?1 } }", count = true)
+    long lichLamViec (Date ngayBatDau, Date ngayKetThuc);
+
 
 
 
