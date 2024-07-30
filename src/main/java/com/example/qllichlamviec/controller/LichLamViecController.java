@@ -195,5 +195,15 @@ public class LichLamViecController {
             return new ResponseEntity<>(new Error("400","Bạn không có quyền xóa lịch làm việc này ", e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/lichToday")
+    public ResponseEntity<Object> getLichToday() {
+        try {
+            return new ResponseEntity<>(lichLamViecService.lichLamViecHomNay(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }
