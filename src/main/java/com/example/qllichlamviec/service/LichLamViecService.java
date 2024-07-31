@@ -19,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -489,6 +491,24 @@ public class LichLamViecService {
         }
 
     }
+
+
+
+    public List<LichLamViecHomNayDTO> lichLamViecHomNay() {
+        LocalDate dateStart = LocalDate.now();
+        LocalDate dateEnd = dateStart.plusDays(1);
+
+        return lichLamViecReponsitory.findByThoiGianBDBetween(dateStart, dateEnd).stream()
+                .map(lichLamViec -> {
+                    LichLamViecHomNayDTO dto = modelMapper.map(lichLamViec, LichLamViecHomNayDTO.class);
+                    if (lichLamViec.getTaiKhoan() != null) {
+                        dto.setTaiKhoan(modelMapper.map(lichLamViec.getTaiKhoan(), NguoiDungDTO.class));
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
 
 
 }

@@ -47,7 +47,6 @@ public class TaiKhoan {
     private LocalDateTime ngayTao;
     private Integer trangThai;
     private List<Session> listSession;
-
     @Size(max = 70, message = "Tên không hợp lệ, không được vượt quá 70 ký tự")
     private String hoTen;
 
