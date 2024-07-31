@@ -1,10 +1,13 @@
 package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.ThongKeNhanVienDvDTO;
+import com.example.qllichlamviec.modal.dto.ThongKeSLLichCuaNguoiDung;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
+import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.reponsitory.ThongKeReponsitory;
 
+import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.pojo.FormatTime;
 import org.modelmapper.ModelMapper;
@@ -30,6 +33,8 @@ public class ThongKeService {
     @Autowired
     private ThongKeReponsitory thongKeReponsitory;
 
+    @Autowired
+    private TaiKhoanReponsitory taiKhoanReponsitory;
     @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
@@ -63,5 +68,30 @@ public class ThongKeService {
         // Trả về kết quả dưới dạng danh sách các bản đồ (Map)
         return results.getMappedResults();
     }
+
+
+    public long countUser(){
+        return taiKhoanReponsitory.count();
+    }
+
+    public  long countEvent(){
+        return lichLamViecReponsitory.count();
+    }
+
+    public List<ThongKeSLLichCuaNguoiDung> countLichByUser() {
+        TypedAggregation<LichLamViec> aggregation = Aggregation.newAggregation(LichLamViec.class,
+
+                Aggregation.group("taiKhoan")
+                        .count().as("soLuong"),
+                Aggregation.lookup("TaiKhoan", "_id", "_id", "taiKhoanInfo"),
+                Aggregation.unwind("taiKhoanInfo"),
+                Aggregation.project("soLuong")
+                        .and("taiKhoanInfo.hoTen").as("hoTen")
+        );
+
+        AggregationResults<ThongKeSLLichCuaNguoiDung> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeSLLichCuaNguoiDung.class);
+        return results.getMappedResults();
+    }
+
 
 }
