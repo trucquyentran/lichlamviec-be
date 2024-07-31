@@ -44,6 +44,7 @@ public class ThongKeController {
 //        }
 //
 //    }
+<<<<<<< HEAD
 
     @GetMapping("/slnguoidung")
     public long countNguoiDung(){
@@ -64,4 +65,6 @@ public class ThongKeController {
             return  new ResponseEntity<Object>("lỗi"+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+=======
+>>>>>>> 77c99bc9e3f8b6b8b88211c25b2d5817393905fc
 }

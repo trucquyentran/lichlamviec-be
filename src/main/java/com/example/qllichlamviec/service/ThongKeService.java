@@ -2,15 +2,12 @@ package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.ThongKeNhanVienCoLichHomNayDTO;
 import com.example.qllichlamviec.modal.dto.ThongKeNhanVienDvDTO;
-import com.example.qllichlamviec.modal.dto.ThongKeSoLuongLichCuaNguoiDung;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 
-import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.LichLamViec;
 import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.pojo.FormatTime;
-import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -29,8 +26,6 @@ import java.util.Map;
 
 @Service
 public class ThongKeService {
-    @Autowired
-    TaiKhoanReponsitory taiKhoanReponsitory;
     @Autowired
     private LichLamViecService lichLamViecService;
     @Autowired
@@ -84,29 +79,5 @@ public class ThongKeService {
 //        AggregationResults<ThongKeNhanVienCoLichHomNayDTO> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeNhanVienCoLichHomNayDTO.class);
 //        return results.getMappedResults();
 //    }
-
-
-    public long countUser(){
-        return taiKhoanReponsitory.count();
-    }
-
-    public  long countEvent(){
-        return lichLamViecReponsitory.count();
-    }
-
-    public List<ThongKeSoLuongLichCuaNguoiDung> countLichByUser() {
-        TypedAggregation<LichLamViec> aggregation = Aggregation.newAggregation(LichLamViec.class,
-
-                Aggregation.group("taiKhoan")
-                        .count().as("soLuong"),
-                Aggregation.lookup("TaiKhoan", "_id", "_id", "taiKhoanInfo"),
-                Aggregation.unwind("taiKhoanInfo"),
-                Aggregation.project("soLuong")
-                        .and("taiKhoanInfo.hoTen").as("hoTen")
-        );
-
-        AggregationResults<ThongKeSoLuongLichCuaNguoiDung> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeSoLuongLichCuaNguoiDung.class);
-        return results.getMappedResults();
-    }
 
 }
