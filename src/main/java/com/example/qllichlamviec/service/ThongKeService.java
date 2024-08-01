@@ -48,18 +48,20 @@ public class ThongKeService {
     }
 
     public List<ThongKeNhanVienDvDTO> countEmpByDonVi() {
-        TypedAggregation<TaiKhoan> aggregation = Aggregation.newAggregation(TaiKhoan.class,
-                Aggregation.group("donVi")
-                        .count().as("soLuong"),
-                Aggregation.lookup("DonVi", "_id", "_id", "donViInfo"),
+        TypedAggregation<TaiKhoan> aggregation = Aggregation.newAggregation(
+                TaiKhoan.class,
+                Aggregation.lookup("DonVi", "donVi", "_id", "donViInfo"),
                 Aggregation.unwind("donViInfo"),
-                Aggregation.project("soLuong")
-                        .and("donViInfo.tenDonVi").as("tenDonVi")
+                Aggregation.group("donVi")
+                        .count().as("soLuong")
+                        .first("donViInfo.tenDonVi").as("tenDonVi"),
+                Aggregation.project("tenDonVi", "soLuong")
+                        .and("_id").as("id")
         );
-
         AggregationResults<ThongKeNhanVienDvDTO> results = mongoTemplate.aggregate(aggregation, "TaiKhoan", ThongKeNhanVienDvDTO.class);
         return results.getMappedResults();
     }
+
 
     public long countUser(){
         return taiKhoanReponsitory.count();
@@ -135,7 +137,20 @@ public class ThongKeService {
 //        AggregationResults<ThongKeNhanVienCoLichHomNayDTO> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeNhanVienCoLichHomNayDTO.class);
 //        return results.getMappedResults();
 //    }
-//    public List<ThongKeDSLichByDateDTO> listEventByDate(Date start, Date end){
-//
-//    }
+    public List<ThongKeDSLichByDateDTO> listEventByDate(Date start, Date end){
+            Aggregation aggregation = Aggregation.newAggregation(
+                    Aggregation.project()
+                            .andExpression("thoiGianBD").dateAsFormattedString("%Y-%m-%d").as("date")
+                            .andInclude("_id", "thoiGianBD", "thoiGianKT", "tieuDe", "diaDiem", "noiDung", "ghiChu", "bg", "thoiGianTao", "taiKhoan", "donVi"),
+                    Aggregation.group("date")
+                            .push("$$ROOT").as("schedules")
+            );
+
+            AggregationResults<ThongKeDSLichByDateDTO> results = mongoTemplate.aggregate(
+                    aggregation, "lichLamViec", ThongKeDSLichByDateDTO.class
+            );
+
+            return results.getMappedResults();
+
+    }
 }
