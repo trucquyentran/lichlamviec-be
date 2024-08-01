@@ -94,4 +94,14 @@ public class ThongKeController {
             return  new ResponseEntity<Object>("Lỗi"+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/slnhanvientheoquyen")
+    public ResponseEntity<Object> countEmpOfRole(){
+        try {
+            return ResponseEntity.ok(thongKeService.countEmpByRole());
+        }
+        catch (Exception e){
+            return new ResponseEntity<Object>("lỗi" +e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

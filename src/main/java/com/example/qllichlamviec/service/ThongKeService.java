@@ -6,6 +6,7 @@ import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
 import com.example.qllichlamviec.util.LichLamViec;
+import com.example.qllichlamviec.util.QuyenTaiKhoan;
 import com.example.qllichlamviec.util.TaiKhoan;
 import com.example.qllichlamviec.util.pojo.FormatTime;
 import org.bson.types.ObjectId;
@@ -138,7 +139,7 @@ public class ThongKeService {
 //        return results.getMappedResults();
 //    }
     public List<ThongKeDSLichByDateDTO> listEventByDate(Date start, Date end){
-            Aggregation aggregation = Aggregation.newAggregation(
+        TypedAggregation<LichLamViec> aggregation = Aggregation.newAggregation(LichLamViec.class,
                     Aggregation.project()
                             .andExpression("thoiGianBD").dateAsFormattedString("%Y-%m-%d").as("date")
                             .andInclude("_id", "thoiGianBD", "thoiGianKT", "tieuDe", "diaDiem", "noiDung", "ghiChu", "bg", "thoiGianTao", "taiKhoan", "donVi"),
@@ -151,6 +152,24 @@ public class ThongKeService {
             );
 
             return results.getMappedResults();
+
+    }
+
+    public List<ThongKeSLNhanVienTheoQuyenDTO> countEmpByRole(){
+        TypedAggregation<QuyenTaiKhoan> aggregation = Aggregation.newAggregation(QuyenTaiKhoan.class,
+                Aggregation.lookup("TaiKhoan","taiKhoan","_id","taiKhoanInfo"),
+                Aggregation.lookup("Quyen","quyen","_id","quyenInfo"),
+                Aggregation.unwind("quyenInfo"),
+                Aggregation.group("quyenInfo._id")
+                        .count().as("soLuong")
+                        .first("quyenInfo.tenQuyen").as("tenVaiTro"),
+                Aggregation.project("_id", "tenVaiTro","soLuong")
+        );
+
+        AggregationResults<ThongKeSLNhanVienTheoQuyenDTO> results = mongoTemplate.aggregate(
+                aggregation, "QuyenTaiKhoan", ThongKeSLNhanVienTheoQuyenDTO.class
+        );
+        return results.getMappedResults();
 
     }
 }
