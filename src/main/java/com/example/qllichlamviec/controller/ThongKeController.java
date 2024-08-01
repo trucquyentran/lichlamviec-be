@@ -84,4 +84,14 @@ public class ThongKeController {
             return  new ResponseEntity<Object>("Lỗi" +e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/dslichtheongay")
+    public ResponseEntity<Object> listEventOfDate(@RequestParam Date start, Date end){
+        try {
+            return ResponseEntity.ok(thongKeService.listEventByDate(start, end));
+        }
+        catch (Exception e){
+            return  new ResponseEntity<Object>("Lỗi"+e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -21,7 +21,5 @@ public class ThongKeDSLichByDateDTO {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     private LocalDate thoiGian;
-    @DocumentReference(lazy = false)
-    private DonViDTO donVi;
-    private List<LichLamViec> lichLamViecList;
+    private List<LichLamViecDTO> lichLamViecList;
 }
