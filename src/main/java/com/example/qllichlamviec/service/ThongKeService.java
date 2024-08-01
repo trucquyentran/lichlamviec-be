@@ -1,8 +1,6 @@
 package com.example.qllichlamviec.service;
 
-import com.example.qllichlamviec.modal.dto.ThongKeNhanVienCoLichHomNayDTO;
-import com.example.qllichlamviec.modal.dto.ThongKeNhanVienDvDTO;
-import com.example.qllichlamviec.modal.dto.ThongKeSoLuongLichCuaNguoiDung;
+import com.example.qllichlamviec.modal.dto.*;
 import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 
@@ -49,7 +47,7 @@ public class ThongKeService {
 
     }
 
-    public List<ThongKeNhanVienDvDTO> countByDonVi() {
+    public List<ThongKeNhanVienDvDTO> countEmpByDonVi() {
         TypedAggregation<TaiKhoan> aggregation = Aggregation.newAggregation(TaiKhoan.class,
                 Aggregation.group("donVi")
                         .count().as("soLuong"),
@@ -63,29 +61,6 @@ public class ThongKeService {
         return results.getMappedResults();
     }
 
-//    public List<ThongKeNhanVienCoLichHomNayDTO> countUserHaveEventToday() {
-//        // Lấy ngày hôm nay từ 0h đến 23h59
-//        LocalDate start = LocalDate.now();
-//        LocalDate dateEnd = start.plusDays(2);
-//
-//
-//        // Aggregation pipeline
-//        TypedAggregation<LichLamViec> aggregation = Aggregation.newAggregation(LichLamViec.class,
-//                Aggregation.match(Criteria.where("thoiGianBD").gte(start).lt(dateEnd)),
-//                Aggregation.group("donVi._id")
-//                        .count().as("soLuong"),
-//                Aggregation.lookup("DonVi", "_id", "_id", "donViInfo"),
-//                Aggregation.unwind("donViInfo"),
-//                Aggregation.project("soLuong")
-//                        .and("donViInfo.tenDonVi").as("tenDonVi")
-//        );
-//
-//        // Thực hiện aggregation
-//        AggregationResults<ThongKeNhanVienCoLichHomNayDTO> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeNhanVienCoLichHomNayDTO.class);
-//        return results.getMappedResults();
-//    }
-
-
     public long countUser(){
         return taiKhoanReponsitory.count();
     }
@@ -96,7 +71,6 @@ public class ThongKeService {
 
     public List<ThongKeSoLuongLichCuaNguoiDung> countLichByUser() {
         TypedAggregation<LichLamViec> aggregation = Aggregation.newAggregation(LichLamViec.class,
-
                 Aggregation.group("taiKhoan")
                         .count().as("soLuong"),
                 Aggregation.lookup("TaiKhoan", "_id", "_id", "taiKhoanInfo"),
@@ -104,10 +78,41 @@ public class ThongKeService {
                 Aggregation.project("soLuong")
                         .and("taiKhoanInfo.hoTen").as("hoTen")
         );
-
         AggregationResults<ThongKeSoLuongLichCuaNguoiDung> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeSoLuongLichCuaNguoiDung.class);
         return results.getMappedResults();
     }
+
+    public List<ThongKeSLLoaiLichCuaMotNhanVien> countCateEventOfUser(ObjectId userId) {
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                Aggregation.match(org.springframework.data.mongodb.core.query.Criteria.where("taiKhoan").is(userId)),
+                Aggregation.group("bg").count().as("soLuong"),
+                Aggregation.project()
+                        .andExclude("_id")
+                        .and("soLuong").as("soLuong")
+                        .and("_id").as("bg")
+        );
+        AggregationResults<ThongKeSLLoaiLichCuaMotNhanVien> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeSLLoaiLichCuaMotNhanVien.class);
+        return results.getMappedResults();
+    }
+
+    public List<LichByDateDTO> lichByDate(ObjectId id) {
+        TypedAggregation<LichLamViec> aggregation = Aggregation.newAggregation(LichLamViec.class,
+                Aggregation.match(Criteria.where("id").is(id)),
+                Aggregation.group("thoiGian")
+                        .push("$$ROOT").as("lichLamViecList"),
+                Aggregation.lookup("TaiKhoan", "lichLamViecList.taiKhoanId", "_id", "taiKhoanInfo"),
+                Aggregation.unwind("taiKhoanInfo"),
+                Aggregation.project("thoiGian")
+                        .and("lichLamViecList").as("lichLamViecList")
+                        .and("taiKhoanInfo.hoTen").as("hoTen")
+        );
+        AggregationResults<LichByDateDTO> results = mongoTemplate.aggregate(aggregation, "LichLamViec", LichByDateDTO.class);
+        return results.getMappedResults();
+    }
+
+
+
 
 //    public List<ThongKeNhanVienCoLichHomNayDTO> countUserHaveEventToday() {
 //        // Lấy ngày hôm nay từ 0h đến 23h59
@@ -130,5 +135,7 @@ public class ThongKeService {
 //        AggregationResults<ThongKeNhanVienCoLichHomNayDTO> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeNhanVienCoLichHomNayDTO.class);
 //        return results.getMappedResults();
 //    }
-
+//    public List<ThongKeDSLichByDateDTO> listEventByDate(Date start, Date end){
+//
+//    }
 }

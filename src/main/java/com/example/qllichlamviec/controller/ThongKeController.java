@@ -29,9 +29,9 @@ public class ThongKeController {
 
         return thongKeService.soLuongLich(start,end);
     }
-    @GetMapping("/countByDonVi")
+    @GetMapping("/slnhanviencuadonvi")
     public List<ThongKeNhanVienDvDTO> countByDonVi() {
-        return thongKeService.countByDonVi();
+        return thongKeService.countEmpByDonVi();
     }
 //    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
 //    @GetMapping("/count-emp-have-event-today")
@@ -55,7 +55,7 @@ public class ThongKeController {
     public long countLich(){
         return thongKeService.countEvent();
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")
     @GetMapping("/count-event-of-user")
     public ResponseEntity<Object> countEventOfUser(){
         try {
@@ -66,4 +66,22 @@ public class ThongKeController {
         }
     }
 
+    @GetMapping("/count-event-of-user/{id}")
+    public ResponseEntity<Object> countCateEventOfUser(@PathVariable ObjectId id){
+        try {
+            return ResponseEntity.ok(thongKeService.countCateEventOfUser(id));
+        }
+        catch (Exception e){
+            return  new ResponseEntity<Object>("Lỗi" +e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/event-by-date/{id}")
+    public ResponseEntity<Object> eventByDate(@PathVariable ObjectId id){
+        try {
+            return ResponseEntity.ok(thongKeService.lichByDate(id));
+        }
+        catch (Exception e){
+            return  new ResponseEntity<Object>("Lỗi" +e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
