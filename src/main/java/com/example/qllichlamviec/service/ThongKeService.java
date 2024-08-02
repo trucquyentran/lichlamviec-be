@@ -1,7 +1,6 @@
 package com.example.qllichlamviec.service;
 
 import com.example.qllichlamviec.modal.dto.*;
-import com.example.qllichlamviec.modal.system.TaiKhoanNguoiDungDTO;
 import com.example.qllichlamviec.reponsitory.LichLamViecReponsitory;
 
 import com.example.qllichlamviec.reponsitory.TaiKhoanReponsitory;
@@ -12,6 +11,7 @@ import com.example.qllichlamviec.util.pojo.FormatTime;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -19,11 +19,14 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-
+import org.bson.Document;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Calendar;
 
 
 @Service
@@ -172,4 +175,57 @@ public class ThongKeService {
         return results.getMappedResults();
 
     }
+    public List<ThongKeSLLoaiLichCuaMotNhanVien> countCateEventOfUser(ObjectId taiKhoanId, Date startDate,Date endDate) {
+        Date end = endDate;
+        Calendar c = Calendar.getInstance();
+        c.setTime(end);
+        c.add(Calendar.DATE, 1);
+        end = c.getTime();
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                // Lọc dữ liệu theo điều kiện
+                Aggregation.match(Criteria.where("taiKhoan").is(taiKhoanId)
+                        .and("thoiGianBD").gte(startDate)
+                        .and("thoiGianKT").lte(end)),
+
+                // Kết hợp với collection TaiKhoan
+                Aggregation.lookup("TaiKhoan", "taiKhoan", "_id", "TaiKhoanInfo"),
+
+                // Tách mảng TaiKhoanInfo thành tài liệu riêng biệt
+                Aggregation.unwind("TaiKhoanInfo"),
+
+                // Nhóm theo bg, thoiGianBD, và thoiGianKT
+                Aggregation.group("bg", "thoiGianBD", "thoiGianKT")
+                        .count().as("sl")
+                        .first("thoiGianBD").as("thoiGianBD")
+                        .first("thoiGianKT").as("thoiGianKT"),
+
+                // Format ngày và giữ các trường cần thiết
+                Aggregation.project("bg", "thoiGianBD", "thoiGianKT", "sl")
+                        .andExpression("dateToString('%Y-%m-%d', thoiGianBD)").as("startDate")
+                        .andExpression("dateToString('%Y-%m-%d', thoiGianKT)").as("endDate"),
+
+                // Nhóm theo startDate và bg để tính số lượng
+                Aggregation.group("startDate", "bg")
+                        .sum("sl").as("sl"),
+
+                // Nhóm theo startDate để tính tổng số lượng và tạo danh sách loại
+                Aggregation.group("startDate")
+                        .sum("sl").as("tongSoLuong")
+                        .push(new Document("bg", "$_id.bg").append("sl", "$sl")).as("loai"),
+
+                // Dự phóng kết quả cuối cùng
+                Aggregation.project("tongSoLuong", "loai")
+                        .and("_id").as("ngay"),
+
+                // Sắp xếp kết quả theo ngày
+                Aggregation.sort(Sort.by(Sort.Order.asc("ngay")))
+        );
+
+        // Thực hiện aggregation
+        AggregationResults<ThongKeSLLoaiLichCuaMotNhanVien> results = mongoTemplate.aggregate(aggregation, "LichLamViec", ThongKeSLLoaiLichCuaMotNhanVien.class);
+
+        return results.getMappedResults();
+    }
+
 }

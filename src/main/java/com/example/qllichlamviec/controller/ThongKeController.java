@@ -13,6 +13,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -66,13 +70,18 @@ public class ThongKeController {
         }
     }
 
-    @GetMapping("/count-event-of-user/{id}")
-    public ResponseEntity<Object> countCateEventOfUser(@PathVariable ObjectId id){
+    @GetMapping("/slloailichcuanhanvientheongay")
+    public ResponseEntity<Object> countCateEventOfUser(
+            @RequestParam ObjectId id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date end)  {
+
         try {
-            return ResponseEntity.ok(thongKeService.countCateEventOfUser(id));
-        }
-        catch (Exception e){
-            return  new ResponseEntity<Object>("Lỗi" +e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+
+
+            return ResponseEntity.ok(thongKeService.countCateEventOfUser(id, start, end));
+        } catch (Exception e) {
+            return new ResponseEntity<>("Lỗi: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping("/event-by-date/{id}")
