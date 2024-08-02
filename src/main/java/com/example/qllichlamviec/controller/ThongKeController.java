@@ -28,9 +28,7 @@ public class ThongKeController {
     @Autowired
     private ThongKeService thongKeService;
     @GetMapping
-    public Object soLuongLichTrongNgay(@RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date start, @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date end){
-
-
+    public Object soLuongLichTrongNgay(@RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date start, @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date end){ 
         return thongKeService.soLuongLich(start,end);
     }
     @GetMapping("/slnhanviencuadonvi")
@@ -70,7 +68,7 @@ public class ThongKeController {
         }
     }
 
-    @GetMapping("/slloailichcuanhanvientheongay")
+    @GetMapping("/slloailichtheongaycuadonvihoacnhanvien")
     public ResponseEntity<Object> countCateEventOfUser(
             @RequestParam ObjectId id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date start,
